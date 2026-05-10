@@ -4,9 +4,18 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
+  // Reset scroll lock on every route change (caused by React Three Fiber canvas on home page)
+  useEffect(() => {
+    document.body.style.overflow = "";
+    document.body.style.height = "";
+    document.documentElement.style.overflow = "";
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const isAdmin = pathname.startsWith("/admin");
 
