@@ -28,6 +28,8 @@
     "react-dom": "19.2.3",
     "react-hot-toast": "^2.6.0",
     "recharts": "^3.8.1",
+    "next-auth": "^4.24.11",
+    "nodemailer": "^6.9.16",
     "three": "^0.183.2"
   },
   "devDependencies": {
