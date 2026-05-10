@@ -1,5 +1,88 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# ============================================
+# ROOT LEVEL
+# ============================================
 
-/generated/prisma
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables (NEVER commit these)
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ============================================
+# NEXT.JS (iwallets/)
+# ============================================
+
+# Build output
+iwallets/.next/
+iwallets/out/
+iwallets/build/
+iwallets/dist/
+
+# Cache
+iwallets/.cache/
+iwallets/.turbo/
+
+# TypeScript build info
+iwallets/tsconfig.tsbuildinfo
+iwallets/next-env.d.ts
+
+# Debug/error logs
+iwallets/ts_errors.txt
+iwallets/ts_errors_utf8.txt
+iwallets/jscpd_output.txt
+
+# Vercel
+iwallets/.vercel/
+
+# ============================================
+# SANITY CMS (iwallet-cms/)
+# ============================================
+
+# Sanity build output
+iwallet-cms/.sanity/
+iwallet-cms/dist/
+iwallet-cms/build/
+
+# TypeScript
+iwallet-cms/tsconfig.tsbuildinfo
+
+# Vercel
+iwallet-cms/.vercel/
+
+# ============================================
+# PACKAGE MANAGER
+# ============================================
+
+# Uncomment whichever you DON'T use:
+# package-lock.json   # (if using yarn)
+# yarn.lock           # (if using npm)
