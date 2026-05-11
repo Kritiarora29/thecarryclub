@@ -30,6 +30,7 @@ export default function OrdersPage() {
           <p>
             {order.address?.city}, {order.address?.state} -{" "}
             {order.address?.pincode}
+            {order.address?.landmark && ` (LM: ${order.address.landmark})`}
           </p>
 
           <p className="mt-2 font-semibold">Items:</p>

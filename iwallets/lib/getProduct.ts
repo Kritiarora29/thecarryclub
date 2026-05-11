@@ -30,8 +30,8 @@ export async function getProducts() {
       slug: p.slug,
       description: p.description,
       color: p.color,
-      imageUrl: p.imageUrl,
-      videoUrl: p.videoUrl,
+      imageUrl: p.imageUrl?.startsWith("http") || p.imageUrl?.startsWith("/") ? p.imageUrl : `/${p.imageUrl}`,
+      videoUrl: p.videoUrl?.startsWith("http") || p.videoUrl?.startsWith("/") ? p.videoUrl : `/${p.videoUrl}`,
     }));
   } catch (error) {
     console.error("MongoDB Fetch Error:", error);

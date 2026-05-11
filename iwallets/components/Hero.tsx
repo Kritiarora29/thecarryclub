@@ -1,19 +1,10 @@
 "use client"
 
-import dynamic from "next/dynamic"
+import WalletModel from "./WalletModel"
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-
-const WalletModel = dynamic(() => import("./WalletModel"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center w-full h-full text-gray-400 font-bold uppercase tracking-widest text-xs">
-      Loading 3D Experience...
-    </div>
-  ),
-})
 
 const banners = [
   {
@@ -78,7 +69,7 @@ export default function Hero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -112,14 +103,15 @@ export default function Hero() {
               quality={85}
               className="object-cover"
               sizes="100vw"
+              unoptimized={true}
             />
           </motion.div>
         </AnimatePresence>
 
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 md:px-6">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 md:px-6 pt-16 md:pt-0">
           <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl"
           >
             <h1 className="text-3xl md:text-8xl font-black text-white tracking-tighter mb-2 md:mb-4 leading-none">
@@ -160,19 +152,18 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* TRUST BAR */}
-      <section aria-label="Trust signals" className="bg-white py-8 md:py-16 border-b border-gray-100 relative overflow-hidden">
+      <section aria-label="Trust signals" className="bg-white py-6 md:py-16 border-b border-gray-100 relative overflow-hidden">
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-rose-100 rounded-full blur-3xl opacity-40" aria-hidden="true" />
         <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-blue-100 rounded-full blur-3xl opacity-40" aria-hidden="true" />
 
-        <ul className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-12 relative z-10 list-none m-0 p-0">
+        <ul className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-3 gap-2 md:gap-12 relative z-10 list-none m-0 p-0">
           {benefits.map((b, i) => (
             <li key={i} className="flex flex-col items-center text-center group">
-              <span className="text-2xl md:text-4xl mb-2 md:mb-4 transform group-hover:scale-125 transition-transform duration-300" aria-hidden="true">
+              <span className="text-xl md:text-4xl mb-1 md:mb-4 transform group-hover:scale-125 transition-transform duration-300" aria-hidden="true">
                 {b.icon}
               </span>
-              <h3 className="font-black text-[9px] md:text-sm text-black uppercase tracking-[0.2em]">{b.title}</h3>
-              <p className="text-[9px] md:text-xs text-gray-500 mt-1 font-bold">{b.desc}</p>
+              <h3 className="font-black text-[7px] md:text-sm text-black uppercase tracking-widest md:tracking-[0.2em]">{b.title}</h3>
+              <p className="text-[6px] md:text-xs text-gray-500 mt-0.5 font-bold">{b.desc}</p>
             </li>
           ))}
         </ul>
@@ -182,7 +173,7 @@ export default function Hero() {
       <section aria-label="Interactive 3D wallet studio" className="py-10 md:py-24 bg-white overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-20 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 1, x: 0 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="text-center md:text-left"
@@ -206,7 +197,7 @@ export default function Hero() {
               </Link>
             </div>
           </motion.div>
-          <div className="h-[200px] md:h-[650px] w-full relative group mt-4 md:mt-0">
+          <div className="h-[300px] md:h-[650px] w-full relative group mt-4 md:mt-0">
             <div className="absolute inset-0 bg-gradient-to-br from-[#ff3366]/10 to-blue-500/10 rounded-full blur-[100px] group-hover:opacity-100 transition-opacity duration-1000" aria-hidden="true" />
             <WalletModel />
           </div>
@@ -218,7 +209,7 @@ export default function Hero() {
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-20 gap-4 md:gap-8">
             <h2 className="text-4xl md:text-9xl font-black text-black leading-none tracking-tighter">
-              Iconic <br className="hidden md:block" /> <span className="text-gray-300">Style.</span>
+              Iconic <br className="hidden md:block" /> <span className="text-[#ff3366]">Style.</span>
             </h2>
             <p className="text-gray-500 max-w-sm text-xs md:text-lg md:text-right leading-relaxed">
               Premium materials crafted into a minimal silhouette.
@@ -230,33 +221,36 @@ export default function Hero() {
             {wallets.map((wallet) => (
               <motion.li
                 key={wallet.id}
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 1, y: 0 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className={`${wallet.bgClass} rounded-[2rem] md:rounded-[3rem] p-6 md:p-24 flex flex-col md:flex-row items-center gap-6 md:gap-16 group relative overflow-hidden shadow-xl md:shadow-2xl text-center md:text-left`}
+                className={`${wallet.bgClass} rounded-[2rem] md:rounded-[4rem] p-6 md:p-20 flex flex-col md:flex-row items-center gap-6 md:gap-24 group relative overflow-hidden shadow-2xl border border-white/5 text-center md:text-left`}
               >
-                <div className={`w-full md:w-1/2 ${wallet.reverse ? "order-1 md:order-2" : "order-1"}`}>
-                  <div className="relative aspect-square md:aspect-auto h-[250px] md:h-[400px]">
+                {/* Visual Side */}
+                <div className={`w-full md:w-1/2 flex justify-center md:block ${wallet.reverse ? "order-1 md:order-2" : "order-1"}`}>
+                  <div className="relative aspect-square md:aspect-auto h-[200px] md:h-[500px] bg-white rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-12 overflow-hidden shadow-inner group-hover:shadow-2xl transition-all duration-700">
                     <div
-                      className={`absolute inset-0 ${wallet.accent} rounded-full blur-[40px] md:blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-1000`}
+                      className={`absolute inset-0 ${wallet.accent} rounded-full blur-[60px] md:blur-[100px] opacity-10 group-hover:opacity-30 transition-opacity duration-1000`}
                       aria-hidden="true"
                     />
                     <Image
                       src={wallet.img}
                       alt={wallet.alt}
                       fill
-                      loading="lazy"
-                      className="object-contain drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-1000 relative z-10"
+                      unoptimized={true}
+                      className="object-contain transform group-hover:scale-110 transition-transform duration-1000 relative z-10"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                 </div>
+
+                {/* Content Side */}
                 <div className={`w-full md:w-1/2 ${wallet.reverse ? "order-2 md:order-1" : "order-2"} flex flex-col items-center md:items-start`}>
-                  <div className={`w-8 md:w-12 h-1 ${wallet.accent} mb-3 md:mb-8`} aria-hidden="true" />
-                  <h3 className={`text-2xl md:text-8xl font-black mb-2 md:mb-8 tracking-tighter whitespace-pre-line leading-tight ${wallet.titleColor}`}>
+                  <div className={`w-10 md:w-20 h-1 md:h-1.5 ${wallet.accent} mb-4 md:mb-12 rounded-full`} aria-hidden="true" />
+                  <h3 className={`text-2xl md:text-8xl font-black mb-2 md:mb-10 tracking-tighter leading-none ${wallet.titleColor}`}>
                     {wallet.title}
                   </h3>
-                  <p className="text-xs md:text-2xl mb-2 md:mb-8 leading-relaxed opacity-80 max-w-[280px] md:max-w-none">
+                  <p className="text-xs md:text-2xl mb-4 md:mb-12 leading-relaxed opacity-70 font-medium max-w-[280px] md:max-w-none">
                     {wallet.desc}
                   </p>
                 </div>

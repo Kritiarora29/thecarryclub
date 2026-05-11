@@ -26,6 +26,7 @@ export default function OrderDetails() {
 
         <p className="mt-3">
           <b>Address:</b> {order.address?.city}, {order.address?.state} - {order.address?.pincode}
+          {order.address?.landmark && ` (Landmark: ${order.address.landmark})`}
         </p>
 
         <div className="mt-3">

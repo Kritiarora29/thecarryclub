@@ -7,9 +7,10 @@ const OrderSchema = new mongoose.Schema(
     phone: String,
 
     address: {
-      pincode: String,
       city: String,
       state: String,
+      pincode: String,
+      landmark: String,
     },
 
     items: [

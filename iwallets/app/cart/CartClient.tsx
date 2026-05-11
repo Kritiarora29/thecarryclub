@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import RazorpayCheckout from "@/components/RazorpayCheckout"
 import {
   updateQty,
@@ -20,7 +20,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const [pincode, setPincode] = useState("")
   const [city, setCity] = useState("")
   const [state, setState] = useState("")
-  const [eta, setEta] = useState("")
+  const [landmark, setLandmark] = useState("")
 
   const [appliedCoupon, setAppliedCoupon] = useState("CARRY999")
 
@@ -40,26 +40,13 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const discount = appliedCoupon === "CARRY999" ? 600 * totalQty : 0
   const finalTotal = Math.max(total - discount, 0)
 
-  // ================= PINCODE =================
-  const fetchAddress = async (pin: string) => {
-    if (pin.length !== 6) return
-    try {
-      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`)
-      const data = await res.json()
-      if (data[0].Status === "Success") {
-        const post = data[0].PostOffice[0]
-        setCity(post.District)
-        setState(post.State)
-        setEta(pin.startsWith("56") ? "2-3 days" : "4-6 days")
-      }
-    } catch { }
-  }
+
 
   return (
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#fafafa] pt-24 md:pt-36 pb-10 px-4 md:px-8 text-black flex flex-col items-center justify-start overflow-hidden"
+      className="min-h-screen bg-[#fafafa] pt-32 md:pt-36 pb-10 px-4 md:px-8 text-black flex flex-col items-center justify-start overflow-hidden"
     >
       <div className="max-w-7xl w-full">
 
@@ -106,32 +93,34 @@ export default function CartClient({ cart = [], products = [] }: any) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <input
                   className="premium-input"
-                  placeholder="Pincode *"
-                  value={pincode}
-                  onChange={(e) => {
-                    setPincode(e.target.value)
-                    fetchAddress(e.target.value)
-                  }}
+                  placeholder="City *"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                 />
                 <input
-                  className="premium-input bg-gray-50 cursor-not-allowed"
-                  value={city && state ? `${city}, ${state}` : ""}
-                  readOnly
-                  placeholder="City, State"
+                  className="premium-input"
+                  placeholder="State *"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
                 />
               </div>
 
-              <AnimatePresence>
-                {eta && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-emerald-600 font-bold text-[10px] md:text-xs uppercase tracking-widest flex items-center gap-2 mt-2"
-                  >
-                    🚀 Delivered in {eta}
-                  </motion.p>
-                )}
-              </AnimatePresence>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <input
+                  className="premium-input"
+                  placeholder="Pincode *"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                />
+                <input
+                  className="premium-input"
+                  placeholder="Landmark (Optional)"
+                  value={landmark}
+                  onChange={(e) => setLandmark(e.target.value)}
+                />
+              </div>
+
+
             </div>
           </motion.div>
 
@@ -264,7 +253,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       onSuccess={async (paymentId: any) => {
                         await fetch("/api/order", {
                           method: "POST",
-                          body: JSON.stringify({ name, email, phone, address: { street, pincode, city, state }, items: cartItems, amount: finalTotal, paymentId }),
+                          body: JSON.stringify({ name, email, phone, address: { street, city, state, pincode, landmark }, items: cartItems, amount: finalTotal, paymentId }),
                         })
                         localStorage.removeItem("cart")
                         window.location.href = "/success"

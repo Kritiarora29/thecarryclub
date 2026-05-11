@@ -36,10 +36,10 @@ const faqs = [
 ]
 
 export default function FAQsPage() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <section className="min-h-screen bg-[#fafafa] px-6 pt-24 md:pt-40 pb-20 overflow-hidden">
+    <section className="min-h-screen bg-[#fafafa] px-6 pt-32 md:pt-40 pb-20 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         
         {/* Hero Section */}

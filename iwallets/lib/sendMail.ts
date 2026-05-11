@@ -54,7 +54,7 @@ export async function sendOrderEmail(order: any) {
 
           <div style="background: #f7f7f7; padding: 15px; border-radius: 8px; margin-top: 20px;">
             <p style="margin: 0; font-size: 14px; color: #666;"><strong>Payment ID:</strong> ${paymentId}</p>
-            <p style="margin: 5px 0 0; font-size: 14px; color: #666;"><strong>Delivery to:</strong> ${address.city}, ${address.state} - ${address.pincode}</p>
+            <p style="margin: 5px 0 0; font-size: 14px; color: #666;"><strong>Delivery to:</strong> ${address.city}, ${address.state} - ${address.pincode}${address.landmark ? ` (Landmark: ${address.landmark})` : ""}</p>
           </div>
 
           <p style="margin-top: 30px;">We'll send you another email with a tracking link once your package is on its way!</p>

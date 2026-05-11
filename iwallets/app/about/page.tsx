@@ -6,7 +6,7 @@ import { Mail, Instagram, ArrowRight } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <section className="min-h-screen bg-[#fafafa] px-6 pt-24 md:pt-40 pb-20 overflow-hidden">
+    <section className="min-h-screen bg-[#fafafa] px-6 pt-32 md:pt-40 pb-20 overflow-hidden">
       <div className="max-w-6xl mx-auto">
 
         {/* Hero Section */}
