@@ -205,11 +205,11 @@ export default function Hero() {
       </section>
 
       {/* EDITORIAL SHOWCASE */}
-      <section aria-label="Wallet colour showcase" className="bg-gray-50 py-10 md:py-24">
+      <section aria-label="Wallet colour showcase" className="bg-gray-50 pt-6 pb-12 md:pt-10 md:pb-24">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-20 gap-4 md:gap-8">
-            <h2 className="text-4xl md:text-9xl font-black text-black leading-none tracking-tighter">
-              Iconic <br className="hidden md:block" /> <span className="text-[#ff3366]">Style.</span>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-16 gap-4 md:gap-8">
+            <h2 className="text-4xl md:text-8xl font-black text-black leading-none tracking-tighter whitespace-nowrap">
+              Iconic <span className="text-[#ff3366]">Style.</span>
             </h2>
             <p className="text-gray-500 max-w-sm text-xs md:text-lg md:text-right leading-relaxed">
               Premium materials crafted into a minimal silhouette.
@@ -224,11 +224,11 @@ export default function Hero() {
                 initial={{ opacity: 1, y: 0 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className={`${wallet.bgClass} rounded-[2rem] md:rounded-[4rem] p-6 md:p-20 flex flex-col md:flex-row items-center gap-6 md:gap-24 group relative overflow-hidden shadow-2xl border border-white/5 text-center md:text-left`}
+                className={`${wallet.bgClass} rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 flex flex-col md:flex-row items-center gap-6 md:gap-16 group relative overflow-hidden shadow-2xl border border-white/5 text-center md:text-left`}
               >
                 {/* Visual Side */}
                 <div className={`w-full md:w-1/2 flex justify-center md:block ${wallet.reverse ? "order-1 md:order-2" : "order-1"}`}>
-                  <div className="relative aspect-square md:aspect-auto h-[200px] md:h-[500px] bg-white rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-12 overflow-hidden shadow-inner group-hover:shadow-2xl transition-all duration-700">
+                  <div className="relative aspect-square md:aspect-auto h-[200px] md:h-[350px] bg-white rounded-[1.5rem] md:rounded-[2.5rem] p-4 md:p-8 overflow-hidden shadow-inner group-hover:shadow-2xl transition-all duration-700">
                     <div
                       className={`absolute inset-0 ${wallet.accent} rounded-full blur-[60px] md:blur-[100px] opacity-10 group-hover:opacity-30 transition-opacity duration-1000`}
                       aria-hidden="true"
@@ -246,11 +246,11 @@ export default function Hero() {
 
                 {/* Content Side */}
                 <div className={`w-full md:w-1/2 ${wallet.reverse ? "order-2 md:order-1" : "order-2"} flex flex-col items-center md:items-start`}>
-                  <div className={`w-10 md:w-20 h-1 md:h-1.5 ${wallet.accent} mb-4 md:mb-12 rounded-full`} aria-hidden="true" />
-                  <h3 className={`text-2xl md:text-8xl font-black mb-2 md:mb-10 tracking-tighter leading-none ${wallet.titleColor}`}>
+                  <div className={`w-10 md:w-16 h-1 md:h-1.5 ${wallet.accent} mb-4 md:mb-8 rounded-full`} aria-hidden="true" />
+                  <h3 className={`text-2xl md:text-6xl font-black mb-2 md:mb-6 tracking-tighter leading-none ${wallet.titleColor}`}>
                     {wallet.title}
                   </h3>
-                  <p className="text-xs md:text-2xl mb-4 md:mb-12 leading-relaxed opacity-70 font-medium max-w-[280px] md:max-w-none">
+                  <p className="text-xs md:text-xl mb-4 md:mb-8 leading-relaxed opacity-70 font-medium max-w-[280px] md:max-w-none">
                     {wallet.desc}
                   </p>
                 </div>
@@ -266,16 +266,16 @@ export default function Hero() {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500 rounded-full blur-[150px] opacity-20 animate-pulse" aria-hidden="true" />
 
         <div className="max-w-4xl mx-auto px-4 md:px-6 relative z-10">
-          <h2 className="text-2xl md:text-8xl font-black text-white mb-3 md:mb-10 tracking-tighter leading-none">
+          <h2 className="text-xl md:text-6xl font-black text-white mb-2 md:mb-8 tracking-tighter leading-none">
             Ready to <br className="hidden md:block" /> <span className="text-[#ff3366]">Level Up?</span>
           </h2>
-          <p className="text-gray-400 text-xs md:text-2xl mb-6 md:mb-16 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-400 text-[10px] md:text-xl mb-6 md:mb-12 max-w-2xl mx-auto leading-relaxed">
             Join the thousands who ditched the bulk.
             Secure yours today with a 7-day money-back guarantee.
           </p>
           <Link
             href="/buy"
-            className="inline-block bg-[#ff3366] text-white px-5 py-3 md:px-16 md:py-6 rounded-full font-black text-xs md:text-2xl hover:bg-white hover:text-black transition-all shadow-[0_20px_50px_rgba(255,51,102,0.3)] transform hover:scale-110 uppercase tracking-widest"
+            className="inline-block bg-[#ff3366] text-white px-4 py-2.5 md:px-12 md:py-5 rounded-full font-black text-[10px] md:text-xl hover:bg-white hover:text-black transition-all shadow-[0_20px_50px_rgba(255,51,102,0.3)] transform hover:scale-105 uppercase tracking-widest"
             aria-label="Order your iWallet now"
           >
             Order Your iWallet

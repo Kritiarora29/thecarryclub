@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Instagram, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -15,15 +16,19 @@ export default function Footer() {
             <p className="text-gray-500 text-sm md:text-xl font-bold leading-tight max-w-sm">
               Crafting minimal gear for the modern professional. Built to last, designed to carry.
             </p>
-            <div className="flex gap-6">
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#ff3366] hover:border-[#ff3366] transition-all">
-                <span className="text-xs font-black">IG</span>
+            <div className="flex gap-4">
+              <a 
+                href="https://instagram.com/thecarryclub.in" 
+                target="_blank"
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#ff3366] hover:border-[#ff3366] transition-all group"
+              >
+                <Instagram size={18} className="group-hover:scale-110 transition-transform" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#ff3366] hover:border-[#ff3366] transition-all">
-                <span className="text-xs font-black">TW</span>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#ff3366] hover:border-[#ff3366] transition-all">
-                <span className="text-xs font-black">FB</span>
+              <a 
+                href="mailto:info@thecarryclub.in" 
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#ff3366] hover:border-[#ff3366] transition-all group"
+              >
+                <Mail size={18} className="group-hover:scale-110 transition-transform" />
               </a>
             </div>
           </div>
@@ -41,7 +46,7 @@ export default function Footer() {
             
             <div className="space-y-6">
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Legal</h4>
-              <ul className="space-y-4 font-bold text-sm text-gray-500">
+              <ul className="space-y-4 font-bold text-sm text-gray-400">
                 <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
                 <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
                 <li><Link href="/returns" className="hover:text-white transition-colors">Returns</Link></li>
