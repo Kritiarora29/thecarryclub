@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ShieldCheck, 
   Leaf, 
   Zap, 
   ArrowRight, 
@@ -451,26 +450,16 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                     </form>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3 mb-1 px-4">
-                  <input type="checkbox" id="terms-landing" className="w-5 h-5 rounded-lg border-gray-200 text-blue-600 focus:ring-blue-600 cursor-pointer" />
-                  <label htmlFor="terms-landing" className="text-[10px] text-gray-400 font-bold uppercase tracking-widest cursor-pointer">I agree with the <Link href="/terms" className="underline hover:text-black transition-colors">terms and conditions</Link></label>
-                </div>
+
               </div>
 
               {/* Features Grid like Image 1 */}
-              <div className="grid grid-cols-2 gap-y-12 border-t border-gray-100 pt-16">
+              <div className="grid grid-cols-3 gap-4 md:gap-8 border-t border-gray-100 pt-16">
                 <div className="flex flex-col gap-3">
                   <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-black shadow-sm">
                     <RotateCcw size={28} strokeWidth={1} />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">30 Days Return</p>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-black shadow-sm">
-                    <ShieldCheck size={28} strokeWidth={1} />
-                  </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">RFID Protected</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">5 Days Return</p>
                 </div>
                 <div className="flex flex-col gap-3">
                   <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-black shadow-sm">
