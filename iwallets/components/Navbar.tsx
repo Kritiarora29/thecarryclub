@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminLoginModal from "@/components/AdminLoginModal";
-import { Menu, X, ShoppingCart, User } from "lucide-react";
+import { Menu, X, ShoppingCart, User, Search, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
@@ -11,6 +11,7 @@ export default function Navbar() {
   const [showModal, setShowModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [bannerIndex, setBannerIndex] = useState(0);
 
@@ -28,16 +29,29 @@ export default function Navbar() {
   }, []);
 
   const banners = [
-    <span key="1">FLASH SALE GOING ON 🔥</span>,
-    <span key="2">Use code <span className="text-black bg-white px-1.5 py-0.5 md:px-2 md:py-1 rounded mx-2 tracking-normal">CARRY999</span> for ₹999 deal!</span>
+    <span key="1">PREMIUM SLIM WALLETS – FREE SHIPPING PAN INDIA 🔥</span>,
+    <span key="2">USE CODE <span className="text-black bg-white px-2 py-0.5 rounded mx-2 font-black">CARRY999</span> FOR ₹999 DEAL!</span>
   ];
 
-  const updateCartCount = () => {
+  const updateCartCount = async () => {
     try {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCartCount(cart.reduce((sum: number, item: any) => sum + item.qty, 0));
+      const res = await fetch("/api/cart-count");
+      const data = await res.json();
+      setCartCount(data.count);
     } catch {
       setCartCount(0);
+    }
+  };
+
+  const updateWishlistCount = () => {
+    try {
+      const wishlistMatch = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("wishlist="));
+      const wishlist = wishlistMatch ? JSON.parse(decodeURIComponent(wishlistMatch.split("=")[1])) : [];
+      setWishlistCount(wishlist.length);
+    } catch {
+      setWishlistCount(0);
     }
   };
 
@@ -47,8 +61,12 @@ export default function Navbar() {
       .then((data) => setIsAdmin(data.authenticated));
 
     updateCartCount();
+    updateWishlistCount();
     window.addEventListener("storage", updateCartCount);
-    const interval = setInterval(updateCartCount, 2000);
+    const interval = setInterval(() => {
+      updateCartCount();
+      updateWishlistCount();
+    }, 2000);
 
     return () => {
       window.removeEventListener("storage", updateCartCount);
@@ -62,16 +80,17 @@ export default function Navbar() {
   };
 
   const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Shop", href: "/buy" },
     { name: "About", href: "/about" },
     { name: "FAQs", href: "/faqs" },
-    { name: "Shop", href: "/buy" },
   ];
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full z-[100] flex flex-col">
-        {/* COUPON BAR */}
-        <div className="bg-[#ff3366] text-white text-center h-8 md:h-10 flex items-center justify-center text-[8px] md:text-[11px] font-black tracking-[0.2em] uppercase shadow-md overflow-hidden relative">
+      <div className="fixed top-0 left-0 w-full z-[100] flex flex-col font-sans">
+        {/* PROMO BAR */}
+        <div className="bg-[#111] text-white text-center h-10 flex items-center justify-center text-[10px] font-black tracking-[0.2em] uppercase overflow-hidden relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={bannerIndex}
@@ -79,41 +98,74 @@ export default function Navbar() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="absolute w-full flex items-center justify-center"
+              className="absolute w-full flex items-center justify-center px-4"
             >
               {banners[bannerIndex]}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* NAVBAR */}
+        {/* MAIN NAV */}
         <motion.nav
           initial={{ y: -100 }}
           animate={{ y: 0 }}
-          className={`w-full transition-all duration-500 bg-[#111] backdrop-blur-xl border-b border-white/5 ${scrolled ? "py-2 md:py-3" : "py-3 md:py-4"
-            }`}
+          className={`w-full transition-all duration-500 ${scrolled 
+            ? "bg-white/90 backdrop-blur-md py-3 shadow-lg" 
+            : "bg-white/50 backdrop-blur-sm py-6"
+          }`}
         >
-          <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between">
-
-            <Link href="/" className="group flex items-center gap-1">
-              <span className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase italic">
-                theCarry<span className="text-[#ff3366]">Club</span>
+          <div className="max-w-[1440px] mx-auto px-6 md:px-10 grid grid-cols-2 md:grid-cols-3 items-center">
+            
+            {/* Logo - Left */}
+            <Link href="/" className="flex items-center">
+              <span className="text-2xl md:text-4xl font-black text-black tracking-tighter">
+                theCarryClub<span className="text-blue-600">.</span>
               </span>
             </Link>
 
-            {/* DESKTOP NAV */}
-            <div className="hidden md:flex items-center gap-10">
+            {/* Links - Center (Desktop) */}
+            <div className="hidden md:flex items-center justify-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-xs font-black uppercase tracking-[0.2em] transition-all text-gray-400 hover:text-white"
+                  className="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-black transition-colors"
                 >
                   {link.name}
                 </Link>
               ))}
+            </div>
 
-              <Link href="/cart" className="relative text-gray-400 hover:text-white transition-colors">
+            {/* Icons - Right */}
+            <div className="flex items-center justify-end gap-6 md:gap-8">
+              
+              {isAdmin ? (
+                <button onClick={logout} className="text-blue-600 hover:scale-110 transition-transform">
+                  <User size={22} strokeWidth={2.5} />
+                </button>
+              ) : (
+                <button onClick={() => setShowModal(true)} className="text-black hover:scale-110 transition-transform">
+                  <User size={22} strokeWidth={2.5} />
+                </button>
+              )}
+
+              <Link href="/wishlist" className="hidden md:block relative text-black hover:scale-110 transition-transform">
+                <Heart size={22} strokeWidth={2.5} />
+                <AnimatePresence>
+                  {wishlistCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -top-2 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full"
+                    >
+                      {wishlistCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </Link>
+
+              <Link href="/cart" className="relative text-black hover:scale-110 transition-transform">
                 <ShoppingCart size={22} strokeWidth={2.5} />
                 <AnimatePresence>
                   {cartCount > 0 && (
@@ -121,7 +173,7 @@ export default function Navbar() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
-                      className="absolute -top-2 -right-2 bg-[#ff3366] text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg shadow-rose-500/40"
+                      className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full"
                     >
                       {cartCount}
                     </motion.span>
@@ -129,78 +181,45 @@ export default function Navbar() {
                 </AnimatePresence>
               </Link>
 
-              {isAdmin ? (
-                <button
-                  onClick={logout}
-                  className="text-rose-400 hover:text-white transition-colors p-1"
-                  title="Admin Logout"
-                >
-                  <User size={22} strokeWidth={2.5} className="fill-rose-400/20" />
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="text-gray-400 hover:text-white transition-colors p-1"
-                  title="Admin Login"
-                >
-                  <User size={22} strokeWidth={2.5} />
-                </button>
-              )}
-            </div>
-
-            {/* MOBILE TOGGLE */}
-            <div className="flex items-center gap-6 md:hidden">
-              <Link href="/cart" className="relative text-white">
-                <ShoppingCart size={22} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-[#ff3366] text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
               <button
-                className="text-white relative w-7 h-7 flex items-center justify-center"
+                className="md:hidden text-black"
                 onClick={() => setIsOpen(!isOpen)}
               >
-                {isOpen ? (
-                  <X size={28} className="absolute" />
-                ) : (
-                  <Menu size={28} className="absolute" />
-                )}
+                {isOpen ? <X size={28} /> : <Menu size={28} />}
               </button>
             </div>
+
           </div>
         </motion.nav>
       </div>
 
-      {/* MOBILE NAV OVERLAY */}
+      {/* MOBILE NAV */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-3xl z-[90] pt-[120px] pb-12 px-8"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            className="fixed inset-0 bg-white z-[95] pt-[120px] px-10"
           >
-            <div className="flex flex-col gap-8 items-center h-full relative justify-center">
+            <div className="flex flex-col gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-2xl font-black uppercase tracking-widest text-white hover:text-[#ff3366]"
+                  className="text-4xl font-black uppercase tracking-tighter text-black"
                 >
                   {link.name}
                 </Link>
               ))}
-
-              <hr className="w-12 border-white/10 my-4" />
-
-              {isAdmin ? (
-                <button onClick={() => { logout(); setIsOpen(false); }} className="text-rose-400 text-base font-black uppercase tracking-widest">Logout</button>
-              ) : (
-                <button onClick={() => { setShowModal(true); setIsOpen(false); }} className="text-gray-500 text-base font-black uppercase tracking-widest">Admin Login</button>
-              )}
+              <Link
+                href="/wishlist"
+                onClick={() => setIsOpen(false)}
+                className="text-4xl font-black uppercase tracking-tighter text-rose-600"
+              >
+                Wishlist
+              </Link>
             </div>
           </motion.div>
         )}

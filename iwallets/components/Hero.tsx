@@ -8,17 +8,23 @@ import Image from "next/image"
 
 const banners = [
   {
-    image: "/premium_wallet_lifestyle_1_1778337485615.png",
+    image: "/Iwallet - Images/Home-Hero banner-desk.jpg",
     title: "Luxury in Your Pocket",
     subtitle: "Precision engineering meets timeless fashion.",
     alt: "Lifestyle shot of iWallet black premium slim wallet",
   },
   {
-    image: "/premium_wallet_lifestyle_2_1778337503803.png",
+    image: "/Iwallet - Images/High energy sale - desk.jpg",
     title: "Minimalism Redefined",
     subtitle: "The only wallet you'll ever need.",
     alt: "Close-up of iWallet minimalist vegan leather design",
   },
+  {
+    image: "/Iwallet - Images/a031c145-eb6b-4433-a855-fe19543cbc19.jpg",
+    title: "Discover the Future",
+    subtitle: "Crafted for those who demand excellence.",
+    alt: "Discover the future of carry",
+  }
 ];
 
 const benefits = [
@@ -32,7 +38,7 @@ const wallets = [
     id: "black",
     title: "Black",
     desc: "A bold and refined finish designed for timeless elegance and premium durability.",
-    img: "/black_wallet.jpeg",
+    img: "/Iwallet - Images/Black wit box.png",
     alt: "iWallet Black – premium slim vegan leather wallet",
     reverse: false,
     bgClass: "bg-black text-white",
@@ -43,7 +49,7 @@ const wallets = [
     id: "space-grey",
     title: "Space Grey",
     desc: "Inspired by modern technology aesthetics. Minimal, sleek, and engineered for everyday performance.",
-    img: "/space_grey_wallet.png",
+    img: "/Iwallet - Images/Grey with box_.png",
     alt: "iWallet Space Grey – minimalist slim wallet inspired by modern tech",
     reverse: true,
     bgClass: "bg-black text-white",
@@ -54,7 +60,7 @@ const wallets = [
     id: "white",
     title: "White",
     desc: "A clean minimal finish designed for modern lifestyle and effortless elegance.",
-    img: "/white_wallet.png",
+    img: "/Iwallet - Images/White with box_.png",
     alt: "iWallet White – clean minimal finish slim wallet",
     reverse: false,
     bgClass: "bg-black text-white",
@@ -69,7 +75,7 @@ export default function Hero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 1000);
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
 

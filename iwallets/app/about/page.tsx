@@ -2,141 +2,150 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Mail, Instagram, ArrowRight } from "lucide-react";
+import { Mail, Instagram, ArrowRight, Shield, Zap, Heart } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <section className="min-h-screen bg-[#fafafa] px-6 pt-32 md:pt-40 pb-20 overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <section className="min-h-screen bg-[#fafafa] pt-32 md:pt-48 pb-20 overflow-hidden font-sans">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-20">
 
         {/* Hero Section */}
-        <div className="text-center mb-24 relative">
+        {/* Hero Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center relative mb-24 md:mb-40">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#ff3366]/10 rounded-full blur-[100px] -z-10"
-          />
-          
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-4xl md:text-6xl font-black text-black tracking-tighter leading-none"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="z-10 relative"
           >
-            OUR <span className="text-[#ff3366]">STORY.</span>
-          </motion.h1>
+             <p className="text-[#ff3366] font-black tracking-[0.3em] text-[10px] md:text-sm uppercase mb-6">About theCarryClub</p>
+            <h1 className="text-6xl md:text-[100px] lg:text-[120px] font-black text-black leading-[0.85] tracking-tighter mb-10">
+              Redefining <br /> 
+              <span className="text-rose-600">Everyday</span> <br />
+              Carry.
+            </h1>
+            <p className="text-gray-500 text-lg md:text-2xl max-w-xl mb-12 leading-relaxed font-medium">
+              We're on a mission to eliminate bulk and bring back intentionality to the things you carry every single day.
+            </p>
+          </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="mt-8 text-lg md:text-2xl text-gray-500 font-medium max-w-2xl mx-auto uppercase tracking-wide"
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+            className="relative h-[300px] md:h-[500px] lg:h-[600px] w-full bg-white rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl z-10"
           >
-            Minimal design. <span className="text-black">Exceptional</span> carry.
-          </motion.p>
+            <Image 
+              src="/Iwallet - Images/Editorial-desk/2.jpg" 
+              alt="Everyday Carry Lifestyle" 
+              fill 
+              className="object-cover"
+              unoptimized
+            />
+          </motion.div>
+
+          {/* Background Glows */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-rose-600/10 blur-[150px] -z-10" />
+          <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-blue-600/10 blur-[120px] -z-10" />
         </div>
 
-        {/* Content Blocks */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="bg-white rounded-[2rem] md:rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col justify-center"
-          >
-            <h2 className="text-2xl md:text-4xl font-black text-black tracking-tight mb-6 md:mb-8">
-              The Vision
+        {/* Vision Section - Split Layout like Home */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32 md:mb-56">
+          <div className="relative h-[400px] md:h-[600px] bg-white rounded-[3rem] overflow-hidden shadow-2xl">
+            <Image 
+              src="/Iwallet - Images/Editorial-desk/1.jpg" 
+              alt="The Vision" 
+              fill 
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+          <div>
+            <motion.span 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.3 }}
+              className="text-[120px] md:text-[200px] font-black text-transparent stroke-gray-200 leading-none select-none block mb-[-40px] md:mb-[-80px]"
+              style={{ WebkitTextStroke: '2px #e5e7eb' }}
+            >
+              01
+            </motion.span>
+            <h2 className="text-4xl md:text-7xl font-black mb-8 tracking-tighter">
+              The Vision <br /> of Less.
             </h2>
-
-            <div className="space-y-6 text-base md:text-lg text-gray-600 leading-relaxed font-medium">
+            <div className="space-y-6 text-gray-500 text-lg md:text-xl leading-relaxed max-w-md font-medium">
               <p>
                 We believe everyday essentials should feel <span className="text-black font-black">intentional</span>.
               </p>
-
               <p>
                 Our wallets are designed for people who prefer less — less bulk,
-                less noise, less distraction. <span className="text-[#ff3366]">Clean lines, premium materials,
+                less noise, less distraction. <span className="text-rose-600 font-black">Clean lines, premium materials,
                 and practical engineering.</span>
               </p>
-
-              <p>
-                This isn’t just about carrying cards. It’s about <span className="text-black font-black">confidence</span>
-                in the details you carry every single day.
-              </p>
             </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="bg-black rounded-[2rem] md:rounded-[3rem] p-8 md:p-16 shadow-2xl text-white flex flex-col justify-center relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#ff3366]/20 rounded-full blur-[60px]" />
-            
-            <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-6 md:mb-8">
-              Why theCarryClub?
-            </h2>
-
-            <ul className="space-y-8">
-              {[
-                "Premium vegan leather, crafted for longevity.",
-                "Ultra-slim profile with zero unnecessary bulk.",
-                "Built for daily use, engineered to stay sharp.",
-                "Minimal design that fits every modern style."
-              ].map((item, idx) => (
-                <li key={idx} className="flex gap-4 items-start group">
-                  <div className="mt-1 w-6 h-6 rounded-full bg-[#ff3366] flex-shrink-0 flex items-center justify-center text-[10px] font-black">
-                    {idx + 1}
-                  </div>
-                  <p className="text-gray-300 font-bold group-hover:text-white transition-colors">
-                    {item}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Contact CTA */}
+        {/* Values Grid */}
+        <div className="mb-32 md:mb-56">
+           <div className="text-center mb-20">
+              <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-6">Engineered for Excellence.</h2>
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-xs md:text-sm">Quality without compromise</p>
+           </div>
+           
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
+              {[
+                { title: "Premium Materials", desc: "Highest grade vegan leather chosen for its texture and durability.", icon: <Shield size={40} strokeWidth={1}/> },
+                { title: "Ultra Slim", desc: "Designed to vanish in your pocket while holding all your essentials.", icon: <Zap size={40} strokeWidth={1}/> },
+                { title: "Made with Heart", desc: "Every product is a piece of art, reimagined for the modern world.", icon: <Heart size={40} strokeWidth={1}/> }
+              ].map((item, idx) => (
+                <motion.div 
+                  key={idx}
+                  whileHover={{ y: -15 }}
+                  className="bg-white p-10 md:p-16 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-50 flex flex-col items-center text-center group"
+                >
+                  <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-10 group-hover:bg-rose-600 group-hover:text-white transition-all duration-500">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-black mb-4 tracking-tighter uppercase">{item.title}</h3>
+                  <p className="text-gray-400 font-medium leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+           </div>
+        </div>
+
+        {/* Contact CTA - Dark Theme */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-16 md:mt-40 text-center"
+          className="relative bg-[#111] rounded-[3rem] p-10 md:p-32 overflow-hidden text-center"
         >
-          <div className="inline-block px-4 py-2 bg-rose-50 rounded-full mb-4 md:mb-8">
-            <p className="text-[#ff3366] font-black text-[10px] md:text-xs uppercase tracking-widest">Connect with us</p>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-600/20 to-blue-600/20 opacity-50" />
           
-          <h2 className="text-3xl md:text-6xl font-black text-black tracking-tighter mb-6 md:mb-10">
-            Let's Start a <br className="md:hidden" /><span className="text-[#ff3366]">Conversation.</span>
-          </h2>
+          <div className="relative z-10">
+            <h2 className="text-5xl md:text-8xl font-black text-white tracking-tighter mb-10 leading-none">
+              Let's Start a <br /> <span className="text-rose-600">Conversation.</span>
+            </h2>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+              <a
+                href="mailto:info@thecarryclub.in"
+                className="group flex items-center gap-4 bg-white px-10 py-5 rounded-full hover:bg-rose-600 transition-all transform hover:scale-105"
+              >
+                <Mail size={20} className="text-rose-600 group-hover:text-white" />
+                <span className="text-sm font-black uppercase tracking-widest group-hover:text-white">Email Us</span>
+              </a>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-12 mx-auto">
-            <a
-              href="mailto:info@thecarryclub.in"
-              className="group flex items-center justify-center gap-3 md:gap-4 bg-white px-6 md:px-8 py-3 md:py-4 rounded-full shadow-xl hover:shadow-[#ff3366]/10 transition-all border border-gray-100"
-            >
-              <div className="bg-[#ff3366] text-white p-2 md:p-3 rounded-full group-hover:rotate-12 transition-transform">
-                <Mail size={16} className="md:w-5 md:h-5" />
-              </div>
-              <span className="text-sm md:text-lg font-black tracking-tight">Email Us</span>
-            </a>
-
-            <Link
-              href="https://instagram.com/thecarryclub.in"
-              target="_blank"
-              className="group flex items-center justify-center gap-3 md:gap-4 bg-white px-6 md:px-8 py-3 md:py-4 rounded-full shadow-xl hover:shadow-[#ff3366]/10 transition-all border border-gray-100"
-            >
-              <div className="bg-black text-white p-2 md:p-3 rounded-full group-hover:rotate-12 transition-transform">
-                <Instagram size={16} className="md:w-5 md:h-5" />
-              </div>
-              <span className="text-sm md:text-lg font-black tracking-tight">Instagram</span>
-            </Link>
+              <Link
+                href="https://instagram.com/thecarryclub.in"
+                target="_blank"
+                className="group flex items-center gap-4 bg-[#222] border border-white/10 px-10 py-5 rounded-full hover:bg-white transition-all transform hover:scale-105"
+              >
+                <Instagram size={20} className="text-white group-hover:text-black" />
+                <span className="text-sm font-black uppercase tracking-widest text-white group-hover:text-black">Instagram</span>
+              </Link>
+            </div>
           </div>
         </motion.div>
 

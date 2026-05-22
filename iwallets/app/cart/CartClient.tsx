@@ -2,13 +2,15 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import RazorpayCheckout from "@/components/RazorpayCheckout"
 import {
   updateQty,
   removeFromCart,
   clearCart,
 } from "@/lib/cartActions"
+import { ShoppingBag, Truck, ShieldCheck, ArrowLeft } from "lucide-react"
+import toast from "react-hot-toast"
 
 export default function CartClient({ cart = [], products = [] }: any) {
 
@@ -40,87 +42,128 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const discount = appliedCoupon === "CARRY999" ? 600 * totalQty : 0
   const finalTotal = Math.max(total - discount, 0)
 
-
+  const productImages: any = {
+    "Premium iWallet – White": "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
+    "Premium iWallet – Black": "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg",
+    "Premium iWallet – Space Grey": "/Iwallet - Images/Prod image-desk-grey/1.png"
+  };
 
   return (
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#fafafa] pt-32 md:pt-36 pb-10 px-4 md:px-8 text-black flex flex-col items-center justify-start overflow-hidden"
+      className="relative min-h-screen w-full max-w-[100vw] bg-[#fafafa] pt-32 md:pt-48 pb-20 px-4 md:px-8 text-black flex flex-col items-center justify-start overflow-hidden font-sans"
     >
-      <div className="max-w-7xl w-full">
+      {/* Background Glows */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-rose-600/5 blur-[150px] -z-10" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/5 blur-[150px] -z-10" />
+
+      <div className="max-w-7xl w-full relative z-10 mx-auto">
 
         {/* Tagline Related to Payment */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-center mb-8 mt-10"
+          className="text-center mb-16 md:mb-24"
         >
-          <p className="text-sm md:text-lg font-black uppercase tracking-[0.5em] text-[#ff3366]">
+          <p className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.5em] text-rose-600 mb-4">
             SECURE CHECKOUT • JUST ONE STEP AWAY
           </p>
+          <h1 className="text-4xl md:text-7xl font-black tracking-tighter">
+            Review Your <span className="text-rose-600">Order.</span>
+          </h1>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
 
           {/* LEFT: Shipping Info */}
           <motion.div
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-xl md:shadow-2xl border border-gray-100 flex flex-col h-full"
+            className="bg-white p-6 md:p-16 rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col h-full"
           >
-            <div className="flex items-center gap-3 mb-4 md:mb-8">
-              <h2 className="text-xl md:text-4xl font-black tracking-tighter">Shipping Details</h2>
+            <div className="flex items-center gap-4 mb-10">
+               <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
+                  <Truck size={24} className="text-black" />
+               </div>
+               <h2 className="text-2xl md:text-4xl font-black tracking-tighter uppercase">Shipping</h2>
             </div>
 
-            <div className="space-y-3 md:space-y-4 flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                <input className="premium-input" placeholder="Full Name *" value={name} onChange={(e) => setName(e.target.value)} />
-                <input className="premium-input" placeholder="Email Address *" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <div className="space-y-4 md:space-y-6 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Full Name</label>
+                  <input className="premium-input" placeholder="John Doe *" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Email Address</label>
+                  <input className="premium-input" placeholder="john@example.com *" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
               </div>
 
-              <input className="premium-input" placeholder="Phone Number *" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Phone Number</label>
+                <input className="premium-input" placeholder="+91 00000 00000 *" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
 
-              <input
-                className="premium-input"
-                placeholder="Flat / Floor / Street Address *"
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Street Address</label>
                 <input
                   className="premium-input"
-                  placeholder="City *"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-                <input
-                  className="premium-input"
-                  placeholder="State *"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
+                  placeholder="Flat / Floor / Street Address *"
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                <input
-                  className="premium-input"
-                  placeholder="Pincode *"
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                />
-                <input
-                  className="premium-input"
-                  placeholder="Landmark (Optional)"
-                  value={landmark}
-                  onChange={(e) => setLandmark(e.target.value)}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">City</label>
+                  <input
+                    className="premium-input"
+                    placeholder="City *"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">State</label>
+                  <input
+                    className="premium-input"
+                    placeholder="State *"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                  />
+                </div>
               </div>
 
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Pincode</label>
+                  <input
+                    className="premium-input"
+                    placeholder="Pincode *"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Landmark</label>
+                  <input
+                    className="premium-input"
+                    placeholder="Landmark (Optional)"
+                    value={landmark}
+                    onChange={(e) => setLandmark(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-10 pt-10 border-t border-gray-50 flex items-center gap-4 text-gray-400">
+               <ShieldCheck size={20} />
+               <p className="text-[10px] font-black uppercase tracking-widest">Encrypted & Secure Transaction</p>
             </div>
           </motion.div>
 
@@ -131,48 +174,63 @@ export default function CartClient({ cart = [], products = [] }: any) {
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
             className="flex flex-col h-full"
           >
-            <div className="bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-xl md:shadow-2xl border border-gray-100 flex flex-col h-full mt-2 md:mt-0">
+            <div className="bg-white p-6 md:p-16 rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col h-full">
 
-              <div className="flex justify-between items-center mb-4 md:mb-8">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl md:text-4xl font-black tracking-tighter">Your Order</h2>
+              <div className="flex justify-between items-center mb-10">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
+                    <ShoppingBag size={24} className="text-black" />
+                  </div>
+                  <h2 className="text-2xl md:text-4xl font-black tracking-tighter uppercase">Summary</h2>
                 </div>
-                <Link href="/buy" className="text-[10px] md:text-sm font-bold text-[#ff3366] hover:underline">Add products</Link>
+                <Link href="/buy" className="text-[10px] font-black text-rose-600 hover:underline uppercase tracking-widest flex items-center gap-2 group">
+                  <ArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" /> Add products
+                </Link>
               </div>
 
               {cartItems.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center py-10">
-                  <p className="text-gray-400 font-medium text-sm">Cart is empty.</p>
+                <div className="flex-1 flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                    <ShoppingBag size={40} className="text-gray-200" />
+                  </div>
+                  <p className="text-gray-400 font-black text-lg uppercase tracking-tighter">Your cart is empty.</p>
+                  <Link href="/buy" className="mt-6 text-rose-600 font-black uppercase tracking-widest text-xs border-b-2 border-rose-600 pb-1">Shop Collection</Link>
                 </div>
               ) : (
-                <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
-                  <div className="space-y-4 md:space-y-6">
+                <div className="space-y-8 flex-1 flex flex-col">
+                  <div className="space-y-6 flex-1">
                     {cartItems.map((item: any) => (
-                      <div key={item.slug.current} className="flex gap-4 md:gap-6 items-start group">
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100 p-2 shadow-sm group-hover:shadow-md transition-shadow">
-                          <img src={item.imageUrl} className="w-full h-full object-contain" />
+                      <div key={item.slug.current} className="flex gap-6 items-center group bg-gray-50/50 p-4 rounded-3xl border border-transparent hover:border-gray-100 hover:bg-white transition-all duration-300">
+                        <div className="w-20 h-20 md:w-28 md:h-28 bg-white rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100 p-2 shadow-sm group-hover:shadow-md transition-all">
+                          <img src={productImages[item.title] || item.imageUrl} className="w-full h-full object-contain" />
                         </div>
-                        <div className="flex-1 min-w-0 pt-1">
-                          <p className="font-black text-sm md:text-lg tracking-tight leading-tight mb-1">{item.title}</p>
-                          <p className="text-xs md:text-base font-bold text-gray-500 mb-2 md:mb-4">₹1599</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-black text-lg md:text-xl tracking-tight leading-none mb-2">{item.title}</p>
+                          <p className="text-sm md:text-lg font-bold text-gray-400 mb-4 tracking-tighter">₹1599</p>
 
-                          {/* MODERN QUANTITY ADJUSTER */}
-                          <div className="flex items-center gap-3 md:gap-5">
-                            <div className="flex items-center bg-gray-50 border border-gray-100 rounded-full px-2 py-1 gap-2 md:gap-4">
+                          <div className="flex items-center gap-5">
+                            <div className="flex items-center bg-white border border-gray-100 rounded-full px-4 py-2 gap-6 shadow-sm">
                               <form action={updateQty.bind(null, item.slug.current, item.qty - 1)}>
-                                <button className="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-sm md:text-lg font-bold hover:bg-white hover:text-[#ff3366] transition-all">−</button>
+                                <button className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-black hover:bg-rose-600 hover:text-white transition-all">−</button>
                               </form>
-                              <span className="text-[10px] md:text-sm font-black w-4 text-center">{item.qty}</span>
+                              <span className="text-sm font-black w-4 text-center">{item.qty}</span>
                               <form action={updateQty.bind(null, item.slug.current, item.qty + 1)}>
-                                <button className="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-sm md:text-lg font-bold hover:bg-white hover:text-[#ff3366] transition-all">+</button>
+                                <button className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-black hover:bg-rose-600 hover:text-white transition-all">+</button>
                               </form>
                             </div>
 
-                            <form action={removeFromCart.bind(null, item.slug.current)}>
-                              <button className="text-[9px] md:text-xs font-black text-rose-500 hover:text-black uppercase tracking-widest transition-colors ml-2">
-                                Remove
-                              </button>
-                            </form>
+                            <div className="flex">
+                               <button 
+                                 onClick={async (e) => {
+                                   e.preventDefault();
+                                   await removeFromCart(item.slug.current);
+                                   toast.success("Removed item");
+                                 }}
+                                 className="text-[10px] font-black text-gray-300 hover:text-rose-600 uppercase tracking-widest transition-colors"
+                               >
+                                 Remove
+                               </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -180,73 +238,66 @@ export default function CartClient({ cart = [], products = [] }: any) {
                   </div>
 
                   {/* COUPON SECTION */}
-                  {appliedCoupon === "CARRY999" ? (
-                    <div className="w-full bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-emerald-500 text-xs">✓</span>
-                        <p className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest">CARRY999 Applied — ₹600 off!</p>
+                  <div className="pt-8">
+                    {appliedCoupon === "CARRY999" ? (
+                      <div className="w-full bg-emerald-50 border border-emerald-100 p-5 rounded-[2rem] flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center font-black">✓</div>
+                          <div>
+                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-0.5">CARRY999 Applied</p>
+                            <p className="text-xs font-bold text-emerald-800">₹600 discount per item unlocked!</p>
+                          </div>
+                        </div>
+                        <button onClick={() => setAppliedCoupon("")} className="text-[10px] font-black text-emerald-600 hover:underline uppercase tracking-widest">Remove</button>
                       </div>
-                      <button
-                        onClick={() => setAppliedCoupon("")}
-                        className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-black hover:bg-red-100 hover:text-red-500 transition-colors"
+                    ) : (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setAppliedCoupon("CARRY999")}
+                        className="w-full bg-rose-50 border border-rose-100 p-6 rounded-[2rem] flex items-center justify-between group hover:bg-rose-600 transition-all duration-500 shadow-lg shadow-rose-600/5"
                       >
-                        REMOVE
-                      </button>
-                    </div>
-                  ) : (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setAppliedCoupon("CARRY999")}
-                      className="w-full bg-rose-50 border border-rose-100 p-3 rounded-xl flex items-center justify-between group hover:bg-[#ff3366] transition-all duration-300"
-                    >
-                      <div className="text-left">
-                        <p className="text-[9px] md:text-[10px] font-black text-[#ff3366] group-hover:text-white uppercase tracking-widest mb-0.5">Coupon Unlock ⚡</p>
-                        <p className="text-xs font-bold text-gray-800 group-hover:text-white">Apply CARRY999 for ₹999 deal</p>
-                      </div>
-                      <span className="text-[#ff3366] group-hover:text-white font-black text-[10px] md:text-sm">APPLY</span>
-                    </motion.button>
-                  )}
+                        <div className="text-left">
+                          <p className="text-[10px] font-black text-rose-600 group-hover:text-white uppercase tracking-[0.2em] mb-1">Exclusive Offer ⚡</p>
+                          <p className="text-sm md:text-lg font-black text-black group-hover:text-white tracking-tighter">Apply CARRY999 for ₹999 deal</p>
+                        </div>
+                        <div className="bg-rose-600 group-hover:bg-white text-white group-hover:text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all">
+                          Apply
+                        </div>
+                      </motion.button>
+                    )}
+                  </div>
 
                   {/* BREAKDOWN */}
-                  <div className="mt-auto pt-4 md:pt-6 border-t border-gray-100 space-y-2">
-                    <div className="flex justify-between text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                  <div className="mt-auto pt-10 border-t border-gray-100 space-y-4">
+                    <div className="flex justify-between text-gray-400 text-xs font-black uppercase tracking-[0.2em]">
                       <span>Subtotal</span>
                       <span>₹{total}</span>
                     </div>
-
 
                     {appliedCoupon !== "" && (
                       <motion.div
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex justify-between items-center text-[#ff3366]"
+                        className="flex justify-between items-center text-rose-600"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-[9px] md:text-[10px] md:text-xs font-bold uppercase tracking-widest">Applied Code: {appliedCoupon}</span>
-                          <button
-                            onClick={() => setAppliedCoupon("")}
-                            className="text-[9px] md:text-[10px] bg-rose-100 text-[#ff3366] px-2 py-1 md:px-3 md:py-1 rounded-full font-black hover:bg-rose-200"
-                          >
-                            REMOVE
-                          </button>
-                        </div>
-                        <span className="font-black text-sm md:text-base">-₹{discount}</span>
+                        <span className="text-xs font-black uppercase tracking-[0.2em]">Discount Unlocked</span>
+                        <span className="font-black text-lg md:text-xl tracking-tighter">-₹{discount}</span>
                       </motion.div>
                     )}
 
-                    <div className="flex justify-between items-end pt-3 md:pt-4">
+                    <div className="flex justify-between items-end pt-6 border-t border-gray-50">
                       <div>
-                        <p className="text-xl md:text-4xl font-black tracking-tighter">₹{finalTotal}</p>
-                        <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase">Incl. all taxes</p>
+                        <p className="text-4xl md:text-6xl font-black tracking-tighter leading-none">₹{finalTotal}</p>
+                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">All Inclusive • Free Shipping</p>
                       </div>
                       <form action={clearCart}>
-                        <button className="text-gray-500 hover:text-red-500 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-colors">Clear Cart</button>
+                        <button className="text-gray-300 hover:text-rose-600 text-[10px] font-black uppercase tracking-widest transition-colors mb-2">Clear Cart</button>
                       </form>
                     </div>
                   </div>
 
-                  <div className="pt-3 md:pt-6">
+                  <div className="pt-6">
                     <RazorpayCheckout
                       amount={finalTotal}
                       prefill={{ name, email, contact: phone }}
@@ -258,7 +309,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                         localStorage.removeItem("cart")
                         window.location.href = "/success"
                       }}
-                      className="w-full bg-black hover:bg-[#ff3366] text-white py-2.5 md:py-3.5 rounded-full font-black text-xs md:text-sm shadow-lg transition-all transform hover:-translate-y-1"
+                      className="w-full bg-black hover:bg-rose-600 text-white py-6 rounded-full font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-rose-600/10 transition-all transform hover:-translate-y-1"
                     />
                   </div>
                 </div>
@@ -271,26 +322,31 @@ export default function CartClient({ cart = [], products = [] }: any) {
       <style jsx>{`
         .premium-input {
           width: 100%;
-          background: #fcfcfc;
-          border: 2px solid #f8f8f8;
-          padding: 10px 16px;
-          border-radius: 0.75rem;
-          font-size: 13px;
-          font-weight: 500;
-          transition: all 0.3s ease;
+          background: #f9f9f9;
+          border: 2px solid #f3f3f3;
+          padding: 14px 20px;
+          border-radius: 1.5rem;
+          font-size: 14px;
+          font-weight: 600;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           outline: none;
         }
         @media (min-width: 768px) {
           .premium-input {
-            padding: 16px 24px;
-            border-radius: 1.25rem;
-            font-size: 15px;
+            padding: 20px 28px;
+            border-radius: 2rem;
+            font-size: 16px;
           }
         }
         .premium-input:focus {
           border-color: #ff3366;
           background: #fff;
-          box-shadow: 0 10px 30px rgba(255,51,102,0.05);
+          box-shadow: 0 20px 40px rgba(255,51,102,0.08);
+          transform: translateY(-2px);
+        }
+        .premium-input::placeholder {
+          color: #ccc;
+          font-weight: 500;
         }
       `}</style>
     </motion.section>

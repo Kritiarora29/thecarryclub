@@ -19,6 +19,6 @@ export async function setCart(cart: CartItem[]) {
   const cookieStore = await cookies()
   cookieStore.set(CART_KEY, JSON.stringify(cart), {
     path: "/",
-    httpOnly: true,
+    httpOnly: false,
   })
 }

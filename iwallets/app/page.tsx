@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Hero from "@/components/Hero";
+import PremiumLanding from "@/components/PremiumLanding";
 
 export const metadata: Metadata = {
   title: "Buy Premium Slim Wallets Online India | iWallet",
@@ -30,7 +30,13 @@ const jsonLd = {
   },
 };
 
-export default function Home() {
+import { getProducts } from "@/lib/getProduct";
+import { getWishlist } from "@/lib/wishlist";
+
+export default async function Home() {
+  const products = await getProducts();
+  const wishlist = await getWishlist();
+
   return (
     <>
       {/* JSON-LD for rich search results */}
@@ -38,7 +44,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Hero />
+      <PremiumLanding products={products} wishlist={wishlist} />
     </>
   );
 }

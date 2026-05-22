@@ -1,14 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/lib/cartActions";
+import { toggleWishlist } from "@/lib/wishlistActions";
+import toast from "react-hot-toast";
+import { Heart } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 import Image from "next/image";
 
-export default function BuyClient({ products }: any) {
+function BuyClientContent({ products = [], wishlist = [] }: any) {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [quantity, setQuantity] = useState(1);
+  const searchParams = useSearchParams();
+  const productSlug = searchParams.get("product");
+
+  const handleAddToCart = async (e: React.MouseEvent, slug: string) => {
+    e.preventDefault();
+    await addToCart(slug);
+    toast.success("Successfully added to cart");
+  };
+
+  useEffect(() => {
+    if (productSlug && products) {
+      const product = products.find((p: any) => p.slug?.current === productSlug);
+      if (product) setSelectedProduct(product);
+    }
+  }, [productSlug, products]);
 
   useEffect(() => {
     if (selectedProduct) document.body.style.overflow = "hidden";
@@ -33,19 +51,67 @@ export default function BuyClient({ products }: any) {
     },
   };
 
+  const productImages: any = {
+    "Premium iWallet – White": {
+      desktop: [
+        "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
+        "/Iwallet - Images/Prod image- desk -White/3-white.jpg",
+        "/Iwallet - Images/Prod image- desk -White/4-white.jpg",
+        "/Iwallet - Images/Prod image- desk -White/5-white(1).jpg",
+        "/Iwallet - Images/Prod image- desk -White/5-white.jpg",
+        "/Iwallet - Images/Prod image- desk -White/6-white.jpg"
+      ],
+      mobile: [
+        "/Iwallet - Images/Prod image- mob-white/1-white.jpg",
+        "/Iwallet - Images/Prod image- mob-white/2-white.jpg",
+        "/Iwallet - Images/Prod image- mob-white/3-white.jpg",
+        "/Iwallet - Images/Prod image- mob-white/4-white.jpg",
+        "/Iwallet - Images/Prod image- mob-white/5-white.jpg"
+      ]
+    },
+    "Premium iWallet – Black": {
+      desktop: [
+        "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg",
+        "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg",
+        "/Iwallet - Images/Prod image- desk-Black/3-Black.jpg",
+        "/Iwallet - Images/Prod image- desk-Black/4-black.jpg",
+        "/Iwallet - Images/Prod image- desk-Black/5-black.jpg",
+        "/Iwallet - Images/Prod image- desk-Black/6-black.jpg"
+      ],
+      mobile: [
+        "/Iwallet - Images/Prod image- mob-Black/1-Black.jpg",
+        "/Iwallet - Images/Prod image- mob-Black/2-Black.jpg",
+        "/Iwallet - Images/Prod image- mob-Black/3-Black.jpg",
+        "/Iwallet - Images/Prod image- mob-Black/4-black.jpg",
+        "/Iwallet - Images/Prod image- mob-Black/5-black.jpg",
+        "/Iwallet - Images/Prod image- mob-Black/6-black.jpg"
+      ]
+    },
+    "Premium iWallet – Space Grey": {
+      desktop: [
+        "/Iwallet - Images/Prod image-desk-grey/1.png",
+        "/Iwallet - Images/Prod image-desk-grey/2.png",
+        "/Iwallet - Images/Prod image-desk-grey/3.png",
+        "/Iwallet - Images/Prod image-desk-grey/4.png"
+      ],
+      mobile: [
+        "/Iwallet - Images/Prod images- grey- mob/1.png",
+        "/Iwallet - Images/Prod images- grey- mob/2.png",
+        "/Iwallet - Images/Prod images- grey- mob/3.png",
+        "/Iwallet - Images/Prod images- grey- mob/4.png"
+      ]
+    }
+  };
+
   return (
     <section className="min-h-screen bg-[#fafafa] pt-28 md:pt-40 pb-16 px-4 md:px-8 flex flex-col">
 
       <div className="max-w-7xl mx-auto w-full">
 
         <div className="text-center mb-10 md:mb-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-black text-black tracking-tighter leading-none"
-          >
-            Select Your <span className="text-[#ff3366]">Style.</span>
-          </motion.h1>
+            <h1 className="text-5xl md:text-8xl font-extrabold text-black tracking-tighter leading-none mb-6">
+              Select Your <span className="text-rose-600">Style.</span>
+            </h1>
           <motion.p 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
@@ -66,24 +132,68 @@ export default function BuyClient({ products }: any) {
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -10 }}
               onClick={() => setSelectedProduct(product)}
-              className="group bg-white rounded-2xl md:rounded-[2.5rem] shadow-xl shadow-gray-200/50 cursor-pointer overflow-hidden border border-gray-100 flex flex-col h-full relative"
+               className="group bg-white rounded-2xl md:rounded-[2.5rem] shadow-xl shadow-gray-200/50 cursor-pointer overflow-hidden border border-gray-100 flex flex-col h-full relative"
             >
-              <div className="p-2 md:p-6 aspect-square relative overflow-hidden bg-gray-50 flex items-center justify-center">
-                  <Image
-                    src={product.imageUrl}
-                    className="object-contain transform group-hover:scale-110 transition-transform duration-700 relative z-10"
-                    alt={product.title}
-                    fill
-                    unoptimized={true}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    priority={idx < 4}
-                  />
+              {/* WISHLIST BUTTON */}
+              <div className="absolute top-3 right-3 md:top-6 md:right-6 z-20">
+                <form action={toggleWishlist.bind(null, product.slug?.current)}>
+                  <button 
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 md:p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-rose-600 group/heart transition-all duration-300"
+                  >
+                    <Heart 
+                      size={16} 
+                      className={`${wishlist.some((w: any) => w.slug === product.slug?.current) ? "fill-rose-600 stroke-rose-600" : "text-gray-400"} group-hover/heart:text-white group-hover/heart:fill-white transition-colors`} 
+                      strokeWidth={3} 
+                    />
+                  </button>
+                </form>
+              </div>
+
+              {/* IMAGE SCROLL CONTAINER */}
+              <div className="p-2 md:p-6 relative bg-gray-50">
+                <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full relative group/scroll">
+                  {(productImages[product.title]?.desktop || []).map((desktopImg: string, i: number) => {
+                    const mobileArr = productImages[product.title]?.mobile || [];
+                    const mobileImg = mobileArr[i] || desktopImg;
+                    return (
+                      <div key={i} className="min-w-full aspect-square relative flex items-center justify-center snap-center shrink-0 group">
+                        {/* Desktop Image */}
+                        <Image
+                          src={desktopImg}
+                          className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
+                          alt={`${product.title} ${i + 1}`}
+                          fill
+                          unoptimized={true}
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          priority={idx < 4 && i === 0}
+                        />
+                        {/* Mobile Image */}
+                        <Image
+                          src={mobileImg}
+                          className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
+                          alt={`${product.title} ${i + 1}`}
+                          fill
+                          unoptimized={true}
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          priority={idx < 4 && i === 0}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
+                {/* Visual Cue for scroll */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                   {(productImages[product.title]?.desktop || []).map((_: any, i: number) => (
+                     <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                   ))}
+                </div>
+              </div>
 
                 <div className="p-3 md:p-8 pt-0 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
-                       <span className="w-3 md:w-6 h-0.5 bg-[#ff3366] rounded-full" />
+                       <span className="w-3 md:w-6 h-0.5 bg-rose-600 rounded-full" />
                        <p className="text-[8px] md:text-[9px] text-gray-400 uppercase font-black tracking-widest truncate">Collection 01</p>
                     </div>
                     <h2 className="text-base md:text-xl font-bold md:font-black text-black tracking-tight leading-snug line-clamp-2 min-h-[40px] md:min-h-0">
@@ -98,7 +208,7 @@ export default function BuyClient({ products }: any) {
                       </span>
                     </div>
                     
-                    <div className="w-6 h-6 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white group-hover:bg-[#ff3366] transition-colors shadow-lg shrink-0">
+                    <div className="w-6 h-6 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white group-hover:bg-rose-600 transition-colors shadow-lg shrink-0">
                        <span className="text-[10px] md:text-lg leading-none">+</span>
                     </div>
                   </div>
@@ -133,17 +243,45 @@ export default function BuyClient({ products }: any) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                    {/* Product Image Panel */}
-                   <div className="bg-gray-50 py-4 px-2 md:p-16 flex items-center justify-center relative min-h-[160px] md:min-h-[300px]">
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#ff3366]/10 to-transparent" />
-                      <div className="w-full max-w-[200px] md:max-w-sm h-32 md:h-64 relative z-10">
-                        <Image
-                          src={selectedProduct.imageUrl}
-                          className="object-contain"
-                          alt={selectedProduct.title}
-                          fill
-                          unoptimized={true}
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                        />
+                   <div className="bg-gray-50 relative min-h-[250px] md:min-h-[500px] flex items-center overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-rose-600/10 to-transparent" />
+                      
+                      <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full relative z-10 group/scroll items-center">
+                        {(productImages[selectedProduct.title]?.desktop || []).map((desktopImg: string, i: number) => {
+                          const mobileArr = productImages[selectedProduct.title]?.mobile || [];
+                          const mobileImg = mobileArr[i] || desktopImg;
+                          return (
+                            <div key={i} className="min-w-full h-full p-8 md:p-16 relative flex items-center justify-center snap-center shrink-0">
+                              <div className="w-full max-w-[250px] md:max-w-sm h-48 md:h-[400px] relative">
+                                {/* Desktop Image */}
+                                <Image
+                                  src={desktopImg}
+                                  className="object-contain hidden md:block"
+                                  alt={`${selectedProduct.title} ${i + 1}`}
+                                  fill
+                                  unoptimized={true}
+                                  sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                                {/* Mobile Image */}
+                                <Image
+                                  src={mobileImg}
+                                  className="object-contain block md:hidden"
+                                  alt={`${selectedProduct.title} ${i + 1}`}
+                                  fill
+                                  unoptimized={true}
+                                  sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Visual Cue for scroll */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                         {(productImages[selectedProduct.title]?.desktop || []).map((_: any, i: number) => (
+                           <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                         ))}
                       </div>
                    </div>
 
@@ -186,12 +324,16 @@ export default function BuyClient({ products }: any) {
                           <span className="text-lg md:text-4xl font-black tracking-tighter text-black">₹1599</span>
                        </div>
 
-                       <form
-                        action={addToCart.bind(null, selectedProduct.slug?.current)}
-                        className="w-full"
-                      >
-                        <button className="w-full py-2 md:py-5 bg-[#ff3366] text-white font-black text-xs md:text-xl rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-rose-500/20 transform hover:-translate-y-1 tracking-widest">
+                       <form className="w-full">
+                         <button onClick={(e) => handleAddToCart(e, selectedProduct.slug?.current)} className="w-full py-2 md:py-5 bg-rose-600 text-white font-black text-xs md:text-xl rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-rose-500/20 transform hover:-translate-y-1 tracking-widest uppercase">
                           ADD TO CART
+                        </button>
+                      </form>
+
+                      <form action={toggleWishlist.bind(null, selectedProduct.slug?.current)}>
+                        <button className="w-full py-2 md:py-4 border-2 border-gray-100 text-black font-black text-[10px] md:text-sm rounded-full hover:bg-gray-50 transition-all flex items-center justify-center gap-2 tracking-widest uppercase">
+                          <Heart size={16} className={wishlist.some((w: any) => w.slug === selectedProduct.slug?.current) ? "fill-rose-600 stroke-rose-600" : ""} />
+                          {wishlist.some((w: any) => w.slug === selectedProduct.slug?.current) ? "In Wishlist" : "Add to Wishlist"}
                         </button>
                       </form>
                     </div>
@@ -203,5 +345,13 @@ export default function BuyClient({ products }: any) {
       </AnimatePresence>
 
     </section>
+  );
+}
+
+export default function BuyClient(props: any) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BuyClientContent {...props} />
+    </Suspense>
   );
 }

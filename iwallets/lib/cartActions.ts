@@ -11,7 +11,10 @@ export async function addToCart(slug: string) {
   else cart.push({ slug, qty: 1 })
 
   await setCart(cart)
-  
+}
+
+export async function buyItNow(slug: string) {
+  await addToCart(slug)
   redirect("/cart")
 }
 
