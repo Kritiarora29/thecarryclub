@@ -138,7 +138,7 @@ export default function AboutPage() {
               </a>
 
               <Link
-                href="https://instagram.com/thecarryclub.in"
+                href="https://instagram.com/Thecarryclub.in_"
                 target="_blank"
                 className="group flex items-center gap-4 bg-[#222] border border-white/10 px-10 py-5 rounded-full hover:bg-white transition-all transform hover:scale-105"
               >

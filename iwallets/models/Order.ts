@@ -7,6 +7,7 @@ const OrderSchema = new mongoose.Schema(
     phone: String,
 
     address: {
+      street: String,
       city: String,
       state: String,
       pincode: String,
@@ -24,7 +25,13 @@ const OrderSchema = new mongoose.Schema(
     amount: Number,
     paymentId: String,
 
-    
+    // NimbusPost shipping fields
+    nimbusShipmentId: String,
+    nimbusAwb: String,
+    nimbusCourier: String,
+    nimbusLabelUrl: String,
+    nimbusStatus: String,
+    nimbusShippedAt: Date,
   },
   { timestamps: true }
 );

@@ -13,19 +13,120 @@ import {
   CartesianGrid,
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, LogOut, TrendingUp, ShoppingBag, Search, Eye, Plus, Image as ImageIcon, Video, Box, Palette, AlignLeft, DollarSign } from "lucide-react";
+import { Download, LogOut, TrendingUp, ShoppingBag, Search, Eye, Plus, Image as ImageIcon, Video, Box, Palette, AlignLeft, DollarSign, Settings, ShieldCheck, Activity, Info, Truck, HelpCircle, Save, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function AdminPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filtered, setFiltered] = useState<any[]>([]);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "products">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "products" | "settings">("orders");
   const router = useRouter();
 
   // Product Form State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Nimbus Config State
+  const [nimbusEmail, setNimbusEmail] = useState("");
+  const [nimbusPassword, setNimbusPassword] = useState("");
+  const [nimbusMode, setNimbusMode] = useState<"sandbox" | "production">("sandbox");
+  const [nimbusIsSimulator, setNimbusIsSimulator] = useState(true);
+  const [nimbusPickupName, setNimbusPickupName] = useState("");
+  const [nimbusPickupPhone, setNimbusPickupPhone] = useState("");
+  const [nimbusPickupAddress, setNimbusPickupAddress] = useState("");
+  const [nimbusPickupCity, setNimbusPickupCity] = useState("");
+  const [nimbusPickupState, setNimbusPickupState] = useState("");
+  const [nimbusPickupPincode, setNimbusPickupPincode] = useState("");
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("");
+
+  // Fetch Nimbus Config on mount
+  useEffect(() => {
+    fetch("/api/nimbus/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setNimbusEmail(data.email || "");
+          setNimbusPassword(data.password || "");
+          setNimbusMode(data.mode || "sandbox");
+          setNimbusIsSimulator(data.isSimulator !== undefined ? data.isSimulator : true);
+          setNimbusPickupName(data.pickupName || "");
+          setNimbusPickupPhone(data.pickupPhone || "");
+          setNimbusPickupAddress(data.pickupAddress || "");
+          setNimbusPickupCity(data.pickupCity || "");
+          setNimbusPickupState(data.pickupState || "");
+          setNimbusPickupPincode(data.pickupPincode || "");
+        }
+      })
+      .catch((err) => console.error("Error fetching Nimbus config:", err));
+  }, []);
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    setSaveStatus("Saving settings...");
+    try {
+      const res = await fetch("/api/nimbus/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: nimbusEmail,
+          password: nimbusPassword,
+          mode: nimbusMode,
+          isSimulator: nimbusIsSimulator,
+          pickupName: nimbusPickupName,
+          pickupPhone: nimbusPickupPhone,
+          pickupAddress: nimbusPickupAddress,
+          pickupCity: nimbusPickupCity,
+          pickupState: nimbusPickupState,
+          pickupPincode: nimbusPickupPincode,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSaveStatus("Settings saved successfully!");
+        setTimeout(() => setSaveStatus(""), 3000);
+      } else {
+        setSaveStatus(`Error: ${data.error || "Failed to save settings"}`);
+      }
+    } catch (err) {
+      setSaveStatus("An unexpected error occurred.");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    setTestResult(null);
+    try {
+      const res = await fetch("/api/nimbus/test-connection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: nimbusEmail,
+          password: nimbusPassword,
+          mode: nimbusMode,
+          isSimulator: nimbusIsSimulator,
+        }),
+      });
+      const data = await res.json();
+      setTestResult({
+        success: data.success,
+        message: data.message || "Failed to test connection",
+      });
+    } catch (err: any) {
+      setTestResult({
+        success: false,
+        message: err.message || "An unexpected error occurred.",
+      });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
 
   // 🔐 Auth check
   useEffect(() => {
@@ -150,6 +251,12 @@ export default function AdminPage() {
               >
                 Products
               </button>
+              <button 
+                onClick={() => setActiveTab("settings")}
+                className={`flex-1 sm:flex-none px-6 py-2 rounded-full font-bold text-sm transition-all ${activeTab === "settings" ? "bg-white shadow-sm text-black" : "text-gray-400 hover:text-black"}`}
+              >
+                Settings
+              </button>
             </div>
 
             {activeTab === "orders" && (
@@ -270,7 +377,7 @@ export default function AdminPage() {
               </div>
             </div>
           </motion.div>
-        ) : (
+        ) : activeTab === "products" ? (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -352,6 +459,248 @@ export default function AdminPage() {
                 <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Database Ready</p>
                 <p className="text-sm text-emerald-800 font-medium mt-1">Products are securely uploaded and stored directly in your MongoDB database.</p>
               </div>
+            </form>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 md:p-12"
+          >
+            <div className="mb-10 text-center max-w-2xl mx-auto">
+              <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Settings size={30} className="text-[#ff3366]" strokeWidth={2.2} />
+              </div>
+              <h2 className="text-3xl font-black tracking-tighter">NimbusPost Integration</h2>
+              <p className="text-gray-500 font-medium mt-2 text-sm md:text-base">
+                Configure your shipping aggregator credentials and warehouse details to enable direct fulfillment.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveSettings} className="max-w-4xl mx-auto space-y-10">
+              
+              {/* Credentials Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                  <ShieldCheck className="text-[#ff3366]" size={20} />
+                  <h3 className="text-lg font-bold text-black tracking-tight">API Credentials</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Nimbus Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={nimbusEmail}
+                      onChange={(e) => setNimbusEmail(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black animate-fade-in"
+                      placeholder="seller@domain.com"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Nimbus Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={nimbusPassword}
+                      onChange={(e) => setNimbusPassword(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black animate-fade-in"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center pt-2">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div>
+                      <p className="text-sm font-bold text-black">Simulator Mode</p>
+                      <p className="text-xs text-gray-400 font-medium">Test shipping flows without hitting live endpoints</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={nimbusIsSimulator}
+                        onChange={(e) => setNimbusIsSimulator(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff3366]"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div>
+                      <p className="text-sm font-bold text-black">API Environment</p>
+                      <p className="text-xs text-gray-400 font-medium">Use Sandbox (testing) or Production (live)</p>
+                    </div>
+                    <div className="flex bg-gray-200 p-0.5 rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => setNimbusMode("sandbox")}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                          nimbusMode === "sandbox"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-500 hover:text-black"
+                        }`}
+                      >
+                        Sandbox
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNimbusMode("production")}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                          nimbusMode === "production"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-500 hover:text-black"
+                        }`}
+                      >
+                        Production
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleTestConnection}
+                    disabled={testingConnection}
+                    className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-xl text-xs transition-colors flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Activity size={14} className={testingConnection ? "animate-spin" : ""} />
+                    {testingConnection ? "TESTING..." : "TEST CONNECTION"}
+                  </button>
+
+                  {testResult && (
+                    <div className="flex items-center gap-2 animate-fade-in">
+                      {testResult.success ? (
+                        <CheckCircle size={16} className="text-emerald-500" />
+                      ) : (
+                        <AlertCircle size={16} className="text-rose-500" />
+                      )}
+                      <p
+                        className={`text-xs font-bold ${
+                          testResult.success ? "text-emerald-600" : "text-rose-600"
+                        }`}
+                      >
+                        {testResult.message}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Warehouse Details Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                  <Truck className="text-[#ff3366]" size={20} />
+                  <h3 className="text-lg font-bold text-black tracking-tight">Pickup / Warehouse Location</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Warehouse Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={nimbusPickupName}
+                      onChange={(e) => setNimbusPickupName(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black"
+                      placeholder="e.g. Primary Delhi Warehouse"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Contact Phone Number</label>
+                    <input
+                      type="tel"
+                      required
+                      value={nimbusPickupPhone}
+                      onChange={(e) => setNimbusPickupPhone(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black"
+                      placeholder="e.g. +91 98765 43210"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-700">Warehouse Street Address</label>
+                  <input
+                    type="text"
+                    required
+                    value={nimbusPickupAddress}
+                    onChange={(e) => setNimbusPickupAddress(e.target.value)}
+                    className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black"
+                    placeholder="Floor, Building, Industrial Area"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">City</label>
+                    <input
+                      type="text"
+                      required
+                      value={nimbusPickupCity}
+                      onChange={(e) => setNimbusPickupCity(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black"
+                      placeholder="New Delhi"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">State</label>
+                    <input
+                      type="text"
+                      required
+                      value={nimbusPickupState}
+                      onChange={(e) => setNimbusPickupState(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black"
+                      placeholder="Delhi"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Pincode (Postal Code)</label>
+                    <input
+                      type="text"
+                      required
+                      value={nimbusPickupPincode}
+                      onChange={(e) => setNimbusPickupPincode(e.target.value)}
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium text-black"
+                      placeholder="110001"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Submission */}
+              <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-4">
+                <button
+                  disabled={savingSettings}
+                  className="px-10 py-4 bg-black hover:bg-[#ff3366] text-white font-black rounded-full shadow-xl shadow-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto min-w-[250px] flex items-center justify-center gap-2"
+                >
+                  <Save size={18} />
+                  {savingSettings ? "SAVING..." : "SAVE CONFIGURATION"}
+                </button>
+
+                <AnimatePresence>
+                  {saveStatus && (
+                    <motion.p
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className={`font-bold text-sm ${
+                        saveStatus.includes("Error") ? "text-red-500" : "text-emerald-500"
+                      }`}
+                    >
+                      {saveStatus}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
             </form>
           </motion.div>
         )}

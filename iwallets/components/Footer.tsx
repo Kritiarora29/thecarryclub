@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Instagram, Mail, Phone, Clock } from "lucide-react"
+import { Instagram, Mail, Clock } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -18,15 +18,7 @@ export default function Footer() {
                 <Clock size={14} />
                 <span>Monday-Friday 9am-6pm IST</span>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-black">
-                  <Phone size={20} />
-                </div>
-                {/* <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Support Line</p>
-                  <p className="text-xl font-black tracking-tight">+91 99999 99999</p>
-                </div> */}
-              </div>
+
             </div>
           </div>
           
@@ -65,7 +57,7 @@ export default function Footer() {
           </div>
           
           <div className="flex gap-6">
-            <a href="https://instagram.com/thecarryclub.in" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white transition-all">
+            <a href="https://instagram.com/thecarryclub.in_" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white transition-all">
               <Instagram size={18} />
             </a>
             <a href="mailto:info@thecarryclub.in" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white transition-all">

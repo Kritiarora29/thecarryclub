@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShieldCheck, 
   Leaf, 
@@ -21,7 +21,7 @@ import {
   User,
   Heart as HeartIcon
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addToCart, buyItNow } from "@/lib/cartActions";
 import { toggleWishlist } from "@/lib/wishlistActions";
 import toast from "react-hot-toast";
@@ -29,6 +29,7 @@ import toast from "react-hot-toast";
 export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("black");
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const colors = [
     { id: "black", name: "Black", class: "bg-black", img: "/Iwallet - Images/Black wit box.png" },
@@ -36,7 +37,60 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     { id: "white", name: "White", class: "bg-white border border-gray-200", img: "/Iwallet - Images/White with box_.png" },
   ];
 
-  const currentProductImage = colors.find(c => c.id === selectedColor)?.img || "/Iwallet - Images/Black wit box.png";
+  const productImagesByColor: Record<string, string[]> = {
+    black: [
+      "/Iwallet - Images/Black wit box.png",
+      "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg",
+      "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg",
+      "/Iwallet - Images/Prod image- desk-Black/3-Black.jpg",
+      "/Iwallet - Images/Prod image- desk-Black/4-black.jpg",
+      "/Iwallet - Images/Prod image- desk-Black/5-black.jpg",
+      "/Iwallet - Images/Prod image- desk-Black/6-black.jpg"
+    ],
+    "space-grey": [
+      "/Iwallet - Images/Grey with box_.png",
+      "/Iwallet - Images/Prod image-desk-grey/1.png",
+      "/Iwallet - Images/Prod image-desk-grey/2.png",
+      "/Iwallet - Images/Prod image-desk-grey/3.png",
+      "/Iwallet - Images/Prod image-desk-grey/4.png"
+    ],
+    white: [
+      "/Iwallet - Images/White with box_.png",
+      "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
+      "/Iwallet - Images/Prod image- desk -White/3-white.jpg",
+      "/Iwallet - Images/Prod image- desk -White/4-white.jpg",
+      "/Iwallet - Images/Prod image- desk -White/5-white(1).jpg",
+      "/Iwallet - Images/Prod image- desk -White/5-white.jpg",
+      "/Iwallet - Images/Prod image- desk -White/6-white.jpg"
+    ]
+  };
+
+  const lifestyleImages = [
+    "/Iwallet - Images/Prod image-desk-grey/1.png",
+    "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg",
+    "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
+    "/Iwallet - Images/Prod image-desk-grey/2.png"
+  ];
+
+  const handleColorChange = (colorId: string) => {
+    setSelectedColor(colorId);
+    setSelectedImageIndex(0);
+  };
+
+  const currentImages = productImagesByColor[selectedColor] || [];
+  const currentProductImage = currentImages[selectedImageIndex] || colors.find(c => c.id === selectedColor)?.img || "/Iwallet - Images/Black wit box.png";
+  const isBoxImage = currentProductImage.toLowerCase().includes("box");
+
+  // Auto-slide effect for product images
+  useEffect(() => {
+    if (currentImages.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setSelectedImageIndex((prevIndex) => (prevIndex + 1) % currentImages.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [currentImages.length, selectedColor, selectedImageIndex]);
 
   const selectedTitle = colors.find(c => c.id === selectedColor)?.name;
   const currentProduct = products.find((p: any) => p.title.toLowerCase().includes(selectedTitle?.toLowerCase() || ""));
@@ -55,7 +109,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     <div className="bg-[#fafafa] text-black overflow-hidden font-sans">
       
       {/* 1. HERO SECTION */}
-      <section className="relative w-full aspect-[4/5] md:aspect-auto md:min-h-screen flex items-center justify-start overflow-hidden mt-[120px] md:mt-0">
+      <section className="relative w-full aspect-[4/5] md:aspect-auto md:min-h-[calc(100vh-136px)] flex items-center justify-start overflow-hidden mt-[120px] md:mt-[136px]">
         <div className="absolute inset-0 w-full h-full">
           <Image 
             src="/Iwallet - Images/Home-Hero banner-desk.jpg" 
@@ -163,7 +217,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
       </section>
 
       {/* 4.5. SLEEK MINIMAL BANNER SECTION */}
-      <section className="relative w-full aspect-[1200/982] md:aspect-auto md:h-[600px] overflow-hidden mt-20">
+      <section className="relative w-full aspect-[1600/682] md:aspect-auto md:h-[600px] overflow-hidden mt-20">
         <Image 
           src="/Iwallet - Images/sleek-minimal-banner.jpg" 
           alt="Sleek Minimal Essential" 
@@ -253,23 +307,29 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
             <div className="space-y-6">
               <motion.div 
                 whileHover={{ scale: 1.01 }}
-                className="relative aspect-square bg-[#f5f5f5] rounded-[2rem] overflow-hidden flex items-center justify-center p-12 group cursor-crosshair"
+                className={`relative aspect-square bg-[#f5f5f5] rounded-[2rem] overflow-hidden flex items-center justify-center transition-all duration-500 group cursor-crosshair ${isBoxImage ? "p-0 md:p-12" : "p-0"}`}
               >
+                <AnimatePresence initial={false}>
                   <motion.div
-                    key={selectedColor}
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.1, y: -20 }}
-                    transition={{ duration: 0.5, ease: "backOut" }}
-                    className="relative z-10 w-full h-full flex items-center justify-center p-2 md:p-8"
+                    key={`${selectedColor}-${selectedImageIndex}`}
+                    initial={{ opacity: 0, x: "100%" }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: "-100%" }}
+                    transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                    className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isBoxImage ? "p-0 md:p-8" : "p-0"}`}
                   >
                     <Image 
                       src={currentProductImage} 
                       alt="iWallet Premium Product" 
                       fill
-                      className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.12)] p-4 md:p-8"
+                      className={`transition-all duration-500 ${
+                        isBoxImage 
+                          ? "object-cover p-0 md:object-contain md:p-8 md:drop-shadow-[0_30px_60px_rgba(0,0,0,0.12)]" 
+                          : "object-cover p-0"
+                      }`}
                     />
                   </motion.div>
+                </AnimatePresence>
                 
                 {/* Floating tags */}
                 <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg z-10 flex items-center gap-2 transform group-hover:scale-110 transition-transform">
@@ -280,16 +340,28 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
               
               {/* Thumbnails row like in Image 2 */}
               <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-                {/* Product Color Variants */}
-                {colors.map((color) => (
-                  <div 
-                    key={color.id} 
-                    onClick={() => setSelectedColor(color.id)}
-                    className={`min-w-[100px] aspect-square bg-[#f5f5f5] rounded-2xl border-2 ${selectedColor === color.id ? "border-black" : "border-transparent"} overflow-hidden cursor-pointer p-2 transition-all hover:border-gray-200`}
-                  >
-                    <Image src={color.img} alt={color.name} width={100} height={100} className="object-contain" />
-                  </div>
-                ))}
+                {/* Product Card Images for Selected Color */}
+                {currentImages.map((imgUrl, idx) => {
+                  const isBox = imgUrl.toLowerCase().includes("box");
+                  return (
+                    <div 
+                      key={idx} 
+                      onClick={() => setSelectedImageIndex(idx)}
+                      className={`min-w-[100px] aspect-square bg-[#f5f5f5] rounded-2xl border-2 ${
+                        selectedImageIndex === idx ? "border-black" : "border-transparent"
+                      } overflow-hidden cursor-pointer transition-all hover:border-gray-200 relative ${
+                        isBox ? "p-0 md:p-2" : "p-0"
+                      }`}
+                    >
+                      <Image 
+                        src={imgUrl} 
+                        alt={`${selectedColor} wallet angle ${idx + 1}`} 
+                        fill
+                        className={isBox ? "object-cover md:object-contain md:p-1" : "object-cover"} 
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -341,12 +413,12 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
 
               {/* Color Swatches like Image 1 */}
               <div className="mb-10">
-                <p className="font-black mb-4 uppercase text-xs tracking-widest">Image: <span className="text-gray-400">{selectedColor}</span></p>
+                <p className="font-black mb-4 uppercase text-xs tracking-widest">Color: <span className="text-gray-400">{selectedTitle}</span></p>
                 <div className="flex gap-4">
                   {colors.map((color) => (
                     <button
                       key={color.id}
-                      onClick={() => setSelectedColor(color.id)}
+                      onClick={() => handleColorChange(color.id)}
                       className={`relative w-16 h-16 rounded-xl border-2 transition-all overflow-hidden ${selectedColor === color.id ? "border-black scale-105" : "border-gray-100 opacity-60"}`}
                     >
                       <Image src={color.img} alt={color.name} fill className="object-contain p-1" />
@@ -358,37 +430,32 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
               {/* Quantity & CTA - MATCH IMAGE 1 */}
               <div className="flex flex-col gap-5 mb-12">
                 <div className="flex gap-3 h-14 md:h-16">
-                  <div className="flex items-center border border-gray-100 rounded-2xl px-5 bg-[#f9f9f9] shadow-inner">
+                  {/* Quantity Selector */}
+                  <div className="flex items-center border border-gray-100 rounded-2xl px-5 bg-[#f9f9f9] shadow-inner shrink-0">
                     <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Minus size={16} /></button>
                     <span className="mx-5 font-black text-base min-w-[20px] text-center">{quantity}</span>
                     <button onClick={() => setQuantity(quantity + 1)} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Plus size={16} /></button>
                   </div>
-                  <form className="flex-1">
-                    <button onClick={handleAddToCart} className="w-full h-full bg-black text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#222] transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
-                      Add to Cart
-                    </button>
-                  </form>
 
-                  <form action={toggleWishlist.bind(null, currentSlug)}>
-                    <button className="w-14 h-14 md:w-16 md:h-16 border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm bg-white text-gray-400 group">
-                      <Heart 
-                        size={18} 
-                        className={`${isInWishlist ? "fill-rose-600 text-rose-600" : "text-gray-400 group-hover:fill-rose-500 group-hover:text-rose-500"} transition-all`} 
-                      />
-                    </button>
-                  </form>
+                  {/* Buttons Side by Side */}
+                  <div className="flex flex-1 gap-3 h-full">
+                    <form className="flex-1 h-full">
+                      <button onClick={handleAddToCart} className="w-full h-full bg-[#ff3366] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-black transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(255,51,102,0.15)]">
+                        Add to Cart
+                      </button>
+                    </form>
+                    <form action={buyItNow.bind(null, currentSlug)} className="flex-1 h-full">
+                      <button className="w-full h-full bg-black text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#ff3366] transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
+                        Buy It Now
+                      </button>
+                    </form>
+                  </div>
                 </div>
                 
                 <div className="flex items-center gap-3 mb-1 px-4">
                   <input type="checkbox" id="terms-landing" className="w-5 h-5 rounded-lg border-gray-200 text-blue-600 focus:ring-blue-600 cursor-pointer" />
                   <label htmlFor="terms-landing" className="text-[10px] text-gray-400 font-bold uppercase tracking-widest cursor-pointer">I agree with the <Link href="/terms" className="underline hover:text-black transition-colors">terms and conditions</Link></label>
                 </div>
-
-                <form action={buyItNow.bind(null, currentSlug)}>
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:from-blue-700 hover:to-blue-600 transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-[0_15px_30px_rgba(37,99,235,0.15)]">
-                    Buy It Now
-                  </button>
-                </form>
               </div>
 
               {/* Features Grid like Image 1 */}
@@ -433,15 +500,15 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
       <section className="py-32 bg-white">
         <div className="max-w-[1440px] mx-auto px-6 md:px-20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {[1, 2, 3, 4].map((i) => (
+            {lifestyleImages.map((imgUrl, idx) => (
               <motion.div 
-                key={i}
+                key={idx}
                 whileHover={{ y: -10 }}
                 className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-lg"
               >
                 <Image 
-                  src={`/Iwallet - Images/Prod image-desk-grey/${i}.png`} 
-                  alt={`Lifestyle ${i}`} 
+                  src={imgUrl} 
+                  alt={`Lifestyle ${idx + 1}`} 
                   fill 
                   className="object-cover hover:scale-110 transition-transform duration-1000"
                 />
@@ -474,7 +541,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
         <div className="mt-24 flex flex-col items-center">
           <Link href="https://instagram.com" className="flex items-center gap-2 group">
             <Instagram size={32} className="group-hover:text-[#ff3366] transition-colors" />
-            <span className="text-xl font-black tracking-tighter uppercase">@theCarryClub</span>
+            <span className="text-xl font-black tracking-tighter uppercase">@TheCarryClub.in_</span>
           </Link>
         </div>
       </section>

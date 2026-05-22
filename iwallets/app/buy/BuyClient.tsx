@@ -21,6 +21,12 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
     toast.success("Successfully added to cart");
   };
 
+  const handleBuyNow = async (e: React.MouseEvent, slug: string) => {
+    e.preventDefault();
+    await addToCart(slug);
+    window.location.href = "/cart";
+  };
+
   useEffect(() => {
     if (productSlug && products) {
       const product = products.find((p: any) => p.slug?.current === productSlug);
@@ -151,17 +157,17 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
               </div>
 
               {/* IMAGE SCROLL CONTAINER */}
-              <div className="p-2 md:p-6 relative bg-gray-50">
-                <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full relative group/scroll">
+              <div className="relative bg-gray-50 aspect-square overflow-hidden">
+                <div className="flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar w-full relative group/scroll">
                   {(productImages[product.title]?.desktop || []).map((desktopImg: string, i: number) => {
                     const mobileArr = productImages[product.title]?.mobile || [];
                     const mobileImg = mobileArr[i] || desktopImg;
                     return (
-                      <div key={i} className="min-w-full aspect-square relative flex items-center justify-center snap-center shrink-0 group">
+                      <div key={i} className="min-w-full h-full relative flex items-center justify-center snap-center shrink-0 group">
                         {/* Desktop Image */}
                         <Image
                           src={desktopImg}
-                          className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
+                          className="object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
                           alt={`${product.title} ${i + 1}`}
                           fill
                           unoptimized={true}
@@ -171,7 +177,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                         {/* Mobile Image */}
                         <Image
                           src={mobileImg}
-                          className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
+                          className="object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
                           alt={`${product.title} ${i + 1}`}
                           fill
                           unoptimized={true}
@@ -233,7 +239,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="bg-white rounded-t-3xl md:rounded-[3rem] w-full max-w-4xl max-h-[95vh] overflow-y-auto relative shadow-2xl overflow-hidden"
+                className="bg-white rounded-t-3xl md:rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -243,7 +249,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                    {/* Product Image Panel */}
-                   <div className="bg-gray-50 relative min-h-[250px] md:min-h-[500px] flex items-center overflow-hidden">
+                   <div className="bg-gray-50 relative min-h-[250px] md:min-h-[420px] flex items-center overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-600/10 to-transparent" />
                       
                       <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full relative z-10 group/scroll items-center">
@@ -251,8 +257,8 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                           const mobileArr = productImages[selectedProduct.title]?.mobile || [];
                           const mobileImg = mobileArr[i] || desktopImg;
                           return (
-                            <div key={i} className="min-w-full h-full p-8 md:p-16 relative flex items-center justify-center snap-center shrink-0">
-                              <div className="w-full max-w-[250px] md:max-w-sm h-48 md:h-[400px] relative">
+                            <div key={i} className="min-w-full h-full p-6 md:p-8 relative flex items-center justify-center snap-center shrink-0">
+                              <div className="w-full max-w-[250px] md:max-w-sm h-48 md:h-[320px] relative">
                                 {/* Desktop Image */}
                                 <Image
                                   src={desktopImg}
@@ -286,14 +292,14 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                    </div>
 
                  {/* Content Panel */}
-                 <div className="p-4 pt-0 md:p-16 flex flex-col justify-center mt-2 md:mt-0">
-                    <span className="text-[#ff3366] font-black tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] uppercase mb-1 md:mb-4">theCarryClub Premium</span>
-                    <h2 className="text-2xl md:text-5xl font-black text-black tracking-tighter leading-[1.1] md:leading-none mb-3 md:mb-6">
+                 <div className="p-4 pt-0 md:p-8 md:py-6 flex flex-col justify-center mt-2 md:mt-0">
+                    <span className="text-[#ff3366] font-black tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] uppercase mb-0.5 md:mb-2">theCarryClub Premium</span>
+                    <h2 className="text-2xl md:text-4xl font-black text-black tracking-tighter leading-[1.1] md:leading-none mb-2 md:mb-3">
                       {selectedProduct.title}
                     </h2>
 
-                    <div className="space-y-1.5 md:space-y-4 mb-4 md:mb-8">
-                       <p className="text-sm md:text-lg font-black text-gray-900 leading-snug">
+                    <div className="space-y-1 md:space-y-2 mb-2 md:mb-4">
+                       <p className="text-sm md:text-base font-black text-gray-900 leading-snug">
                          "We really took the Apple Wallet App Logo and brought it to life!"
                        </p>
                        <p className="text-[9px] md:text-xs font-bold text-gray-400 italic">
@@ -305,11 +311,11 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                       const d = descriptions[selectedProduct.title];
                       if (!d) return null;
                       return (
-                        <div className="space-y-3 md:space-y-6">
-                          <p className="text-xs md:text-base font-bold text-gray-600 leading-snug">{d.tagline}</p>
-                          <ul className="space-y-1.5 md:space-y-3">
+                        <div className="space-y-2 md:space-y-4">
+                          <p className="text-xs md:text-sm font-bold text-gray-600 leading-snug">{d.tagline}</p>
+                          <ul className="space-y-1 md:space-y-2">
                             {d.bullets.map((b: string, i: number) => (
-                              <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-sm font-medium text-gray-500">
+                              <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-medium text-gray-500">
                                 <span className="w-1.5 h-1.5 bg-[#ff3366] rounded-full" />
                                 {b}
                               </li>
@@ -319,23 +325,23 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                       );
                     })()}
 
-                    <div className="mt-4 md:mt-12 flex flex-col gap-2 md:gap-6">
+                    <div className="mt-3 md:mt-6 flex flex-col gap-2 md:gap-4">
                        <div className="flex items-baseline gap-3">
-                          <span className="text-lg md:text-4xl font-black tracking-tighter text-black">₹1599</span>
+                          <span className="text-lg md:text-3xl font-black tracking-tighter text-black">₹1599</span>
                        </div>
 
-                       <form className="w-full">
-                         <button onClick={(e) => handleAddToCart(e, selectedProduct.slug?.current)} className="w-full py-2 md:py-5 bg-rose-600 text-white font-black text-xs md:text-xl rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-rose-500/20 transform hover:-translate-y-1 tracking-widest uppercase">
-                          ADD TO CART
-                        </button>
-                      </form>
-
-                      <form action={toggleWishlist.bind(null, selectedProduct.slug?.current)}>
-                        <button className="w-full py-2 md:py-4 border-2 border-gray-100 text-black font-black text-[10px] md:text-sm rounded-full hover:bg-gray-50 transition-all flex items-center justify-center gap-2 tracking-widest uppercase">
-                          <Heart size={16} className={wishlist.some((w: any) => w.slug === selectedProduct.slug?.current) ? "fill-rose-600 stroke-rose-600" : ""} />
-                          {wishlist.some((w: any) => w.slug === selectedProduct.slug?.current) ? "In Wishlist" : "Add to Wishlist"}
-                        </button>
-                      </form>
+                        <div className="flex gap-3 md:gap-4 w-full">
+                          <form className="flex-1">
+                            <button onClick={(e) => handleAddToCart(e, selectedProduct.slug?.current)} className="w-full py-2.5 md:py-3.5 bg-rose-600 text-white font-black text-xs md:text-base rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-rose-500/20 transform hover:-translate-y-0.5 tracking-widest uppercase text-center">
+                              ADD TO CART
+                            </button>
+                          </form>
+                          <form className="flex-1">
+                            <button onClick={(e) => handleBuyNow(e, selectedProduct.slug?.current)} className="w-full py-2.5 md:py-3.5 bg-black text-white font-black text-xs md:text-base rounded-full hover:bg-rose-600 transition-all duration-300 shadow-xl shadow-gray-200/50 transform hover:-translate-y-0.5 tracking-widest uppercase text-center">
+                              BUY NOW
+                            </button>
+                          </form>
+                        </div>
                     </div>
                  </div>
               </div>
