@@ -31,7 +31,7 @@ export async function sendOrderEmail(order: any) {
         
         <div style="padding: 20px;">
           <h2 style="color: #000;">Thank you for your order, ${name}!</h2>
-          <p>We've received your order and are getting it ready for shipment. Here are the details of your purchase:</p>
+          <p>Order placed successfully! Soon you will receive a confirmation mail and delivery updates from theCarryClub.in. Here are the details of your purchase:</p>
           
           <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
             <thead>

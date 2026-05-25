@@ -38,7 +38,7 @@ export default function ProductView({ product }: any) {
             {product.description}
           </p>
 
-          <p className="mt-6 text-xl">₹ {product.price}</p>
+          <p className="mt-6 text-xl">₹ 1599</p>
 
           <div className="flex gap-4 mt-8">
             {product.colors.map((c: string) => (

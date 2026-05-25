@@ -300,6 +300,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                   <div className="pt-6">
                     <RazorpayCheckout
                       amount={finalTotal}
+                      disabled={!name.trim() || !email.trim() || !phone.trim() || !street.trim() || !city.trim() || !state.trim() || !pincode.trim()}
                       prefill={{ name, email, contact: phone }}
                       onSuccess={async (paymentId: any) => {
                         await fetch("/api/order", {

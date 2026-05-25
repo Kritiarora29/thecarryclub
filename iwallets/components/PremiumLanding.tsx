@@ -380,7 +380,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                   {currentProduct?.title || `Premium iWallet – ${selectedTitle}`}
                 </h2>
                 <div className="flex items-baseline gap-4">
-                  <span className="text-3xl md:text-5xl font-black tracking-tighter">₹{currentProduct?.price || "1,599"}</span>
+                  <span className="text-3xl md:text-5xl font-black tracking-tighter">₹1599</span>
                 </div>
                 
                 {/* Premium Exclusive Coupon UI */}

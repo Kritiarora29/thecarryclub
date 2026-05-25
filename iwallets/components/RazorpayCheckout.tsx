@@ -17,6 +17,7 @@ interface RazorpayCheckoutProps {
   }
   onSuccess?: (paymentId: string) => void
   className?: string
+  disabled?: boolean
 }
 
 export default function RazorpayCheckout({
@@ -24,6 +25,7 @@ export default function RazorpayCheckout({
   prefill,
   onSuccess,
   className,
+  disabled,
 }: RazorpayCheckoutProps) {
 
   const handlePayment = async () => {
@@ -62,11 +64,16 @@ export default function RazorpayCheckout({
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
       <button
+        disabled={disabled}
         onClick={handlePayment}
-        className={`w-full bg-black text-white py-3 md:py-4 rounded-full text-sm md:text-base font-bold flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all shadow-lg active:scale-[0.95] ${className || ""}`}
+        className={`w-full bg-black text-white py-3 md:py-4 rounded-full text-sm md:text-base font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:bg-zinc-800 active:scale-[0.95]"
+        } ${className || ""}`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-        Pay ₹{amount} Securely
+        {disabled ? "Enter Details to Pay" : `Pay ₹${amount} Securely`}
       </button>
     </>
   )
