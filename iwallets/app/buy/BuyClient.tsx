@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/lib/cartActions";
 import { toggleWishlist } from "@/lib/wishlistActions";
 import toast from "react-hot-toast";
-import { Heart } from "lucide-react";
+import { Heart, ArrowLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 import Image from "next/image";
@@ -60,51 +60,57 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   const productImages: any = {
     "Premium iWallet – White": {
       desktop: [
-        "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
         "/Iwallet - Images/Prod image- desk -White/3-white.jpg",
-        "/Iwallet - Images/Prod image- desk -White/4-white.jpg",
+        // "/Iwallet - Images/Prod image- desk -White/4-white.jpg",
         "/Iwallet - Images/Prod image- desk -White/5-white(1).jpg",
-        "/Iwallet - Images/Prod image- desk -White/5-white.jpg",
-        "/Iwallet - Images/Prod image- desk -White/6-white.jpg"
+        // "/Iwallet - Images/Prod image- desk -White/5-white.jpg",
+        "/Iwallet - Images/Prod image- desk -White/6-white.jpg",
+        "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
+        "/Iwallet - Images/White with box_.png"
       ],
       mobile: [
-        "/Iwallet - Images/Prod image- mob-white/1-white.jpg",
         "/Iwallet - Images/Prod image- mob-white/2-white.jpg",
         "/Iwallet - Images/Prod image- mob-white/3-white.jpg",
         "/Iwallet - Images/Prod image- mob-white/4-white.jpg",
-        "/Iwallet - Images/Prod image- mob-white/5-white.jpg"
+        // "/Iwallet - Images/Prod image- mob-white/5-white.jpg",
+        "/Iwallet - Images/Prod image- mob-white/1-white.jpg",
+        "/Iwallet - Images/White with box_.png"
       ]
     },
     "Premium iWallet – Black": {
       desktop: [
-        "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg",
         "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg",
         "/Iwallet - Images/Prod image- desk-Black/3-Black.jpg",
-        "/Iwallet - Images/Prod image- desk-Black/4-black.jpg",
+        // "/Iwallet - Images/Prod image- desk-Black/4-black.jpg",
         "/Iwallet - Images/Prod image- desk-Black/5-black.jpg",
-        "/Iwallet - Images/Prod image- desk-Black/6-black.jpg"
+        // "/Iwallet - Images/Prod image- desk-Black/6-black.jpg",
+        "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg",
+        "/Iwallet - Images/Black wit box.png"
       ],
       mobile: [
-        "/Iwallet - Images/Prod image- mob-Black/1-Black.jpg",
         "/Iwallet - Images/Prod image- mob-Black/2-Black.jpg",
         "/Iwallet - Images/Prod image- mob-Black/3-Black.jpg",
-        "/Iwallet - Images/Prod image- mob-Black/4-black.jpg",
+        // "/Iwallet - Images/Prod image- mob-Black/4-black.jpg",
         "/Iwallet - Images/Prod image- mob-Black/5-black.jpg",
-        "/Iwallet - Images/Prod image- mob-Black/6-black.jpg"
+        // "/Iwallet - Images/Prod image- mob-Black/6-black.jpg",
+        "/Iwallet - Images/Prod image- mob-Black/1-Black.jpg",
+        "/Iwallet - Images/Black wit box.png"
       ]
     },
     "Premium iWallet – Space Grey": {
       desktop: [
+        "/Iwallet - Images/Prod image-desk-grey/4.png",
         "/Iwallet - Images/Prod image-desk-grey/1.png",
         "/Iwallet - Images/Prod image-desk-grey/2.png",
         "/Iwallet - Images/Prod image-desk-grey/3.png",
-        "/Iwallet - Images/Prod image-desk-grey/4.png"
+        "/Iwallet - Images/Grey with box_.png"     
       ],
       mobile: [
+        "/Iwallet - Images/Prod images- grey- mob/4.png",
         "/Iwallet - Images/Prod images- grey- mob/1.png",
         "/Iwallet - Images/Prod images- grey- mob/2.png",
         "/Iwallet - Images/Prod images- grey- mob/3.png",
-        "/Iwallet - Images/Prod images- grey- mob/4.png"
+        "/Iwallet - Images/Grey with box_.png"
       ]
     }
   };
@@ -112,7 +118,15 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   return (
     <section className="min-h-screen bg-[#fafafa] pt-28 md:pt-40 pb-16 px-4 md:px-8 flex flex-col">
 
-      <div className="max-w-7xl mx-auto w-full">
+      <AnimatePresence mode="wait">
+        {!selectedProduct ? (
+          <motion.div
+            key="grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="max-w-7xl mx-auto w-full"
+          >
 
         <div className="text-center mb-10 md:mb-16">
             <h1 className="text-5xl md:text-8xl font-extrabold text-black tracking-tighter leading-none mb-6">
@@ -209,7 +223,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
 
                   <div className="mt-2 md:mt-6 flex items-center justify-between">
                     <div className="flex flex-col">
-                       <span className="text-xs md:text-2xl font-black text-black tracking-tighter">
+                       <span className="text-lg md:text-3xl font-black text-black tracking-tighter">
                         ₹1599
                       </span>
                     </div>
@@ -223,33 +237,27 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
             ))}
           </div>
 
-        </div>
-
-        <AnimatePresence>
-          {selectedProduct && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-6 z-[100]"
+        </motion.div>
+        ) : (
+          <motion.div
+            key="details"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="w-full max-w-5xl mx-auto"
+          >
+            <button
               onClick={() => setSelectedProduct(null)}
+              className="mt-4 md:mt-0 mb-6 md:mb-8 inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-sm border border-gray-200 text-gray-600 hover:text-black hover:shadow-md hover:border-gray-300 transition-all font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transform hover:-translate-y-0.5"
             >
-              <motion.div
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="bg-white rounded-t-3xl md:rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative shadow-2xl overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="absolute right-3 top-3 md:right-8 md:top-8 text-black bg-gray-100/80 backdrop-blur-md hover:bg-rose-500 hover:text-white transition-all rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center z-[60] font-bold shadow-lg"
-                  onClick={() => setSelectedProduct(null)}
-                >✕</button>
+              <ArrowLeft size={14} strokeWidth={2.5} />
+              Back to Products
+            </button>
+            <div className="bg-white rounded-3xl md:rounded-[3rem] w-full shadow-2xl overflow-hidden">
 
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                    {/* Product Image Panel */}
-                   <div className="bg-gray-50 relative min-h-[250px] md:min-h-[420px] flex items-center overflow-hidden">
+                   <div className="bg-gray-50 relative min-h-[360px] md:min-h-[460px] flex items-center overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-600/10 to-transparent" />
                       
                       <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full relative z-10 group/scroll items-center">
@@ -257,8 +265,8 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                           const mobileArr = productImages[selectedProduct.title]?.mobile || [];
                           const mobileImg = mobileArr[i] || desktopImg;
                           return (
-                            <div key={i} className="min-w-full h-full p-6 md:p-8 relative flex items-center justify-center snap-center shrink-0">
-                              <div className="w-full max-w-[250px] md:max-w-sm h-48 md:h-[320px] relative">
+                            <div key={i} className="min-w-full h-full p-0 md:p-8 relative flex items-center justify-center snap-center shrink-0">
+                              <div className="w-full max-w-[360px] md:max-w-lg h-80 md:h-[400px] relative">
                                 {/* Desktop Image */}
                                 <Image
                                   src={desktopImg}
@@ -345,7 +353,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                     </div>
                  </div>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

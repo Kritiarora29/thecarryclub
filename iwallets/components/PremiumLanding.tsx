@@ -31,44 +31,44 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const colors = [
-    { id: "black", name: "Black", class: "bg-black", img: "/Iwallet - Images/Black wit box.png" },
-    { id: "space-grey", name: "Space Grey", class: "bg-gray-600", img: "/Iwallet - Images/Grey with box_.png" },
-    { id: "white", name: "White", class: "bg-white border border-gray-200", img: "/Iwallet - Images/White with box_.png" },
+    { id: "black", name: "Black", class: "bg-black", img: "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg" },
+    { id: "space-grey", name: "Space Grey", class: "bg-gray-600", img: "/Iwallet - Images/Prod image-desk-grey/2.png" },
+    { id: "white", name: "White", class: "bg-white border border-gray-200", img: "/Iwallet - Images/Prod image- desk -White/3-white.jpg" },
   ];
 
   const productImagesByColor: Record<string, string[]> = {
     black: [
-      "/Iwallet - Images/Black wit box.png",
-      "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg",
       "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg",
       "/Iwallet - Images/Prod image- desk-Black/3-Black.jpg",
       "/Iwallet - Images/Prod image- desk-Black/4-black.jpg",
       "/Iwallet - Images/Prod image- desk-Black/5-black.jpg",
-      "/Iwallet - Images/Prod image- desk-Black/6-black.jpg"
+      "/Iwallet - Images/Prod image- desk-Black/6-black.jpg",
+      "/Iwallet - Images/Black wit box.png",
+      "/Iwallet - Images/Prod image- desk-Black/1-Black.jpg"
     ],
     "space-grey": [
-      "/Iwallet - Images/Grey with box_.png",
-      "/Iwallet - Images/Prod image-desk-grey/1.png",
       "/Iwallet - Images/Prod image-desk-grey/2.png",
       "/Iwallet - Images/Prod image-desk-grey/3.png",
-      "/Iwallet - Images/Prod image-desk-grey/4.png"
+      "/Iwallet - Images/Prod image-desk-grey/4.png",
+      "/Iwallet - Images/Grey with box_.png",
+      "/Iwallet - Images/Prod image-desk-grey/1.png"
     ],
     white: [
-      "/Iwallet - Images/White with box_.png",
-      "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
       "/Iwallet - Images/Prod image- desk -White/3-white.jpg",
       "/Iwallet - Images/Prod image- desk -White/4-white.jpg",
       "/Iwallet - Images/Prod image- desk -White/5-white(1).jpg",
       "/Iwallet - Images/Prod image- desk -White/5-white.jpg",
-      "/Iwallet - Images/Prod image- desk -White/6-white.jpg"
+      "/Iwallet - Images/Prod image- desk -White/6-white.jpg",
+      "/Iwallet - Images/White with box_.png",
+      "/Iwallet - Images/Prod image- desk -White/1-white.jpg"
     ]
   };
 
   const lifestyleImages = [
-    "/Iwallet - Images/Prod image-desk-grey/1.png",
-    "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg",
-    "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
-    "/Iwallet - Images/Prod image-desk-grey/2.png"
+    "/Iwallet - Images/Prod image- desk-Black/4-black.jpg",
+    "/Iwallet - Images/Prod image- desk-Black/6-black.jpg",
+    "/Iwallet - Images/Prod image- desk -White/5-white.jpg",
+    "/Iwallet - Images/Prod image-desk-grey/3.png"
   ];
 
   const handleColorChange = (colorId: string) => {
@@ -321,6 +321,8 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                       src={currentProductImage} 
                       alt="iWallet Premium Product" 
                       fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className={`transition-all duration-500 ${
                         isBoxImage 
                           ? "object-cover p-0 md:object-contain md:p-8 md:drop-shadow-[0_30px_60px_rgba(0,0,0,0.12)]" 
@@ -356,6 +358,8 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                         src={imgUrl} 
                         alt={`${selectedColor} wallet angle ${idx + 1}`} 
                         fill
+                        priority
+                        sizes="100px"
                         className={isBox ? "object-cover md:object-contain md:p-1" : "object-cover"} 
                       />
                     </div>
