@@ -60,7 +60,7 @@ async function run() {
         name: p.email ? p.email.split("@")[0] : "Unknown",
         email: p.email,
         phone: p.contact,
-        amount: p.amount / 100, // Razorpay amount is in paise
+        amount: Number(p.amount) / 100, // Razorpay amount is in paise
         paymentId: p.id,
         items: [], // Cannot be recovered as it wasn't sent to Razorpay
         address: {
