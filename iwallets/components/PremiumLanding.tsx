@@ -146,17 +146,19 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
               Designed to vanish in your pocket. Our proprietary construction ensures a razor-thin profile without compromising on durability or capacity.
             </p>
           </div>
-          <div className="order-1 lg:order-2 relative h-[400px] md:h-[600px] bg-white rounded-3xl overflow-hidden shadow-2xl">
+          <div className="order-1 lg:order-2 relative aspect-square md:aspect-auto md:h-[600px] bg-white rounded-3xl overflow-hidden shadow-2xl">
             <Image 
               src="/Iwallet - Images/Editorial-desk/1.jpg" 
               alt="Ultra Slim iWallet" 
               fill 
+              unoptimized={true}
               className="object-cover hidden md:block"
             />
             <Image 
               src="/Iwallet - Images/Editorial-mob/1.jpg" 
               alt="Ultra Slim iWallet" 
               fill 
+              unoptimized={true}
               className="object-cover block md:hidden"
             />
           </div>
@@ -166,17 +168,19 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
       {/* 3. FEATURE SECTION 02 - REVERSED SPLIT */}
       <section className="py-24 md:py-40 px-6 md:px-20 max-w-[1440px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div className="relative h-[400px] md:h-[600px] bg-[#111] rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative aspect-square md:aspect-auto md:h-[600px] bg-[#111] rounded-3xl overflow-hidden shadow-2xl">
             <Image 
               src="/Iwallet - Images/Editorial-desk/2.jpg" 
               alt="Quick Access Mechanism" 
               fill 
+              unoptimized={true}
               className="object-cover hidden md:block"
             />
             <Image 
               src="/Iwallet - Images/Editorial-mob/2.jpg" 
               alt="Quick Access Mechanism" 
               fill 
+              unoptimized={true}
               className="object-cover block md:hidden"
             />
           </div>
@@ -311,10 +315,10 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 <AnimatePresence initial={false}>
                   <motion.div
                     key={`${selectedColor}-${selectedImageIndex}`}
-                    initial={{ opacity: 0, x: "100%" }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: "-100%" }}
-                    transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
                     className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isBoxImage ? "p-0 md:p-8" : "p-0"}`}
                   >
                     <Image 
@@ -359,6 +363,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                         alt={`${selectedColor} wallet angle ${idx + 1}`} 
                         fill
                         priority
+                        unoptimized={true}
                         sizes="100px"
                         className={isBox ? "object-cover md:object-contain md:p-1" : "object-cover"} 
                       />
@@ -424,37 +429,36 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                       onClick={() => handleColorChange(color.id)}
                       className={`relative w-16 h-16 rounded-xl border-2 transition-all overflow-hidden ${selectedColor === color.id ? "border-black scale-105" : "border-gray-100 opacity-60"}`}
                     >
-                      <Image src={color.img} alt={color.name} fill className="object-contain p-1" />
+                      <Image src={color.img} alt={color.name} fill unoptimized={true} className="object-contain p-1" />
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Quantity & CTA - MATCH IMAGE 1 */}
-              <div className="flex flex-col gap-5 mb-12">
-                <div className="flex gap-3 h-14 md:h-16">
-                  {/* Quantity Selector */}
-                  <div className="flex items-center border border-gray-100 rounded-2xl px-5 bg-[#f9f9f9] shadow-inner shrink-0">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Minus size={16} /></button>
-                    <span className="mx-5 font-black text-base min-w-[20px] text-center">{quantity}</span>
-                    <button onClick={() => setQuantity(quantity + 1)} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Plus size={16} /></button>
-                  </div>
+              <div className="flex flex-col gap-3 md:gap-5 mb-12">
+                <div className="flex flex-col md:flex-row gap-3">
+                  <div className="flex gap-3 h-14 md:h-16 w-full md:w-auto flex-1">
+                    {/* Quantity Selector */}
+                    <div className="flex items-center border border-gray-100 rounded-2xl px-5 bg-[#f9f9f9] shadow-inner shrink-0 w-1/3 md:w-auto justify-between md:justify-center">
+                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Minus size={16} /></button>
+                      <span className="mx-5 font-black text-base min-w-[20px] text-center">{quantity}</span>
+                      <button onClick={() => setQuantity(quantity + 1)} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Plus size={16} /></button>
+                    </div>
 
-                  {/* Buttons Side by Side */}
-                  <div className="flex flex-1 gap-3 h-full">
                     <form className="flex-1 h-full">
                       <button onClick={handleAddToCart} className="w-full h-full bg-[#ff3366] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-black transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(255,51,102,0.15)]">
                         Add to Cart
                       </button>
                     </form>
-                    <form action={buyItNow.bind(null, currentSlug)} className="flex-1 h-full">
-                      <button className="w-full h-full bg-black text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#ff3366] transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
-                        Buy It Now
-                      </button>
-                    </form>
                   </div>
+                  
+                  <form action={buyItNow.bind(null, currentSlug)} className="w-full md:flex-1 h-14 md:h-16">
+                    <button className="w-full h-full bg-black text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#ff3366] transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
+                      Buy It Now
+                    </button>
+                  </form>
                 </div>
-
               </div>
 
               {/* Features Grid like Image 1 */}

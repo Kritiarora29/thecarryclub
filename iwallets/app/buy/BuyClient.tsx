@@ -35,8 +35,10 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   }, [productSlug, products]);
 
   useEffect(() => {
-    if (selectedProduct) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto";
+    // Scroll to top when product is selected
+    if (selectedProduct) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [selectedProduct]);
 
   const descriptions: any = {
@@ -224,7 +226,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                   <div className="mt-2 md:mt-6 flex items-center justify-between">
                     <div className="flex flex-col">
                        <span className="text-lg md:text-3xl font-black text-black tracking-tighter">
-                        ₹1599
+                        ₹{product.price || "1599"}
                       </span>
                     </div>
                     
@@ -335,7 +337,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
 
                     <div className="mt-3 md:mt-6 flex flex-col gap-2 md:gap-4">
                        <div className="flex items-baseline gap-3">
-                          <span className="text-lg md:text-3xl font-black tracking-tighter text-black">₹1599</span>
+                          <span className="text-lg md:text-3xl font-black tracking-tighter text-black">₹{selectedProduct.price || "1599"}</span>
                        </div>
 
                         <div className="flex gap-3 md:gap-4 w-full">
