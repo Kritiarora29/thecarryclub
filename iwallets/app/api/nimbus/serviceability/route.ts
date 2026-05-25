@@ -138,8 +138,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         origin: pickupPincode,
         destination: deliveryPincode,
-        weight: weight,
-        payment_method: "prepaid",
+        weight: 200, // 200 grams integer
+        payment_type: "prepaid",
         order_amount: orderAmount
       })
     });

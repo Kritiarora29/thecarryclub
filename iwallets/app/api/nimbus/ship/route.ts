@@ -81,8 +81,9 @@ export async function POST(req: Request) {
     const payload = {
       order_number: order._id.toString(),
       payment_method: "prepaid",
+      payment_type: "prepaid",
       courier_id: courierId,
-      weight: 0.2, // 200 grams default
+      weight: 200, // 200 grams default
       length: 15, // standard wallet package cm
       width: 11,
       height: 3,

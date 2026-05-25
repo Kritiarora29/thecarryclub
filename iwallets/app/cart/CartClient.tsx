@@ -303,9 +303,14 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       disabled={!name.trim() || !email.trim() || !phone.trim() || !street.trim() || !city.trim() || !state.trim() || !pincode.trim()}
                       prefill={{ name, email, contact: phone }}
                       onSuccess={async (paymentId: any) => {
+                        const formattedItems = cartItems.map((item: any) => ({
+                          title: item.title,
+                          quantity: item.qty,
+                          price: 1599
+                        }));
                         await fetch("/api/order", {
                           method: "POST",
-                          body: JSON.stringify({ name, email, phone, address: { street, city, state, pincode, landmark }, items: cartItems, amount: finalTotal, paymentId }),
+                          body: JSON.stringify({ name, email, phone, address: { street, city, state, pincode, landmark }, items: formattedItems, amount: finalTotal, paymentId }),
                         })
                         localStorage.removeItem("cart")
                         window.location.href = "/success"

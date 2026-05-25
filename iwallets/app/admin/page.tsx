@@ -13,13 +13,14 @@ import {
   CartesianGrid,
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, LogOut, TrendingUp, ShoppingBag, Search, Eye, Plus, Image as ImageIcon, Video, Box, Palette, AlignLeft, DollarSign, Settings, ShieldCheck, Activity, Info, Truck, HelpCircle, Save, CheckCircle, AlertCircle } from "lucide-react";
+import { Download, LogOut, TrendingUp, ShoppingBag, Search, Eye, Plus, Image as ImageIcon, Video, Box, Palette, AlignLeft, DollarSign, Settings, ShieldCheck, Activity, Info, Truck, HelpCircle, Save, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
 
 export default function AdminPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filtered, setFiltered] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<"orders" | "products" | "settings">("orders");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
 
   // Product Form State
@@ -42,6 +43,11 @@ export default function AdminPage() {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
+  
+  // Nimbus Warehouse Fetch State
+  const [warehousesList, setWarehousesList] = useState<any[]>([]);
+  const [isFetchingWarehouses, setIsFetchingWarehouses] = useState(false);
+  const [fetchError, setFetchError] = useState("");
 
   // Fetch Nimbus Config on mount
   useEffect(() => {
@@ -128,6 +134,33 @@ export default function AdminPage() {
     }
   };
 
+  const handleFetchWarehouses = async () => {
+    setIsFetchingWarehouses(true);
+    setFetchError("");
+    try {
+      const res = await fetch("/api/nimbus/warehouses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: nimbusEmail,
+          password: nimbusPassword,
+          mode: nimbusMode,
+          isSimulator: nimbusIsSimulator,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.warehouses?.length > 0) {
+        setWarehousesList(data.warehouses);
+      } else {
+        setFetchError(data.message || "No warehouses found.");
+      }
+    } catch (err: any) {
+      setFetchError(err.message || "An error occurred while fetching.");
+    } finally {
+      setIsFetchingWarehouses(false);
+    }
+  };
+
   // 🔐 Auth check
   useEffect(() => {
     fetch("/api/admin-check").then((res) => {
@@ -136,20 +169,24 @@ export default function AdminPage() {
   }, [router]);
 
   // 📊 Fetch orders
+  const fetchOrders = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch("/api/admin-orders");
+      if (!res.ok) return;
+      const text = await res.text();
+      if (!text) return;
+      const data = JSON.parse(text);
+      setOrders(data);
+      setFiltered(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch("/api/admin-orders");
-        if (!res.ok) return;
-        const text = await res.text();
-        if (!text) return;
-        const data = JSON.parse(text);
-        setOrders(data);
-        setFiltered(data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-      }
-    };
     fetchOrders();
   }, []);
 
@@ -260,13 +297,23 @@ export default function AdminPage() {
             </div>
 
             {activeTab === "orders" && (
-              <button 
-                onClick={exportCSV} 
-                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto"
-              >
-                <Download size={16} />
-                <span>Export</span>
-              </button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button 
+                  onClick={fetchOrders} 
+                  disabled={isRefreshing}
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+                  <span className="hidden sm:inline">Refresh</span>
+                </button>
+                <button 
+                  onClick={exportCSV} 
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto"
+                >
+                  <Download size={16} />
+                  <span>Export</span>
+                </button>
+              </div>
             )}
 
             <button 
@@ -593,10 +640,50 @@ export default function AdminPage() {
 
               {/* Warehouse Details Section */}
               <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
-                  <Truck className="text-[#ff3366]" size={20} />
-                  <h3 className="text-lg font-bold text-black tracking-tight">Pickup / Warehouse Location</h3>
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <div className="flex items-center gap-3">
+                    <Truck className="text-[#ff3366]" size={20} />
+                    <h3 className="text-lg font-bold text-black tracking-tight">Pickup / Warehouse Location</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleFetchWarehouses}
+                    disabled={isFetchingWarehouses || !nimbusEmail || !nimbusPassword}
+                    className="px-4 py-2 bg-rose-50 text-[#ff3366] hover:bg-rose-100 text-xs font-bold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isFetchingWarehouses ? "FETCHING..." : "FETCH SAVED LOCATIONS"}
+                  </button>
                 </div>
+
+                {fetchError && <p className="text-xs text-rose-500 font-bold">{fetchError}</p>}
+                
+                {warehousesList.length > 0 && (
+                  <div className="space-y-2 p-4 bg-gray-50 border border-rose-100 rounded-xl mb-4 animate-fade-in">
+                    <label className="text-sm font-bold text-rose-600">Select a Saved Warehouse</label>
+                    <select
+                      className="w-full p-3 rounded-lg bg-white border border-gray-200 focus:outline-none focus:border-[#ff3366] font-medium text-black"
+                      onChange={(e) => {
+                        if (e.target.selectedIndex === 0) return;
+                        const w = warehousesList[e.target.selectedIndex - 1];
+                        if (w) {
+                          setNimbusPickupName(w.warehouse_name || w.name || "");
+                          setNimbusPickupPhone(w.phone || w.contact_number || "");
+                          setNimbusPickupAddress(w.address || w.address_line_1 || "");
+                          setNimbusPickupCity(w.city || "");
+                          setNimbusPickupState(w.state || "");
+                          setNimbusPickupPincode(w.pincode || "");
+                        }
+                      }}
+                    >
+                      <option value="">-- Click to choose a warehouse --</option>
+                      {warehousesList.map((w, i) => (
+                        <option key={i} value={w.warehouse_name || w.name}>
+                          {w.warehouse_name || w.name} ({w.city || "Unknown City"})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
