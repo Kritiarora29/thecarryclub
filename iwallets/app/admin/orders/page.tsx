@@ -7,9 +7,17 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const res = await fetch("/api/admin-orders");
-      const data = await res.json();
-      setOrders(data);
+      try {
+        const res = await fetch("/api/admin-orders", { cache: "no-store" });
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else {
+          console.error("API Error:", data);
+        }
+      } catch (err) {
+        console.error("Fetch Error:", err);
+      }
     };
 
     fetchOrders();
