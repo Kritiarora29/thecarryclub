@@ -23,9 +23,14 @@ export const getProducts = unstable_cache(
       })()
     ]);
 
-    const sanityProducts = sanityProductsResult.status === "fulfilled" && sanityProductsResult.value 
+    const sanityProductsRaw = sanityProductsResult.status === "fulfilled" && sanityProductsResult.value 
       ? sanityProductsResult.value 
       : [];
+
+    const sanityProducts = sanityProductsRaw.map((p: any) => ({
+      ...p,
+      price: p.price === 999 ? 1599 : (p.price || 1599)
+    }));
 
     if (sanityProductsResult.status === "rejected") {
       console.error("Sanity Fetch Error:", sanityProductsResult.reason);
@@ -46,8 +51,15 @@ export const getProducts = unstable_cache(
       slug: p.slug,
       description: p.description,
       color: p.color,
-      imageUrl: p.imageUrl?.startsWith("http") || p.imageUrl?.startsWith("/") ? p.imageUrl : `/${p.imageUrl}`,
-      videoUrl: p.videoUrl?.startsWith("http") || p.videoUrl?.startsWith("/") ? p.videoUrl : `/${p.videoUrl}`,
+      imageUrl: p.imageUrl ? (p.imageUrl.startsWith("http") || p.imageUrl.startsWith("/") ? p.imageUrl : `/${p.imageUrl}`) : "",
+      videoUrl: p.videoUrl ? (p.videoUrl.startsWith("http") || p.videoUrl.startsWith("/") ? p.videoUrl : `/${p.videoUrl}`) : "",
+      images: p.images?.map((img: string) => img?.startsWith("http") || img?.startsWith("/") ? img : `/${img}`) || [],
+      tagline: p.tagline || "",
+      bullets: p.bullets || [],
+      quote: p.quote || "",
+      subQuote: p.subQuote || "",
+      collectionName: p.collectionName || "",
+      brand: p.brand || "",
     }));
 
     return [...sanityProducts, ...mongoProducts];

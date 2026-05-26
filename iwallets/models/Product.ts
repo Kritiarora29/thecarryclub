@@ -11,8 +11,16 @@ const ProductSchema = new mongoose.Schema(
     color: String,
     imageUrl: String,
     videoUrl: String,
+    images: [String],
+    tagline: String,
+    bullets: [String],
+    quote: String,
+    subQuote: String,
+    collectionName: String,
+    brand: String,
   },
   { timestamps: true }
 );
 
 export default mongoose.models.Product || mongoose.model("Product", ProductSchema);
+

@@ -155,8 +155,8 @@ export async function POST(req: Request) {
 
     // Format couriers to match UI structure
     const liveCouriers = serviceabilityData.data.map((c: any) => {
-      // Calculate delivery date if expected_delivery is not directly provided as string
-      let deliveryDateStr = c.expected_delivery || "";
+      // Calculate delivery date if expected_delivery or edd is not directly provided as string
+      let deliveryDateStr = c.expected_delivery || c.edd || "";
       if (!deliveryDateStr && c.etd) {
         deliveryDateStr = new Date(Date.now() + parseInt(c.etd) * 86400000).toLocaleDateString("en-IN", {
           day: "numeric",
@@ -166,9 +166,9 @@ export async function POST(req: Request) {
       }
 
       return {
-        courier_id: c.courier_id || c.name?.toLowerCase().replace(" ", "_"),
+        courier_id: c.id?.toString() || c.courier_id?.toString() || c.name?.toLowerCase().replace(/\s+/g, "_"),
         name: c.name || "Standard Courier",
-        rate: c.rate || c.freight_charge || 50,
+        rate: c.total_charges || c.freight_charges || c.rate || c.freight_charge || 50,
         expected_delivery: deliveryDateStr || "3-5 Business Days",
         etd_days: c.etd || 3,
         service_type: c.service_type || "Surface",

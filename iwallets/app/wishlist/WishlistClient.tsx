@@ -68,6 +68,38 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
     }
   };
 
+  const getProductMedia = (product: any) => {
+    let desktopImgs: string[] = [];
+    let mobileImgs: string[] = [];
+
+    if (productImages[product.title]) {
+      desktopImgs = productImages[product.title].desktop || [];
+      mobileImgs = productImages[product.title].mobile || [];
+    } else {
+      const imgs = product.images && product.images.length > 0
+        ? product.images
+        : (product.imageUrl ? [product.imageUrl] : []);
+      desktopImgs = imgs;
+      mobileImgs = imgs;
+    }
+
+    const mediaList = desktopImgs.map((img: string, i: number) => ({
+      type: "image",
+      desktop: img,
+      mobile: mobileImgs[i] || img
+    }));
+
+    if (product.videoUrl) {
+      mediaList.push({
+        type: "video",
+        desktop: product.videoUrl,
+        mobile: product.videoUrl
+      });
+    }
+
+    return mediaList;
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0 }}
@@ -119,36 +151,47 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                 >
                   <div className="relative bg-gray-50 p-2 md:p-6 overflow-hidden">
                     <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full relative group/scroll">
-                      {(productImages[product.title]?.desktop || []).map((desktopImg: string, i: number) => {
-                        const mobileArr = productImages[product.title]?.mobile || [];
-                        const mobileImg = mobileArr[i] || desktopImg;
+                      {getProductMedia(product).map((media: any, i: number) => {
                         return (
                           <div key={i} className="min-w-full aspect-square relative flex items-center justify-center snap-center shrink-0 group">
-                            {/* Desktop Image */}
-                            <Image
-                              src={desktopImg}
-                              className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
-                              alt={`${product.title} ${i + 1}`}
-                              fill
-                              unoptimized={true}
-                              sizes="(max-width: 768px) 100vw, 33vw"
-                            />
-                            {/* Mobile Image */}
-                            <Image
-                              src={mobileImg}
-                              className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
-                              alt={`${product.title} ${i + 1}`}
-                              fill
-                              unoptimized={true}
-                              sizes="(max-width: 768px) 100vw, 33vw"
-                            />
+                            {media.type === "video" ? (
+                              <video
+                                src={media.desktop}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="object-contain w-full h-full relative z-10"
+                              />
+                            ) : (
+                              <>
+                                {/* Desktop Image */}
+                                <Image
+                                  src={media.desktop}
+                                  className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
+                                  alt={`${product.title} ${i + 1}`}
+                                  fill
+                                  unoptimized={true}
+                                  sizes="(max-width: 768px) 100vw, 33vw"
+                                />
+                                {/* Mobile Image */}
+                                <Image
+                                  src={media.mobile}
+                                  className="object-contain transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
+                                  alt={`${product.title} ${i + 1}`}
+                                  fill
+                                  unoptimized={true}
+                                  sizes="(max-width: 768px) 100vw, 33vw"
+                                />
+                              </>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                     {/* Visual Cue for scroll */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-                       {(productImages[product.title]?.desktop || []).map((_: any, i: number) => (
+                       {getProductMedia(product).map((_: any, i: number) => (
                          <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                        ))}
                     </div>
@@ -171,7 +214,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                       <h2 className="text-xl md:text-3xl font-black text-black tracking-tight leading-none mb-2">
                         {product.title}
                       </h2>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">₹1599</p>
+                      <p className="text-xl md:text-2xl font-bold text-gray-900">₹{product.price || 1599}</p>
                     </div>
 
                     <div className="flex flex-col gap-3">

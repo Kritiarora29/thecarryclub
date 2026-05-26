@@ -380,7 +380,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                   {currentProduct?.title || `Premium iWallet – ${selectedTitle}`}
                 </h2>
                 <div className="flex items-baseline gap-4">
-                  <span className="text-3xl md:text-5xl font-black tracking-tighter">₹1599</span>
+                  <span className="text-3xl md:text-5xl font-black tracking-tighter">₹{currentProduct?.price || 1599}</span>
                 </div>
                 
                 {/* Premium Exclusive Coupon UI */}
@@ -397,7 +397,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                         <span className="text-[8px] font-black uppercase tracking-[0.3em] text-blue-600">Exclusive Flash Deal</span>
                       </div>
                       <p className="text-lg md:text-xl font-black text-black tracking-tight">
-                        Unlock for <span className="text-blue-600">₹999</span>
+                        Unlock for <span className="text-blue-600">₹{(currentProduct?.price || 1599) - 600}</span>
                       </p>
                       <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Available for the next 2 hours</p>
                     </div>

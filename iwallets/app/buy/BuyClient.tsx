@@ -117,6 +117,38 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
     }
   };
 
+  const getProductMedia = (product: any) => {
+    let desktopImgs: string[] = [];
+    let mobileImgs: string[] = [];
+
+    if (productImages[product.title]) {
+      desktopImgs = productImages[product.title].desktop || [];
+      mobileImgs = productImages[product.title].mobile || [];
+    } else {
+      const imgs = product.images && product.images.length > 0
+        ? product.images
+        : (product.imageUrl ? [product.imageUrl] : []);
+      desktopImgs = imgs;
+      mobileImgs = imgs;
+    }
+
+    const mediaList = desktopImgs.map((img: string, i: number) => ({
+      type: "image",
+      desktop: img,
+      mobile: mobileImgs[i] || img
+    }));
+
+    if (product.videoUrl) {
+      mediaList.push({
+        type: "video",
+        desktop: product.videoUrl,
+        mobile: product.videoUrl
+      });
+    }
+
+    return mediaList;
+  };
+
   return (
     <section className="min-h-screen bg-[#fafafa] pt-28 md:pt-40 pb-16 px-4 md:px-8 flex flex-col">
 
@@ -175,38 +207,49 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
               {/* IMAGE SCROLL CONTAINER */}
               <div className="relative bg-gray-50 aspect-square overflow-hidden">
                 <div className="flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar w-full relative group/scroll">
-                  {(productImages[product.title]?.desktop || []).map((desktopImg: string, i: number) => {
-                    const mobileArr = productImages[product.title]?.mobile || [];
-                    const mobileImg = mobileArr[i] || desktopImg;
+                  {getProductMedia(product).map((media: any, i: number) => {
                     return (
                       <div key={i} className="min-w-full h-full relative flex items-center justify-center snap-center shrink-0 group">
-                        {/* Desktop Image */}
-                        <Image
-                          src={desktopImg}
-                          className="object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
-                          alt={`${product.title} ${i + 1}`}
-                          fill
-                          unoptimized={true}
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          priority={idx < 4 && i === 0}
-                        />
-                        {/* Mobile Image */}
-                        <Image
-                          src={mobileImg}
-                          className="object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
-                          alt={`${product.title} ${i + 1}`}
-                          fill
-                          unoptimized={true}
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          priority={idx < 4 && i === 0}
-                        />
+                        {media.type === "video" ? (
+                          <video
+                            src={media.desktop}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="object-cover w-full h-full relative z-10"
+                          />
+                        ) : (
+                          <>
+                            {/* Desktop Image */}
+                            <Image
+                              src={media.desktop}
+                              className="object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-10 hidden md:block"
+                              alt={`${product.title} ${i + 1}`}
+                              fill
+                              unoptimized={true}
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              priority={idx < 4 && i === 0}
+                            />
+                            {/* Mobile Image */}
+                            <Image
+                              src={media.mobile}
+                              className="object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-10 block md:hidden"
+                              alt={`${product.title} ${i + 1}`}
+                              fill
+                              unoptimized={true}
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              priority={idx < 4 && i === 0}
+                            />
+                          </>
+                        )}
                       </div>
                     );
                   })}
                 </div>
                 {/* Visual Cue for scroll */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-                   {(productImages[product.title]?.desktop || []).map((_: any, i: number) => (
+                   {getProductMedia(product).map((_: any, i: number) => (
                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                    ))}
                 </div>
@@ -216,7 +259,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                   <div>
                     <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
                        <span className="w-3 md:w-6 h-0.5 bg-rose-600 rounded-full" />
-                       <p className="text-[8px] md:text-[9px] text-gray-400 uppercase font-black tracking-widest truncate">Collection 01</p>
+                       <p className="text-[8px] md:text-[9px] text-gray-400 uppercase font-black tracking-widest truncate">{product.collectionName || "Collection 01"}</p>
                     </div>
                     <h2 className="text-base md:text-xl font-bold md:font-black text-black tracking-tight leading-snug line-clamp-2 min-h-[40px] md:min-h-0">
                       {product.title}
@@ -226,8 +269,8 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                   <div className="mt-2 md:mt-6 flex items-center justify-between">
                     <div className="flex flex-col">
                        <span className="text-lg md:text-3xl font-black text-black tracking-tighter">
-                        ₹1599
-                      </span>
+                        ₹{product.price}
+                       </span>
                     </div>
                     
                     <div className="w-6 h-6 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white group-hover:bg-rose-600 transition-colors shadow-lg shrink-0">
@@ -263,30 +306,42 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-600/10 to-transparent" />
                       
                       <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full relative z-10 group/scroll items-center">
-                        {(productImages[selectedProduct.title]?.desktop || []).map((desktopImg: string, i: number) => {
-                          const mobileArr = productImages[selectedProduct.title]?.mobile || [];
-                          const mobileImg = mobileArr[i] || desktopImg;
+                        {getProductMedia(selectedProduct).map((media: any, i: number) => {
                           return (
                             <div key={i} className="min-w-full h-full p-0 md:p-8 relative flex items-center justify-center snap-center shrink-0">
-                              <div className="w-full max-w-[360px] md:max-w-lg h-80 md:h-[400px] relative">
-                                {/* Desktop Image */}
-                                <Image
-                                  src={desktopImg}
-                                  className="object-contain hidden md:block"
-                                  alt={`${selectedProduct.title} ${i + 1}`}
-                                  fill
-                                  unoptimized={true}
-                                  sizes="(max-width: 768px) 100vw, 50vw"
-                                />
-                                {/* Mobile Image */}
-                                <Image
-                                  src={mobileImg}
-                                  className="object-contain block md:hidden"
-                                  alt={`${selectedProduct.title} ${i + 1}`}
-                                  fill
-                                  unoptimized={true}
-                                  sizes="(max-width: 768px) 100vw, 50vw"
-                                />
+                              <div className="w-full max-w-[360px] md:max-w-lg h-80 md:h-[400px] relative flex items-center justify-center">
+                                {media.type === "video" ? (
+                                  <video
+                                    src={media.desktop}
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    controls
+                                    className="object-contain w-full h-full rounded-2xl"
+                                  />
+                                ) : (
+                                  <>
+                                    {/* Desktop Image */}
+                                    <Image
+                                      src={media.desktop}
+                                      className="object-contain hidden md:block"
+                                      alt={`${selectedProduct.title} ${i + 1}`}
+                                      fill
+                                      unoptimized={true}
+                                      sizes="(max-width: 768px) 100vw, 50vw"
+                                    />
+                                    {/* Mobile Image */}
+                                    <Image
+                                      src={media.mobile}
+                                      className="object-contain block md:hidden"
+                                      alt={`${selectedProduct.title} ${i + 1}`}
+                                      fill
+                                      unoptimized={true}
+                                      sizes="(max-width: 768px) 100vw, 50vw"
+                                    />
+                                  </>
+                                )}
                               </div>
                             </div>
                           );
@@ -295,7 +350,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
 
                       {/* Visual Cue for scroll */}
                       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-                         {(productImages[selectedProduct.title]?.desktop || []).map((_: any, i: number) => (
+                         {getProductMedia(selectedProduct).map((_: any, i: number) => (
                            <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                          ))}
                       </div>
@@ -303,41 +358,62 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
 
                  {/* Content Panel */}
                  <div className="p-4 pt-0 md:p-8 md:py-6 flex flex-col justify-center mt-2 md:mt-0">
-                    <span className="text-[#ff3366] font-black tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] uppercase mb-0.5 md:mb-2">theCarryClub Premium</span>
+                    <span className="text-[#ff3366] font-black tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] uppercase mb-0.5 md:mb-2">{selectedProduct.brand || "theCarryClub Premium"}</span>
                     <h2 className="text-2xl md:text-4xl font-black text-black tracking-tighter leading-[1.1] md:leading-none mb-2 md:mb-3">
                       {selectedProduct.title}
                     </h2>
 
-                    <div className="space-y-1 md:space-y-2 mb-2 md:mb-4">
-                       <p className="text-sm md:text-base font-black text-gray-900 leading-snug">
-                         "We really took the Apple Wallet App Logo and brought it to life!"
-                       </p>
-                       <p className="text-[9px] md:text-xs font-bold text-gray-400 italic">
-                         "Not an official apple product, obviously... "
-                       </p>
-                    </div>
+                    {((selectedProduct.quote) || (selectedProduct.subQuote)) ? (
+                      <div className="space-y-1 md:space-y-2 mb-2 md:mb-4">
+                         {selectedProduct.quote && (
+                           <p className="text-sm md:text-base font-black text-gray-900 leading-snug">
+                             "{selectedProduct.quote}"
+                           </p>
+                         )}
+                         {selectedProduct.subQuote && (
+                           <p className="text-[9px] md:text-xs font-bold text-gray-400 italic">
+                             "{selectedProduct.subQuote}"
+                           </p>
+                         )}
+                      </div>
+                    ) : (
+                      <div className="space-y-1 md:space-y-2 mb-2 md:mb-4">
+                         <p className="text-sm md:text-base font-black text-gray-900 leading-snug">
+                           "We really took the Apple Wallet App Logo and brought it to life!"
+                         </p>
+                         <p className="text-[9px] md:text-xs font-bold text-gray-400 italic">
+                           "Not an official apple product, obviously... "
+                         </p>
+                      </div>
+                    )}
 
                     {(() => {
-                      const d = descriptions[selectedProduct.title];
-                      if (!d) return null;
+                      const tagline = selectedProduct.tagline || descriptions[selectedProduct.title]?.tagline;
+                      const bullets = (selectedProduct.bullets && selectedProduct.bullets.length > 0)
+                        ? selectedProduct.bullets
+                        : (descriptions[selectedProduct.title]?.bullets || []);
+                      
+                      if (!tagline && bullets.length === 0) return null;
                       return (
                         <div className="space-y-2 md:space-y-4">
-                          <p className="text-xs md:text-sm font-bold text-gray-600 leading-snug">{d.tagline}</p>
-                          <ul className="space-y-1 md:space-y-2">
-                            {d.bullets.map((b: string, i: number) => (
-                              <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-medium text-gray-500">
-                                <span className="w-1.5 h-1.5 bg-[#ff3366] rounded-full" />
-                                {b}
-                              </li>
-                            ))}
-                          </ul>
+                          {tagline && <p className="text-xs md:text-sm font-bold text-gray-600 leading-snug">{tagline}</p>}
+                          {bullets.length > 0 && (
+                            <ul className="space-y-1 md:space-y-2">
+                              {bullets.map((b: string, i: number) => (
+                                <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-medium text-gray-500">
+                                  <span className="w-1.5 h-1.5 bg-[#ff3366] rounded-full" />
+                                  {b}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       );
                     })()}
 
                     <div className="mt-3 md:mt-6 flex flex-col gap-2 md:gap-4">
                        <div className="flex items-baseline gap-3">
-                          <span className="text-lg md:text-3xl font-black tracking-tighter text-black">₹1599</span>
+                          <span className="text-lg md:text-3xl font-black tracking-tighter text-black">₹{selectedProduct.price}</span>
                        </div>
 
                         <div className="flex gap-3 md:gap-4 w-full">

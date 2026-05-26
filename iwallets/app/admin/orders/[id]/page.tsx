@@ -89,6 +89,7 @@ export default function OrderDetails() {
   const [loadingTracking, setLoadingTracking] = useState(false);
   const [trackingError, setTrackingError] = useState("");
 
+
   // 🔐 Auth check & initial fetch
   useEffect(() => {
     fetch("/api/admin-check").then((res) => {
@@ -104,7 +105,7 @@ export default function OrderDetails() {
       setOrder(data);
       
       // If already shipped, fetch its tracking details immediately
-      if (data.nimbusAwb) {
+      if (data.nimbusAwb && data.nimbusAwb !== "check_portal") {
         fetchTrackingDetails(data.nimbusAwb);
       }
     } catch (err: any) {
@@ -170,7 +171,7 @@ export default function OrderDetails() {
 
   // Manifest shipment
   const handleBookShipment = async () => {
-    if (!id || !selectedCourier) return;
+    if (!id || !selectedCourier || bookingShipment) return;
     setBookingShipment(true);
     try {
       const res = await fetch("/api/nimbus/ship", {
@@ -200,6 +201,7 @@ export default function OrderDetails() {
       setBookingShipment(false);
     }
   };
+
 
   // Fetch real-time tracking details
   const fetchTrackingDetails = async (awb: string) => {
@@ -646,7 +648,24 @@ export default function OrderDetails() {
               ) : (
                 /* D. Shipped State: Display shipment information & tracking */
                 <div className="space-y-6">
-                  
+                    {/* Sync success banner */}
+                  {order.nimbusAwb === "check_portal" ? (
+                    <div className="p-3.5 bg-amber-50 border border-amber-100 rounded-2xl flex flex-col gap-1 text-amber-800 text-xs font-bold shadow-sm">
+                      <div className="flex items-center gap-2.5">
+                        <AlertTriangle size={16} className="text-amber-600 flex-shrink-0" />
+                        <span>Successfully added to Nimbus portal!</span>
+                      </div>
+                      <p className="text-[10px] text-amber-700 font-semibold pl-6.5 leading-relaxed">
+                        Please check Nimbus portal for shipment.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-3.5 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-2.5 text-emerald-800 text-xs font-bold shadow-sm">
+                      <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+                      <span>Order added to Nimbus portal successfully!</span>
+                    </div>
+                  )}
+
                   {/* AWB & Info Box */}
                   <div className="p-4 bg-gray-50 border border-gray-100 rounded-2xl space-y-3.5">
                     <div className="flex justify-between items-start">
@@ -655,25 +674,29 @@ export default function OrderDetails() {
                         <p className="text-sm font-black text-gray-900">{order.nimbusCourier}</p>
                       </div>
                       <span className="px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-black rounded-full uppercase tracking-wider">
-                        {trackingStatus || order.nimbusStatus}
+                        {order.nimbusAwb === "check_portal" ? "Pending" : (trackingStatus || order.nimbusStatus)}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-end border-t border-gray-100 pt-3">
                       <div className="space-y-0.5">
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AWB Number</p>
-                        <p className="font-mono text-xs font-black text-black">{order.nimbusAwb}</p>
+                        <p className="font-mono text-xs font-black text-black">
+                          {order.nimbusAwb === "check_portal" ? "Check Nimbus Portal" : order.nimbusAwb}
+                        </p>
                       </div>
-                      <button 
-                        onClick={() => handleCopyAwb(order.nimbusAwb || "")}
-                        className="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-black transition-colors"
-                        title="Copy AWB Number"
-                      >
-                        {copied ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
-                      </button>
+                      {order.nimbusAwb !== "check_portal" && (
+                        <button 
+                          onClick={() => handleCopyAwb(order.nimbusAwb || "")}
+                          className="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 hover:text-black transition-colors"
+                          title="Copy AWB Number"
+                        >
+                          {copied ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
+                        </button>
+                      )}
                     </div>
 
-                    {order.nimbusShippedAt && (
+                    {order.nimbusShippedAt && order.nimbusAwb !== "check_portal" && (
                       <div className="text-[10px] text-gray-400 font-semibold border-t border-gray-100 pt-3 flex justify-between">
                         <span>SHIPPED DATE:</span>
                         <span>{new Date(order.nimbusShippedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
@@ -696,66 +719,74 @@ export default function OrderDetails() {
                   )}
 
                   {/* Stepper Progress Bar */}
-                  <div className="space-y-4 pt-2">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Shipment Progress</h4>
-                    
-                    <div className="relative flex justify-between items-center w-full px-2">
-                      {/* Gray track background line */}
-                      <div className="absolute top-[9px] left-4 right-4 h-0.5 bg-gray-100 -z-10" />
+                  {order.nimbusAwb !== "check_portal" && (
+                    <div className="space-y-4 pt-2">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Shipment Progress</h4>
                       
-                      {/* Active track green line */}
-                      <div 
-                        className="absolute top-[9px] left-4 h-0.5 bg-[#ff3366] transition-all duration-500 -z-10"
-                        style={{ width: `${(activeStep / 4) * 90}%` }}
-                      />
+                      <div className="relative flex justify-between items-center w-full px-2">
+                        {/* Gray track background line */}
+                        <div className="absolute top-[9px] left-4 right-4 h-0.5 bg-gray-100 -z-10" />
+                        
+                        {/* Active track green line */}
+                        <div 
+                          className="absolute top-[9px] left-4 h-0.5 bg-[#ff3366] transition-all duration-500 -z-10"
+                          style={{ width: `${(activeStep / 4) * 90}%` }}
+                        />
 
-                      {/* Stepper dots */}
-                      {["Manifested", "Picked Up", "In Transit", "Out for Delivery", "Delivered"].map((stepLabel, idx) => {
-                        const isDone = idx <= activeStep;
-                        const isCurrent = idx === activeStep;
+                        {/* Stepper dots */}
+                        {["Manifested", "Picked Up", "In Transit", "Out for Delivery", "Delivered"].map((stepLabel, idx) => {
+                          const isDone = idx <= activeStep;
+                          const isCurrent = idx === activeStep;
 
-                        return (
-                          <div key={idx} className="flex flex-col items-center space-y-1.5 flex-1 text-center">
-                            <div 
-                              className={`w-[20px] h-[20px] rounded-full border-4 flex items-center justify-center transition-all ${
-                                isDone 
-                                  ? isCurrent 
-                                    ? "bg-white border-[#ff3366] scale-110 shadow-sm shadow-[#ff3366]/40" 
-                                    : "bg-[#ff3366] border-[#ff3366]"
-                                  : "bg-white border-gray-200"
-                              }`}
-                            >
-                              {isDone && !isCurrent && <CheckCircle2 className="w-3 h-3 text-white fill-white" />}
+                          return (
+                            <div key={idx} className="flex flex-col items-center space-y-1.5 flex-1 text-center">
+                              <div 
+                                className={`w-[20px] h-[20px] rounded-full border-4 flex items-center justify-center transition-all ${
+                                  isDone 
+                                    ? isCurrent 
+                                      ? "bg-white border-[#ff3366] scale-110 shadow-sm shadow-[#ff3366]/40" 
+                                      : "bg-[#ff3366] border-[#ff3366]"
+                                    : "bg-white border-gray-200"
+                                }`}
+                              >
+                                {isDone && !isCurrent && <CheckCircle2 className="w-3 h-3 text-white fill-white" />}
+                              </div>
+                              <span 
+                                className={`text-[8px] font-bold tracking-tight uppercase max-w-[60px] truncate ${
+                                  isCurrent ? "text-black font-black" : isDone ? "text-gray-500" : "text-gray-300"
+                                }`}
+                                title={stepLabel}
+                              >
+                                {stepLabel.split(" ")[0]}
+                              </span>
                             </div>
-                            <span 
-                              className={`text-[8px] font-bold tracking-tight uppercase max-w-[60px] truncate ${
-                                isCurrent ? "text-black font-black" : isDone ? "text-gray-500" : "text-gray-300"
-                              }`}
-                              title={stepLabel}
-                            >
-                              {stepLabel.split(" ")[0]}
-                            </span>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Tracking Log timeline */}
                   <div className="space-y-4 pt-4 border-t border-gray-100">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tracking Logs</h4>
-                      <button
-                        onClick={() => fetchTrackingDetails(order.nimbusAwb || "")}
-                        disabled={loadingTracking}
-                        className="p-1 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 text-gray-400 hover:text-black"
-                        title="Sync from courier API"
-                      >
-                        <RefreshCw size={12} className={loadingTracking ? "animate-spin" : ""} />
-                      </button>
+                      {order.nimbusAwb !== "check_portal" && (
+                        <button
+                          onClick={() => fetchTrackingDetails(order.nimbusAwb || "")}
+                          disabled={loadingTracking}
+                          className="p-1 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 text-gray-400 hover:text-black"
+                          title="Sync from courier API"
+                        >
+                          <RefreshCw size={12} className={loadingTracking ? "animate-spin" : ""} />
+                        </button>
+                      )}
                     </div>
 
-                    {loadingTracking ? (
+                    {order.nimbusAwb === "check_portal" ? (
+                      <p className="text-xs text-gray-400 font-medium text-center py-4">
+                        Courier booking pending. Please complete the booking directly on your NimbusPost portal.
+                      </p>
+                    ) : loadingTracking ? (
                       /* Tracking loader */
                       <div className="flex justify-center items-center py-6">
                         <Loader2 className="w-6 h-6 animate-spin text-[#ff3366]" />

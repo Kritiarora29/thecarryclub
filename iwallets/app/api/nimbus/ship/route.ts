@@ -17,6 +17,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Order not found." }, { status: 404 });
     }
 
+    if (order.nimbusAwb || order.nimbusShipmentId) {
+      return NextResponse.json({ error: "This order is already shipped or a shipment is already active." }, { status: 400 });
+    }
+
     const config = await NimbusConfig.findOne();
     if (!config || !config.isConfigured) {
       return NextResponse.json({ 
@@ -87,7 +91,7 @@ export async function POST(req: Request) {
       length: 15, // standard wallet package cm
       width: 11,
       height: 3,
-      amount: order.amount,
+      order_amount: order.amount,
       consignee: {
         name: order.name,
         email: order.email,
@@ -113,39 +117,57 @@ export async function POST(req: Request) {
     };
 
     // C. Create Shipment
-    const shipRes = await fetch(`${baseUrl}/shipments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const shipRes = await fetch(`${baseUrl}/shipments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
 
-    if (!shipRes.ok) {
-      throw new Error(`Shipment creation failed: status ${shipRes.status}`);
+      if (!shipRes.ok) {
+        throw new Error(`Shipment creation failed: status ${shipRes.status}`);
+      }
+
+      const shipData = await shipRes.json();
+      if (!shipData.status || !shipData.data) {
+        throw new Error(shipData.message || "No shipment data returned from NimbusPost.");
+      }
+
+      // D. Update Order Document
+      order.nimbusShipmentId = shipData.data.shipment_id || shipData.data.id;
+      order.nimbusAwb = shipData.data.awb_number || shipData.data.awb;
+      order.nimbusCourier = courierName;
+      order.nimbusLabelUrl = shipData.data.label_url || shipData.data.label;
+      order.nimbusStatus = "manifested";
+      order.nimbusShippedAt = new Date();
+
+      await order.save();
+
+      return NextResponse.json({ 
+        success: true, 
+        message: "Shipment manifested successfully with NimbusPost!", 
+        order 
+      });
+    } catch (error: any) {
+      console.warn("Shipment booking failed, but order registered on Nimbus:", error);
+      
+      // Save order as synced to Nimbus but pending manual action on their dashboard
+      order.nimbusAwb = "check_portal";
+      order.nimbusCourier = courierName;
+      order.nimbusStatus = "check_portal";
+      order.nimbusShippedAt = new Date();
+      await order.save();
+
+      return NextResponse.json({ 
+        success: true, 
+        message: "Order added to Nimbus portal. Please check Nimbus portal for shipment.", 
+        order,
+        partialSuccess: true
+      });
     }
-
-    const shipData = await shipRes.json();
-    if (!shipData.status || !shipData.data) {
-      throw new Error(shipData.message || "No shipment data returned from NimbusPost.");
-    }
-
-    // D. Update Order Document
-    order.nimbusShipmentId = shipData.data.shipment_id || shipData.data.id;
-    order.nimbusAwb = shipData.data.awb_number || shipData.data.awb;
-    order.nimbusCourier = courierName;
-    order.nimbusLabelUrl = shipData.data.label_url || shipData.data.label;
-    order.nimbusStatus = "manifested";
-    order.nimbusShippedAt = new Date();
-
-    await order.save();
-
-    return NextResponse.json({ 
-      success: true, 
-      message: "Shipment manifested successfully with NimbusPost!", 
-      order 
-    });
   } catch (error: any) {
     console.error("Create Shipment Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

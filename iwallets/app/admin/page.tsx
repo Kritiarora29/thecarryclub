@@ -13,7 +13,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, LogOut, TrendingUp, ShoppingBag, Search, Eye, Plus, Image as ImageIcon, Video, Box, Palette, AlignLeft, DollarSign, Settings, ShieldCheck, Activity, Info, Truck, HelpCircle, Save, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { Download, LogOut, TrendingUp, ShoppingBag, Search, Eye, Plus, Image as ImageIcon, Video, Box, Palette, AlignLeft, DollarSign, Settings, ShieldCheck, Activity, Info, Truck, HelpCircle, Save, CheckCircle, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 
 export default function AdminPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -27,6 +27,10 @@ export default function AdminPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+
+  const [adminProducts, setAdminProducts] = useState<any[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState("");
 
   // Nimbus Config State
   const [nimbusEmail, setNimbusEmail] = useState("");
@@ -43,7 +47,7 @@ export default function AdminPage() {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
-  
+
   // Nimbus Warehouse Fetch State
   const [warehousesList, setWarehousesList] = useState<any[]>([]);
   const [isFetchingWarehouses, setIsFetchingWarehouses] = useState(false);
@@ -235,6 +239,49 @@ export default function AdminPage() {
     a.click();
   };
 
+  const fetchAdminProducts = async () => {
+    setIsLoadingProducts(true);
+    try {
+      const res = await fetch("/api/admin-product");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAdminProducts(data.products || []);
+      }
+    } catch (err) {
+      console.error("Error fetching admin products:", err);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this product? This will delete all uploaded files and database records.")) return;
+    setDeleteStatus("Deleting product...");
+    try {
+      const res = await fetch("/api/admin-product", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDeleteStatus("Product deleted successfully!");
+        fetchAdminProducts();
+        setTimeout(() => setDeleteStatus(""), 3000);
+      } else {
+        setDeleteStatus(`Error: ${data.error || "Failed to delete"}`);
+      }
+    } catch (err) {
+      setDeleteStatus("An unexpected error occurred.");
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "products") {
+      fetchAdminProducts();
+    }
+  }, [activeTab]);
+
   const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -251,6 +298,7 @@ export default function AdminPage() {
       if (res.ok && data.success) {
         setUploadStatus("Product successfully published!");
         formRef.current?.reset();
+        fetchAdminProducts();
         setTimeout(() => setUploadStatus(""), 3000);
       } else {
         setUploadStatus(`Error: ${data.error || "Failed to publish"}`);
@@ -265,7 +313,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] p-3 md:p-10 pb-24 text-black font-sans">
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
-        
+
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100">
           <div>
@@ -276,19 +324,19 @@ export default function AdminPage() {
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
             {/* TABS */}
             <div className="flex p-1 bg-gray-50 rounded-full border border-gray-100 w-full sm:w-auto mb-4 sm:mb-0">
-              <button 
+              <button
                 onClick={() => setActiveTab("orders")}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-full font-bold text-sm transition-all ${activeTab === "orders" ? "bg-white shadow-sm text-black" : "text-gray-400 hover:text-black"}`}
               >
                 Orders
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab("products")}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-full font-bold text-sm transition-all ${activeTab === "products" ? "bg-white shadow-sm text-black" : "text-gray-400 hover:text-black"}`}
               >
                 Products
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab("settings")}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-full font-bold text-sm transition-all ${activeTab === "settings" ? "bg-white shadow-sm text-black" : "text-gray-400 hover:text-black"}`}
               >
@@ -298,16 +346,16 @@ export default function AdminPage() {
 
             {activeTab === "orders" && (
               <div className="flex gap-2 w-full sm:w-auto">
-                <button 
-                  onClick={fetchOrders} 
+                <button
+                  onClick={fetchOrders}
                   disabled={isRefreshing}
                   className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
                   <span className="hidden sm:inline">Refresh</span>
                 </button>
-                <button 
-                  onClick={exportCSV} 
+                <button
+                  onClick={exportCSV}
                   className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto"
                 >
                   <Download size={16} />
@@ -316,8 +364,8 @@ export default function AdminPage() {
               </div>
             )}
 
-            <button 
-              onClick={logout} 
+            <button
+              onClick={logout}
               className="flex items-center justify-center gap-2 px-6 py-2.5 bg-black hover:bg-[#ff3366] text-white font-bold rounded-full transition-colors w-full sm:w-auto"
             >
               <LogOut size={16} />
@@ -327,7 +375,7 @@ export default function AdminPage() {
         </div>
 
         {activeTab === "orders" ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="space-y-8"
@@ -364,7 +412,7 @@ export default function AdminPage() {
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                     <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dy={10} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dx={-10} tickFormatter={(value) => `₹${value}`} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
                       itemStyle={{ color: '#ff3366', fontWeight: '900' }}
                     />
@@ -425,7 +473,7 @@ export default function AdminPage() {
             </div>
           </motion.div>
         ) : activeTab === "products" ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 md:p-12"
@@ -438,50 +486,96 @@ export default function AdminPage() {
               <p className="text-gray-500 font-medium mt-2 text-sm md:text-base">Upload images, videos, and product details directly to the database from here.</p>
             </div>
 
-            <form ref={formRef} onSubmit={handleAddProduct} className="max-w-4xl mx-auto space-y-8">
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Col */}
-                <div className="space-y-6">
+            <form ref={formRef} onSubmit={handleAddProduct} className="max-w-4xl mx-auto space-y-10">
+
+              {/* Part 1: Product Settings */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                  <Box className="text-[#ff3366]" size={20} />
+                  <h3 className="text-lg font-bold text-black tracking-tight">Basic Details</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Box size={16}/> Product Title</label>
+                    <label className="text-sm font-bold text-gray-700">Product Title *</label>
                     <input name="title" required className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder="e.g. Premium iWallet - Stealth Black" />
                   </div>
-
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><DollarSign size={16}/> Price (₹)</label>
+                    <label className="text-sm font-bold text-gray-700">Price (₹) *</label>
                     <input name="price" type="number" required className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder="1599" />
                   </div>
-
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Palette size={16}/> Color / Variant</label>
+                    <label className="text-sm font-bold text-gray-700">Color / Variant</label>
                     <input name="color" className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder="e.g. Matte Black" />
                   </div>
                 </div>
-
-                {/* Right Col */}
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><AlignLeft size={16}/> Description</label>
-                    <textarea name="description" rows={4} className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium resize-none" placeholder="Product features and details..."></textarea>
+                    <label className="text-sm font-bold text-gray-700">Collection Name</label>
+                    <input name="collectionName" className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder="e.g. Collection 01" />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><ImageIcon size={16}/> Product Image</label>
-                      <input name="image" type="file" accept="image/*" className="w-full p-3 rounded-xl bg-gray-50 border border-gray-100 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-[#ff3366] hover:file:bg-rose-100 transition-all cursor-pointer" />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Video size={16}/> Product Video</label>
-                      <input name="video" type="file" accept="video/*" className="w-full p-3 rounded-xl bg-gray-50 border border-gray-100 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-black hover:file:bg-gray-300 transition-all cursor-pointer" />
-                    </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Brand / Badge Label</label>
+                    <input name="brand" className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder="e.g. theCarryClub Premium" />
                   </div>
                 </div>
               </div>
 
+              {/* Part 2: Product Copywriting */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                  <AlignLeft className="text-[#ff3366]" size={20} />
+                  <h3 className="text-lg font-bold text-black tracking-tight">Copywriting & Description</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Description</label>
+                    <textarea name="description" rows={3} className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium resize-none" placeholder="General product description..."></textarea>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Tagline</label>
+                    <input name="tagline" className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder="e.g. Bold. Matte. Timeless." />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Main Quote</label>
+                    <input name="quote" className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder='e.g. "We really took the Apple Wallet App Logo..."' />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Sub-quote / Disclaimer</label>
+                    <input name="subQuote" className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium" placeholder='e.g. "Not an official apple product, obviously..."' />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-700 flex flex-col">
+                    <span>Feature Bullet Points</span>
+                    <span className="text-xs text-gray-400 font-medium mt-0.5">Enter one bullet point per line (e.g. Premium Vegan Leather)</span>
+                  </label>
+                  <textarea name="bullets" rows={4} className="w-full p-4 rounded-xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#ff3366] focus:bg-white transition-all font-medium resize-none" placeholder="Premium Vegan Leather&#10;Ultra-slim Profile&#10;Holds 6-8 Cards"></textarea>
+                </div>
+              </div>
+
+              {/* Part 3: Media Upload */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                  <ImageIcon className="text-[#ff3366]" size={20} />
+                  <h3 className="text-lg font-bold text-black tracking-tight">Product Media</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Product Images (Can upload multiple) *</label>
+                    <input name="images" type="file" accept="image/*" multiple required className="w-full p-3 rounded-xl bg-gray-50 border border-gray-100 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-[#ff3366] hover:file:bg-rose-100 transition-all cursor-pointer" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700">Product Video</label>
+                    <input name="video" type="file" accept="video/*" className="w-full p-3 rounded-xl bg-gray-50 border border-gray-100 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-black hover:file:bg-gray-300 transition-all cursor-pointer" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Section */}
               <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-4">
-                <button 
+                <button
                   disabled={isSubmitting}
                   className="px-10 py-4 bg-black hover:bg-[#ff3366] text-white font-black rounded-full shadow-xl shadow-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto min-w-[250px]"
                 >
@@ -490,7 +584,7 @@ export default function AdminPage() {
 
                 <AnimatePresence>
                   {uploadStatus && (
-                    <motion.p 
+                    <motion.p
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
@@ -507,6 +601,51 @@ export default function AdminPage() {
                 <p className="text-sm text-emerald-800 font-medium mt-1">Products are securely uploaded and stored directly in your MongoDB database.</p>
               </div>
             </form>
+
+            {/* List of Published Products */}
+            <div className="mt-16 border-t border-gray-100 pt-16">
+              <h3 className="text-2xl font-black tracking-tighter text-center mb-8">Published Products ({adminProducts.length})</h3>
+
+              {deleteStatus && (
+                <p className="text-center font-bold text-sm text-[#ff3366] mb-6">{deleteStatus}</p>
+              )}
+
+              {isLoadingProducts ? (
+                <div className="flex justify-center items-center py-10">
+                  <Loader2 className="animate-spin text-[#ff3366]" size={36} />
+                </div>
+              ) : adminProducts.length === 0 ? (
+                <p className="text-center text-gray-400 font-medium py-10">No products found. Publish a new product above!</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {adminProducts.map((prod) => (
+                    <div key={prod._id} className="bg-gray-50 rounded-2xl border border-gray-100 p-5 flex flex-col justify-between group hover:shadow-lg transition-all duration-300">
+                      <div>
+                        <div className="aspect-square bg-white rounded-xl overflow-hidden mb-4 relative border border-gray-100">
+                          {prod.imageUrl ? (
+                            <img src={prod.imageUrl} alt={prod.title} className="object-contain w-full h-full p-2" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>
+                          )}
+                        </div>
+                        <h4 className="font-bold text-lg text-black leading-snug">{prod.title}</h4>
+                        <p className="text-sm text-gray-500 font-bold mt-1">₹{prod.price}</p>
+                        {prod.brand && (
+                          <span className="inline-block bg-rose-50 text-[#ff3366] text-[10px] font-black uppercase px-2 py-0.5 rounded-md mt-2 tracking-widest">{prod.brand}</span>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => handleDeleteProduct(prod._id)}
+                        className="mt-6 w-full py-2.5 bg-rose-50 text-rose-600 hover:bg-[#ff3366] hover:text-white font-bold rounded-xl text-xs tracking-wider transition-all duration-300 uppercase"
+                      >
+                        Delete Product
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </motion.div>
         ) : (
           <motion.div
@@ -525,7 +664,7 @@ export default function AdminPage() {
             </div>
 
             <form onSubmit={handleSaveSettings} className="max-w-4xl mx-auto space-y-10">
-              
+
               {/* Credentials Section */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
@@ -585,22 +724,20 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => setNimbusMode("sandbox")}
-                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                          nimbusMode === "sandbox"
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${nimbusMode === "sandbox"
                             ? "bg-white text-black shadow-sm"
                             : "text-gray-500 hover:text-black"
-                        }`}
+                          }`}
                       >
                         Sandbox
                       </button>
                       <button
                         type="button"
                         onClick={() => setNimbusMode("production")}
-                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                          nimbusMode === "production"
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${nimbusMode === "production"
                             ? "bg-white text-black shadow-sm"
                             : "text-gray-500 hover:text-black"
-                        }`}
+                          }`}
                       >
                         Production
                       </button>
@@ -627,9 +764,8 @@ export default function AdminPage() {
                         <AlertCircle size={16} className="text-rose-500" />
                       )}
                       <p
-                        className={`text-xs font-bold ${
-                          testResult.success ? "text-emerald-600" : "text-rose-600"
-                        }`}
+                        className={`text-xs font-bold ${testResult.success ? "text-emerald-600" : "text-rose-600"
+                          }`}
                       >
                         {testResult.message}
                       </p>
@@ -656,7 +792,7 @@ export default function AdminPage() {
                 </div>
 
                 {fetchError && <p className="text-xs text-rose-500 font-bold">{fetchError}</p>}
-                
+
                 {warehousesList.length > 0 && (
                   <div className="space-y-2 p-4 bg-gray-50 border border-rose-100 rounded-xl mb-4 animate-fade-in">
                     <label className="text-sm font-bold text-rose-600">Select a Saved Warehouse</label>
@@ -778,9 +914,8 @@ export default function AdminPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className={`font-bold text-sm ${
-                        saveStatus.includes("Error") ? "text-red-500" : "text-emerald-500"
-                      }`}
+                      className={`font-bold text-sm ${saveStatus.includes("Error") ? "text-red-500" : "text-emerald-500"
+                        }`}
                     >
                       {saveStatus}
                     </motion.p>
