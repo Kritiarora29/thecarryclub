@@ -113,7 +113,7 @@ export async function POST(req: Request) {
     };
 
     // C. Create Shipment
-    const shipRes = await fetch(`${baseUrl}/shipments/create`, {
+    const shipRes = await fetch(`${baseUrl}/shipments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
