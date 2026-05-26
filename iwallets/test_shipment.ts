@@ -28,7 +28,8 @@ async function run() {
     length: 15,
     width: 11,
     height: 3,
-    amount: 999,
+    total_amount: 999,
+    order_amount: 999,
     consignee: {
       name: "Test User",
       email: "test@example.com",
