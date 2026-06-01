@@ -81,6 +81,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
     }
   }, [name, email, phone, street, pincode, city, state, landmark, isLoaded, verificationExpiry]);
 
+  /* 
   // Polling for email verification
   useEffect(() => {
     let interval: any;
@@ -141,6 +142,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
     }
     return () => clearInterval(interval);
   }, [isEmailVerified, verificationExpiry]);
+  */
 
   // ================= CART =================
   const cartItems = cart
@@ -217,16 +219,14 @@ export default function CartClient({ cart = [], products = [] }: any) {
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Email Address</label>
                   <div className="flex gap-2 items-stretch">
                     <input 
-                      className={`premium-input flex-1 ${isEmailVerified ? "!border-green-400 !bg-green-50" : ""}`} 
+                      className="premium-input flex-1" 
                       placeholder="john@example.com *" 
                       value={email} 
-                      disabled={isEmailVerified}
                       onChange={(e) => {
                         setEmail(e.target.value);
-                        setIsEmailVerified(false);
-                        setVerificationSent(false);
                       }} 
                     />
+                    {/*
                     <button
                       type="button"
                       onClick={async () => {
@@ -264,7 +264,9 @@ export default function CartClient({ cart = [], products = [] }: any) {
                     >
                       {isEmailVerified ? "Verified ✅" : isSendingLink ? "..." : verificationSent ? "Sent!" : "Verify"}
                     </button>
+                    */}
                   </div>
+                  {/*
                   {verificationSent && !isEmailVerified && (
                     <p className="text-[10px] text-rose-600 font-bold ml-4 mt-2">Waiting for verification... Please click the link sent to your email. You can safely open it on your phone.</p>
                   )}
@@ -288,6 +290,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       </button>
                     </div>
                   )}
+                  */}
                 </div>
               </div>
 
@@ -466,16 +469,16 @@ export default function CartClient({ cart = [], products = [] }: any) {
                         onClick={() => setPaymentMethod("cod")}
                         className={`flex-1 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[9px] md:text-xs uppercase tracking-widest border-2 transition-all ${paymentMethod === "cod" ? "border-rose-600 bg-rose-50 text-rose-600" : "border-gray-100 text-gray-400 hover:border-gray-200"}`}
                       >
-                        Cash Delivery
+                        Cash on Delivery
                       </button>
                     </div>
 
                     <button
-                      disabled={!isEmailVerified || !name.trim() || !email.trim() || !phone.trim() || !street.trim() || !city.trim() || !state.trim() || !pincode.trim()}
+                      disabled={!name.trim() || !email.trim() || !phone.trim() || !street.trim() || !city.trim() || !state.trim() || !pincode.trim()}
                       onClick={(e) => { e.preventDefault(); setShowReviewModal(true); }}
                       className="w-full bg-black hover:bg-rose-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-6 rounded-full font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-rose-600/10 transition-all transform hover:-translate-y-1"
                     >
-                      {isEmailVerified ? "REVIEW & PLACE ORDER" : "VERIFY EMAIL TO CONTINUE"}
+                      REVIEW & PLACE ORDER
                     </button>
                   </div>
                 </div>
