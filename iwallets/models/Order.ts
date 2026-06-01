@@ -24,6 +24,7 @@ const OrderSchema = new mongoose.Schema(
 
     amount: Number,
     paymentId: String,
+    paymentMethod: String,
 
     // NimbusPost shipping fields
     nimbusShipmentId: String,

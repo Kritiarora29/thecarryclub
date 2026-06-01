@@ -53,9 +53,21 @@ export async function sendOrderEmail(order: any) {
           </table>
 
           <div style="background: #f7f7f7; padding: 15px; border-radius: 8px; margin-top: 20px;">
-            <p style="margin: 0; font-size: 14px; color: #666;"><strong>Payment ID:</strong> ${paymentId}</p>
+            <p style="margin: 0; font-size: 14px; color: #666;">
+              <strong>Payment Method:</strong> 
+              ${paymentId === 'COD' 
+                ? '<span style="color: #d97706; font-weight: bold; background: #fef3c7; padding: 2px 6px; border-radius: 4px;">Cash on Delivery (COD)</span>' 
+                : `<span style="color: #059669; font-weight: bold; background: #d1fae5; padding: 2px 6px; border-radius: 4px;">Prepaid Online</span> (ID: ${paymentId})`}
+            </p>
             <p style="margin: 5px 0 0; font-size: 14px; color: #666;"><strong>Delivery to:</strong> ${address.city}, ${address.state} - ${address.pincode}${address.landmark ? ` (Landmark: ${address.landmark})` : ""}</p>
           </div>
+
+          ${paymentId === 'COD' ? `
+            <div style="background: #fffbeb; border: 1px solid #fcd34d; padding: 15px; border-radius: 8px; margin-top: 20px;">
+              <h3 style="margin: 0 0 10px; color: #b45309; font-size: 16px;">⚠️ Important note regarding your COD order</h3>
+              <p style="margin: 0 0 15px; color: #92400e; font-size: 14px;">Please keep exactly <strong>₹${amount}</strong> ready in cash for when our delivery partner arrives.</p>
+            </div>
+          ` : ""}
 
           <p style="margin-top: 30px;">We'll send you another email with a tracking link once your package is on its way!</p>
           

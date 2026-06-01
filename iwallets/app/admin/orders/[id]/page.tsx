@@ -315,9 +315,9 @@ export default function OrderDetails() {
                 Order #{order._id.toString().toUpperCase()}
               </h1>
               <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                order.paymentId ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-50 text-amber-600 border border-amber-100"
+                order.paymentId === "COD" ? "bg-amber-50 text-amber-600 border border-amber-100" : order.paymentId ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-50 text-amber-600 border border-amber-100"
               }`}>
-                {order.paymentId ? "Paid Prepaid" : "Pending Payment"}
+                {order.paymentId === "COD" ? "Cash on Delivery" : order.paymentId ? "Paid Prepaid" : "Pending Payment"}
               </span>
               {order.nimbusAwb && (
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100 flex items-center gap-1">
@@ -465,11 +465,11 @@ export default function OrderDetails() {
                   <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Payment Gateway</p>
                   <p className="text-black font-bold flex items-center gap-1">
                     <DollarSign size={14} className="text-emerald-500" />
-                    Razorpay Online Payments
+                    {order.paymentId === "COD" ? "Cash on Delivery" : "Razorpay Online Payments"}
                   </p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-1">
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Razorpay Payment ID</p>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Payment ID</p>
                   <p className="font-mono text-xs text-gray-600 bg-white px-2 py-1 rounded border border-gray-100 inline-block max-w-full truncate">
                     {order.paymentId || "N/A (Pre-checkout)"}
                   </p>

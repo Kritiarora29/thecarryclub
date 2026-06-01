@@ -62,7 +62,14 @@ export const getProducts = unstable_cache(
       brand: p.brand || "",
     }));
 
-    return [...sanityProducts, ...mongoProducts];
+    const result = [...sanityProducts, ...mongoProducts];
+    
+    // Prevent caching an empty array if something went wrong during fetch
+    if (result.length === 0) {
+      throw new Error("No products found, preventing cache");
+    }
+
+    return result;
   },
   ["products-cache"],
   { revalidate: 900, tags: ["products"] } // Revalidate every 15 minutes

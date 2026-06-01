@@ -48,8 +48,18 @@ export default function OrdersPage() {
             </div>
           ))}
 
-          <p className="mt-2">Amount: ₹{order.amount}</p>
-          <p className="text-xs">{order.paymentId}</p>
+          <div className="mt-4 flex items-center gap-3">
+            <p>Amount: <b>₹{order.amount}</b></p>
+            {order.paymentId === "COD" ? (
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/50 rounded-full text-xs font-black uppercase tracking-wider">
+                ⚠️ Cash on Delivery
+              </span>
+            ) : (
+              <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 rounded-full text-xs font-black uppercase tracking-wider">
+                Prepaid: {order.paymentId}
+              </span>
+            )}
+          </div>
         </div>
       ))}
     </div>

@@ -35,7 +35,7 @@ export default function Navbar() {
 
   const banners = [
     <span key="1">PREMIUM SLIM WALLETS – FREE SHIPPING PAN INDIA 🔥</span>,
-    <span key="2">USE CODE <span className="text-black bg-white px-2 py-0.5 rounded mx-2 font-black">CARRY999</span> FOR ₹999 DEAL!</span>
+    <span key="2">🔥 LIMITED TIME OFFER: <span className="line-through text-gray-500 mx-1">₹1599</span> <span className="text-rose-400 font-black">₹999</span></span>
   ];
 
   const updateCartCount = async () => {
@@ -207,13 +207,13 @@ export default function Navbar() {
             exit={{ opacity: 0, x: "100%" }}
             className="fixed inset-0 bg-white z-[95] pt-[120px] px-10"
           >
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-4xl font-black uppercase tracking-tighter text-black"
+                  className="text-2xl font-black uppercase tracking-tighter text-black"
                 >
                   {link.name}
                 </Link>
@@ -221,7 +221,7 @@ export default function Navbar() {
               <Link
                 href="/wishlist"
                 onClick={() => setIsOpen(false)}
-                className="text-4xl font-black uppercase tracking-tighter text-rose-600"
+                className="text-2xl font-black uppercase tracking-tighter text-rose-600"
               >
                 Wishlist
               </Link>

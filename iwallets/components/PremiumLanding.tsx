@@ -379,40 +379,15 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-black leading-none">
                   {currentProduct?.title || `Premium iWallet – ${selectedTitle}`}
                 </h2>
-                <div className="flex items-baseline gap-4">
-                  <span className="text-3xl md:text-5xl font-black tracking-tighter">₹{currentProduct?.price || 1599}</span>
-                </div>
-                
-                {/* Premium Exclusive Coupon UI */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  className="relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl opacity-5 group-hover:opacity-10 transition-opacity" />
-                  <div className="relative border border-blue-100 bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_10px_30px_rgba(37,99,235,0.05)]">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
-                        <span className="text-[8px] font-black uppercase tracking-[0.3em] text-blue-600">Exclusive Flash Deal</span>
-                      </div>
-                      <p className="text-lg md:text-xl font-black text-black tracking-tight">
-                        Unlock for <span className="text-blue-600">₹{(currentProduct?.price || 1599) - 600}</span>
-                      </p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Available for the next 2 hours</p>
-                    </div>
-
-                    <button className="relative group/btn flex items-center gap-3 bg-white border border-blue-100 p-1.5 pl-4 rounded-xl shadow-sm hover:border-blue-400 transition-all overflow-hidden">
-                      <div className="flex flex-col items-start mr-3">
-                        <span className="text-[7px] text-gray-400 font-black uppercase tracking-tighter">Coupon Code</span>
-                        <span className="text-xs font-black text-black">CARRY999</span>
-                      </div>
-                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-black uppercase tracking-widest text-[8px] group-hover/btn:bg-blue-700 transition-colors">
-                        Copy
-                      </div>
-                    </button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(currentProduct?.price || 1599) - 600}</span>
+                    <span className="text-xl md:text-3xl font-black tracking-tighter text-gray-400 line-through">₹{currentProduct?.price || 1599}</span>
                   </div>
-                </motion.div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 Limited Time Offer Going On</span>
+                  </div>
+                </div>
               </div>
 
               <p className="text-gray-500 leading-relaxed mb-10 text-lg font-medium max-w-lg">
@@ -437,27 +412,27 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
 
               {/* Quantity & CTA - MATCH IMAGE 1 */}
               <div className="flex flex-col gap-3 md:gap-5 mb-12">
-                <div className="flex flex-col md:flex-row gap-3">
-                  <div className="flex gap-3 h-14 md:h-16 w-full md:w-auto flex-1">
-                    {/* Quantity Selector */}
-                    <div className="flex items-center border border-gray-100 rounded-2xl px-5 bg-[#f9f9f9] shadow-inner shrink-0 w-1/3 md:w-auto justify-between md:justify-center">
-                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Minus size={16} /></button>
-                      <span className="mx-5 font-black text-base min-w-[20px] text-center">{quantity}</span>
-                      <button onClick={() => setQuantity(quantity + 1)} className="text-gray-400 hover:text-black transition-colors transform hover:scale-120"><Plus size={16} /></button>
-                    </div>
-
+                <div className="flex flex-col md:flex-row gap-3 md:h-16">
+                  {/* Quantity Selector */}
+                  <div className="flex items-center border border-gray-100 rounded-2xl px-6 py-3 md:py-0 bg-[#f9f9f9] shadow-inner shrink-0 w-full md:w-auto justify-between md:justify-center">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-gray-400 hover:text-black transition-colors p-2"><Minus size={18} /></button>
+                    <span className="mx-5 font-black text-lg min-w-[30px] text-center">{quantity}</span>
+                    <button onClick={() => setQuantity(quantity + 1)} className="text-gray-400 hover:text-black transition-colors p-2"><Plus size={18} /></button>
+                  </div>
+                  
+                  <div className="flex flex-row gap-3 w-full md:flex-1 h-14 md:h-full">
                     <form className="flex-1 h-full">
-                      <button onClick={handleAddToCart} className="w-full h-full bg-[#ff3366] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-black transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(255,51,102,0.15)]">
+                      <button onClick={handleAddToCart} className="w-full h-full bg-[#ff3366] text-white rounded-2xl font-black uppercase tracking-[0.15em] text-[10px] md:text-xs hover:bg-black transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(255,51,102,0.15)] flex items-center justify-center text-center px-2">
                         Add to Cart
                       </button>
                     </form>
+                    
+                    <form action={buyItNow.bind(null, currentSlug)} className="flex-1 h-full">
+                      <button className="w-full h-full bg-black text-white rounded-2xl font-black uppercase tracking-[0.15em] text-[10px] md:text-xs hover:bg-[#ff3366] transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-center px-2">
+                        Buy It Now
+                      </button>
+                    </form>
                   </div>
-                  
-                  <form action={buyItNow.bind(null, currentSlug)} className="w-full md:flex-1 h-14 md:h-16">
-                    <button className="w-full h-full bg-black text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#ff3366] transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
-                      Buy It Now
-                    </button>
-                  </form>
                 </div>
               </div>
 

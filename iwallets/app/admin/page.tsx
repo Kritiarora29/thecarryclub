@@ -345,18 +345,18 @@ export default function AdminPage() {
             </div>
 
             {activeTab === "orders" && (
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mb-4 sm:mb-0">
                 <button
                   onClick={fetchOrders}
                   disabled={isRefreshing}
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex flex-1 items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
-                  <span className="hidden sm:inline">Refresh</span>
+                  <span>Refresh</span>
                 </button>
                 <button
                   onClick={exportCSV}
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto"
+                  className="flex flex-1 items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-bold rounded-full transition-colors w-full sm:w-auto"
                 >
                   <Download size={16} />
                   <span>Export</span>
@@ -366,10 +366,10 @@ export default function AdminPage() {
 
             <button
               onClick={logout}
-              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-black hover:bg-[#ff3366] text-white font-bold rounded-full transition-colors w-full sm:w-auto"
+              className="flex flex-1 items-center justify-center gap-2 px-6 py-2.5 bg-black hover:bg-[#ff3366] text-white font-bold rounded-full transition-colors w-full sm:w-auto"
             >
               <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -441,6 +441,7 @@ export default function AdminPage() {
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
+                      <th className="py-4 px-6 text-xs font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Date</th>
                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Customer</th>
                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Contact</th>
                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Amount</th>
@@ -451,6 +452,10 @@ export default function AdminPage() {
                   <tbody>
                     {filtered.map((o, i) => (
                       <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 px-6 whitespace-nowrap">
+                          <p className="font-bold text-gray-900">{new Date(o.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                          <p className="text-xs text-gray-500 font-medium mt-0.5">{new Date(o.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                        </td>
                         <td className="py-4 px-6 whitespace-nowrap">
                           <p className="font-bold text-gray-900">{o.name}</p>
                           <p className="text-xs text-gray-500 font-medium mt-0.5">{o.email}</p>
