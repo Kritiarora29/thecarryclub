@@ -387,9 +387,9 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                          <p className="text-sm md:text-base font-black text-gray-900 leading-snug">
                            "We really took the Apple Wallet App Logo and brought it to life!"
                          </p>
-                         <p className="text-[9px] md:text-xs font-bold text-gray-400 italic">
+                         {/* <p className="text-[9px] md:text-xs font-bold text-gray-400 italic">
                            "Not an official apple product, obviously... "
-                         </p>
+                         </p> */}
                       </div>
                     )}
 

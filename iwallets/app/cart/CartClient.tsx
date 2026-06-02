@@ -27,6 +27,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const [paymentMethod, setPaymentMethod] = useState("prepaid")
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
+  const [isCouponApplied, setIsCouponApplied] = useState(false)
 
   const [isEmailVerified, setIsEmailVerified] = useState(false)
   const [isSendingLink, setIsSendingLink] = useState(false)
@@ -157,8 +158,11 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const totalQty = cartItems.reduce((s: number, i: any) => s + i.qty, 0)
   const total = totalQty * 1599
 
-  const discount = 600 * totalQty
-  const finalTotal = Math.max(total - discount, 0)
+  const discount = isCouponApplied ? 600 * totalQty : 0
+  const baseFinalTotal = Math.max(total - discount, 0)
+  
+  const prepaidDiscount = paymentMethod === "prepaid" ? Math.round(baseFinalTotal * 0.05) : 0
+  const finalTotal = baseFinalTotal - prepaidDiscount
 
   const productImages: any = {
     "Premium iWallet – White": "/Iwallet - Images/Prod image- desk -White/1-white.jpg",
@@ -213,12 +217,15 @@ export default function CartClient({ cart = [], products = [] }: any) {
               <div className="grid grid-cols-1 gap-4 md:gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Full Name</label>
-                  <input className="premium-input" placeholder="John Doe *" value={name} onChange={(e) => setName(e.target.value)} />
+                  <input type="text" name="name" autoComplete="name" className="premium-input" placeholder="John Doe *" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="space-y-2 flex flex-col">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Email Address</label>
                   <div className="flex gap-2 items-stretch">
                     <input 
+                      type="email"
+                      name="email"
+                      autoComplete="email"
                       className="premium-input flex-1" 
                       placeholder="john@example.com *" 
                       value={email} 
@@ -296,12 +303,15 @@ export default function CartClient({ cart = [], products = [] }: any) {
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Phone Number</label>
-                <input className="premium-input" placeholder="+91 00000 00000 *" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <input type="tel" name="phone" autoComplete="tel" className="premium-input" placeholder="+91 00000 00000 *" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Street Address</label>
                 <input
+                  type="text"
+                  name="street-address"
+                  autoComplete="street-address"
                   className="premium-input"
                   placeholder="Flat / Floor / Street Address *"
                   value={street}
@@ -313,6 +323,9 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">City</label>
                   <input
+                    type="text"
+                    name="city"
+                    autoComplete="address-level2"
                     className="premium-input"
                     placeholder="City *"
                     value={city}
@@ -322,6 +335,9 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">State</label>
                   <input
+                    type="text"
+                    name="state"
+                    autoComplete="address-level1"
                     className="premium-input"
                     placeholder="State *"
                     value={state}
@@ -334,6 +350,9 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Pincode</label>
                   <input
+                    type="text"
+                    name="postal-code"
+                    autoComplete="postal-code"
                     className="premium-input"
                     placeholder="Pincode *"
                     value={pincode}
@@ -343,6 +362,8 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Landmark</label>
                   <input
+                    type="text"
+                    name="landmark"
                     className="premium-input"
                     placeholder="Landmark (Optional)"
                     value={landmark}
@@ -428,6 +449,29 @@ export default function CartClient({ cart = [], products = [] }: any) {
                     ))}
                   </div>
 
+                  {/* COUPON SECTION */}
+                  <div className="bg-rose-50 border border-rose-100 p-3 md:p-5 rounded-3xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className="bg-white w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl shadow-sm flex items-center justify-center shrink-0">
+                        <span className="text-lg md:text-xl">🎟️</span>
+                      </div>
+                      <div>
+                        <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-rose-600">Special Offer</p>
+                        <p className="text-xs md:text-sm font-bold text-gray-700 mt-0.5 tracking-tighter">Get it for ₹999 <span className="text-gray-400 font-medium">(Save ₹600/item)</span></p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsCouponApplied(!isCouponApplied);
+                        if (!isCouponApplied) toast.success("Coupon Applied!");
+                      }}
+                      className={`px-4 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all shrink-0 ${isCouponApplied ? 'bg-black text-white shadow-lg shadow-black/20' : 'bg-rose-600 text-white hover:bg-rose-700 shadow-lg shadow-rose-600/20'}`}
+                    >
+                      {isCouponApplied ? 'APPLIED ✅' : 'APPLY'}
+                    </button>
+                  </div>
+
                   {/* BREAKDOWN */}
                   <div className="mt-auto pt-8 border-t border-gray-100 space-y-4">
                     <div className="flex justify-between text-gray-400 text-xs font-black uppercase tracking-[0.2em]">
@@ -435,16 +479,37 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       <span className="line-through">₹{total}</span>
                     </div>
 
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex justify-between items-center text-rose-600"
-                    >
-                      <span className="text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                        <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[8px] md:text-[10px] px-2 py-0.5 rounded-full shadow-sm animate-pulse">🔥 Limited Time Offer</span>
-                      </span>
-                      <span className="font-black text-lg md:text-xl tracking-tighter">-₹{discount}</span>
-                    </motion.div>
+                    <AnimatePresence>
+                      {discount > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="flex justify-between items-center text-rose-600 overflow-hidden"
+                        >
+                          <span className="text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2 pt-2 pb-2">
+                            <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[8px] md:text-[10px] px-2 py-0.5 rounded-full shadow-sm animate-pulse">🔥 Special Coupon Applied</span>
+                          </span>
+                          <span className="font-black text-lg md:text-xl tracking-tighter">-₹{discount}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <AnimatePresence>
+                      {paymentMethod === "prepaid" && prepaidDiscount > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="flex justify-between items-center text-green-600 overflow-hidden pt-4"
+                        >
+                          <span className="text-xs font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                            <span className="bg-green-50 border border-green-100 text-green-600 text-[8px] md:text-[10px] px-2 py-0.5 rounded-full shadow-sm">💳 Extra 5% Prepaid Discount</span>
+                          </span>
+                          <span className="font-black text-lg md:text-xl tracking-tighter">-₹{prepaidDiscount}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <div className="flex justify-between items-end pt-6 border-t border-gray-50">
                       <div>
@@ -472,6 +537,23 @@ export default function CartClient({ cart = [], products = [] }: any) {
                         Cash on Delivery
                       </button>
                     </div>
+
+                    <AnimatePresence>
+                      {paymentMethod === "cod" && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="bg-orange-50 border border-orange-200 text-orange-600 p-3 rounded-xl flex items-start gap-3 overflow-hidden mt-4"
+                        >
+                          <span className="text-xl">💡</span>
+                          <div>
+                            <p className="text-[10px] md:text-xs font-black uppercase tracking-widest">Missed out on savings!</p>
+                            <p className="text-[10px] font-bold mt-1">Switch to Prepaid and get an extra 5% discount (Save ₹{Math.round(baseFinalTotal * 0.05)}) instantly.</p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <button
                       disabled={!name.trim() || !email.trim() || !phone.trim() || !street.trim() || !city.trim() || !state.trim() || !pincode.trim()}
