@@ -33,8 +33,12 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const [reviews, setReviews] = useState<any[]>([]);
   const [newReview, setNewReview] = useState({ name: "", text: "", stars: 5 });
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showTopReviewForm, setShowTopReviewForm] = useState(false);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
   const [visibleReviewsCount, setVisibleReviewsCount] = useState(6);
+
+  const averageRating = reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.stars, 0) / reviews.length).toFixed(1) : "5.0";
+  const totalReviews = reviews.length;
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -68,6 +72,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
           setReviews([addedReview, ...reviews]);
           setNewReview({ name: "", text: "", stars: 5 });
           setShowReviewForm(false);
+          setShowTopReviewForm(false);
           toast.success("Review submitted successfully!");
         } else {
           toast.error("Failed to submit review.");
@@ -428,6 +433,81 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-black leading-none">
                   {currentProduct?.title || `Premium iWallet – ${selectedTitle}`}
                 </h2>
+                
+                {/* Average Rating & Review Action */}
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1 cursor-pointer" onClick={() => document.getElementById('reviews-section')?.scrollIntoView({behavior: 'smooth'})}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} size={18} className={star <= Math.round(Number(averageRating)) ? "fill-black text-black" : "text-gray-200"} />
+                    ))}
+                  </div>
+                  <span className="text-sm font-bold text-gray-500 cursor-pointer" onClick={() => document.getElementById('reviews-section')?.scrollIntoView({behavior: 'smooth'})}>{averageRating} ({totalReviews} Reviews)</span>
+                  <button 
+                    onClick={() => setShowTopReviewForm(!showTopReviewForm)}
+                    className="text-xs font-bold text-gray-400 hover:text-black underline uppercase tracking-wider ml-2"
+                  >
+                    {showTopReviewForm ? "Cancel" : "Write Review"}
+                  </button>
+                </div>
+
+                <AnimatePresence>
+                  {showTopReviewForm && (
+                    <motion.form 
+                      initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                      animate={{ opacity: 1, height: "auto", overflow: 'visible' }}
+                      exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                      onSubmit={handleReviewSubmit}
+                      className="bg-white p-6 rounded-3xl border border-gray-100 shadow-lg mt-2"
+                    >
+                      <div className="mb-4">
+                        <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Name</label>
+                        <input 
+                          type="text" 
+                          required
+                          value={newReview.name}
+                          onChange={(e) => setNewReview({...newReview, name: e.target.value})}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black text-sm transition-shadow"
+                          placeholder="Your Name"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Rating</label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button 
+                              key={star} 
+                              type="button"
+                              onClick={() => setNewReview({...newReview, stars: star})}
+                              className="focus:outline-none"
+                            >
+                              <Star 
+                                size={28} 
+                                className={`transition-colors ${star <= newReview.stars ? "fill-black text-black" : "text-gray-200 hover:text-gray-400"}`} 
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Review</label>
+                        <textarea 
+                          required
+                          value={newReview.text}
+                          onChange={(e) => setNewReview({...newReview, text: e.target.value})}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black h-28 resize-none text-sm transition-shadow"
+                          placeholder="Share your experience..."
+                        />
+                      </div>
+                      <button 
+                        type="submit"
+                        className="w-full bg-black text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg"
+                      >
+                        Submit Review
+                      </button>
+                    </motion.form>
+                  )}
+                </AnimatePresence>
+
                 <div className="flex flex-col gap-2">
                   <div className="flex items-baseline gap-4">
                     <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(currentProduct?.price || 1599) - 200}</span>
@@ -540,7 +620,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
       </section>
 
       {/* 7. REVIEWS & SOCIAL */}
-      <section className="py-32 px-6 md:px-20 max-w-[1440px] mx-auto text-center border-t border-gray-100">
+      <section id="reviews-section" className="py-32 px-6 md:px-20 max-w-[1440px] mx-auto text-center border-t border-gray-100">
         <h2 className="text-4xl md:text-6xl font-black mb-16 tracking-tighter">Join the Carry Club</h2>
         
         <div className="flex justify-center mb-12">

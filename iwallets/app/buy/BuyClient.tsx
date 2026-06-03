@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/lib/cartActions";
 import { toggleWishlist } from "@/lib/wishlistActions";
 import toast from "react-hot-toast";
-import { Heart, ArrowLeft } from "lucide-react";
+import { Heart, ArrowLeft, Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 import Image from "next/image";
@@ -14,6 +14,54 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const searchParams = useSearchParams();
   const productSlug = searchParams.get("product");
+
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [newReview, setNewReview] = useState({ name: "", text: "", stars: 5 });
+  const [showTopReviewForm, setShowTopReviewForm] = useState(false);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch("/api/reviews");
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch reviews:", error);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newReview.name && newReview.text) {
+      try {
+        const res = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newReview),
+        });
+
+        if (res.ok) {
+          const addedReview = await res.json();
+          setReviews([addedReview, ...reviews]);
+          setNewReview({ name: "", text: "", stars: 5 });
+          setShowTopReviewForm(false);
+          toast.success("Review submitted successfully!");
+        } else {
+          toast.error("Failed to submit review.");
+        }
+      } catch (error) {
+        console.error("Failed to submit review:", error);
+        toast.error("An error occurred.");
+      }
+    }
+  };
+
+  const averageRating = reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.stars, 0) / reviews.length).toFixed(1) : "5.0";
+  const totalReviews = reviews.length;
 
   const handleAddToCart = async (e: React.MouseEvent, slug: string) => {
     e.preventDefault();
@@ -259,11 +307,19 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                   <div>
                     <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
                        <span className="w-3 md:w-6 h-0.5 bg-rose-600 rounded-full" />
-                       <p className="text-[8px] md:text-[9px] text-gray-400 uppercase font-black tracking-widest truncate">{product.collectionName || "Collection 01"}</p>
+                       <p className="text-[8px] md:text-[9px] text-gray-400 uppercase font-black tracking-widest truncate">{product.collectionName}</p>
                     </div>
                     <h2 className="text-base md:text-xl font-bold md:font-black text-black tracking-tight leading-snug line-clamp-2 min-h-[40px] md:min-h-0">
                       {product.title}
                     </h2>
+                    <div className="flex items-center gap-1 mt-1 md:mt-2 bg-gray-50/80 w-fit px-2 py-1 rounded-full border border-gray-100">
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} size={12} className={star <= Math.round(Number(averageRating)) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"} />
+                        ))}
+                      </div>
+                      <span className="text-[10px] md:text-xs font-black text-black ml-1">{averageRating} ({totalReviews})</span>
+                    </div>
                   </div>
 
                   <div className="mt-2 md:mt-6 flex items-center justify-between">
@@ -368,6 +424,81 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                     <h2 className="text-2xl md:text-4xl font-black text-black tracking-tighter leading-[1.1] md:leading-none mb-2 md:mb-3">
                       {selectedProduct.title}
                     </h2>
+
+                    {/* Average Rating & Review Action */}
+                    <div className="flex items-center gap-2 mb-4 md:mb-6 bg-gray-50 w-fit px-3 py-2 rounded-full border border-gray-100 shadow-sm">
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} size={18} className={star <= Math.round(Number(averageRating)) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"} />
+                        ))}
+                      </div>
+                      <span className="text-sm font-black text-black ml-1">{averageRating} ({totalReviews} Reviews)</span>
+                      <div className="w-px h-4 bg-gray-300 mx-2"></div>
+                      <button 
+                        onClick={() => setShowTopReviewForm(!showTopReviewForm)}
+                        className="text-[10px] md:text-xs font-black text-[#ff3366] hover:text-black uppercase tracking-widest transition-colors"
+                      >
+                        {showTopReviewForm ? "Cancel" : "Write Review"}
+                      </button>
+                    </div>
+
+                    <AnimatePresence>
+                      {showTopReviewForm && (
+                        <motion.form 
+                          initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                          animate={{ opacity: 1, height: "auto", overflow: 'visible' }}
+                          exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                          onSubmit={handleReviewSubmit}
+                          className="bg-white p-4 rounded-2xl border border-gray-100 shadow-lg mb-4"
+                        >
+                          <div className="mb-3">
+                            <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Name</label>
+                            <input 
+                              type="text" 
+                              required
+                              value={newReview.name}
+                              onChange={(e) => setNewReview({...newReview, name: e.target.value})}
+                              className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black text-xs transition-shadow"
+                              placeholder="Your Name"
+                            />
+                          </div>
+                          <div className="mb-3">
+                            <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Rating</label>
+                            <div className="flex gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button 
+                                  key={star} 
+                                  type="button"
+                                  onClick={() => setNewReview({...newReview, stars: star})}
+                                  className="focus:outline-none"
+                                >
+                                  <Star 
+                                    size={20} 
+                                    className={`transition-colors ${star <= newReview.stars ? "fill-black text-black" : "text-gray-200 hover:text-gray-400"}`} 
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="mb-3">
+                            <label className="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Review</label>
+                            <textarea 
+                              required
+                              value={newReview.text}
+                              onChange={(e) => setNewReview({...newReview, text: e.target.value})}
+                              className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black h-20 resize-none text-xs transition-shadow"
+                              placeholder="Share your experience..."
+                            />
+                          </div>
+                          <button 
+                            type="submit"
+                            className="w-full bg-black text-white py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-gray-800 transition-colors shadow-sm hover:shadow-md"
+                          >
+                            Submit Review
+                          </button>
+                        </motion.form>
+                      )}
+                    </AnimatePresence>
 
                     {((selectedProduct.quote) || (selectedProduct.subQuote)) ? (
                       <div className="space-y-1 md:space-y-2 mb-2 md:mb-4">
