@@ -30,6 +30,55 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const [selectedColor, setSelectedColor] = useState("black");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [newReview, setNewReview] = useState({ name: "", text: "", stars: 5 });
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
+  const [visibleReviewsCount, setVisibleReviewsCount] = useState(6);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch("/api/reviews");
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch reviews:", error);
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newReview.name && newReview.text) {
+      try {
+        const res = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newReview),
+        });
+
+        if (res.ok) {
+          const addedReview = await res.json();
+          setReviews([addedReview, ...reviews]);
+          setNewReview({ name: "", text: "", stars: 5 });
+          setShowReviewForm(false);
+          toast.success("Review submitted successfully!");
+        } else {
+          toast.error("Failed to submit review.");
+        }
+      } catch (error) {
+        console.error("Failed to submit review:", error);
+        toast.error("An error occurred.");
+      }
+    }
+  };
+
   const colors = [
     { id: "black", name: "Black", class: "bg-black", img: "/Iwallet - Images/Prod image- desk-Black/2-Black.jpg" },
     { id: "space-grey", name: "Space Grey", class: "bg-gray-600", img: "/Iwallet - Images/Prod image-desk-grey/2.png" },
@@ -494,12 +543,75 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
       <section className="py-32 px-6 md:px-20 max-w-[1440px] mx-auto text-center border-t border-gray-100">
         <h2 className="text-4xl md:text-6xl font-black mb-16 tracking-tighter">Join the Carry Club</h2>
         
+        <div className="flex justify-center mb-12">
+          <button 
+            onClick={() => setShowReviewForm(!showReviewForm)}
+            className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl"
+          >
+            {showReviewForm ? "Cancel" : "Write a Review"}
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {showReviewForm && (
+            <motion.form 
+              initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+              animate={{ opacity: 1, height: "auto", overflow: 'visible' }}
+              exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+              onSubmit={handleReviewSubmit}
+              className="max-w-2xl mx-auto mb-16 text-left bg-white p-8 rounded-3xl shadow-lg border border-gray-100"
+            >
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newReview.name}
+                  onChange={(e) => setNewReview({...newReview, name: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black transition-shadow"
+                  placeholder="Your Name"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Rating</label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button 
+                      key={star} 
+                      type="button"
+                      onClick={() => setNewReview({...newReview, stars: star})}
+                      className="focus:outline-none"
+                    >
+                      <Star 
+                        size={28} 
+                        className={`transition-colors ${star <= newReview.stars ? "fill-black text-black" : "text-gray-200 hover:text-gray-400"}`} 
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-6">
+                <label className="block text-sm font-bold text-gray-700 mb-2">Review</label>
+                <textarea 
+                  required
+                  value={newReview.text}
+                  onChange={(e) => setNewReview({...newReview, text: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black transition-shadow h-32 resize-none"
+                  placeholder="Share your experience..."
+                />
+              </div>
+              <button 
+                type="submit"
+                className="w-full bg-black text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg"
+              >
+                Submit Review
+              </button>
+            </motion.form>
+          )}
+        </AnimatePresence>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {[
-            { name: "Rahul S.", text: "The best wallet I've ever owned. So slim I forget it's in my pocket.", stars: 5 },
-            { name: "Anita M.", text: "Elegant design and the card ejector is so satisfying to use!", stars: 5 },
-            { name: "Vikram R.", text: "Premium feel at a great price. Highly recommended.", stars: 5 }
-          ].map((review, i) => (
+          {reviews.slice(0, visibleReviewsCount).map((review, i) => (
             <div key={i} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-50 text-left hover:shadow-xl transition-shadow">
               <div className="flex gap-1 mb-4">
                 {[...Array(review.stars)].map((_, s) => <Star key={s} size={14} className="fill-black text-black" />)}
@@ -509,6 +621,18 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
             </div>
           ))}
         </div>
+
+        {reviews.length > visibleReviewsCount && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => setVisibleReviewsCount(prev => prev + 6)}
+              className="border-2 border-black text-black px-8 py-3 rounded-full font-bold hover:bg-black hover:text-white transition-colors"
+            >
+              View More Reviews
+            </button>
+          </div>
+        )}
+
 
         <div className="mt-24 flex flex-col items-center">
           <Link href="https://instagram.com" className="flex items-center gap-2 group">
