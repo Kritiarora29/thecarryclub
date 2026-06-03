@@ -156,9 +156,9 @@ export default function CartClient({ cart = [], products = [] }: any) {
     .filter(Boolean)
 
   const totalQty = cartItems.reduce((s: number, i: any) => s + i.qty, 0)
-  const total = totalQty * 1599
+  const total = totalQty * 1399
 
-  const discount = isCouponApplied ? 600 * totalQty : 0
+  const discount = isCouponApplied ? 400 * totalQty : 0
   const baseFinalTotal = Math.max(total - discount, 0)
   
   const prepaidDiscount = paymentMethod === "prepaid" ? Math.round(baseFinalTotal * 0.05) : 0
@@ -418,7 +418,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-black text-base md:text-xl tracking-tight leading-none mb-1 md:mb-2 truncate">{item.title}</p>
-                          <p className="text-sm md:text-lg font-bold text-gray-400 mb-3 md:mb-4 tracking-tighter">₹1599</p>
+                          <p className="text-sm md:text-lg font-bold text-gray-400 mb-3 md:mb-4 tracking-tighter">₹1399 <span className="line-through text-xs ml-2">₹1599</span></p>
 
                           <div className="flex items-center justify-between md:justify-start gap-2 md:gap-5 flex-wrap">
                             <div className="flex items-center bg-white border border-gray-100 rounded-full px-3 py-1.5 md:px-4 md:py-2 gap-4 md:gap-6 shadow-sm">
@@ -457,7 +457,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       </div>
                       <div>
                         <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-rose-600">Special Offer</p>
-                        <p className="text-xs md:text-sm font-bold text-gray-700 mt-0.5 tracking-tighter">Get it for ₹999 <span className="text-gray-400 font-medium">(Save ₹600/item)</span></p>
+                        <p className="text-xs md:text-sm font-bold text-gray-700 mt-0.5 tracking-tighter">Get it for ₹999 <span className="text-gray-400 font-medium">(Save ₹400/item)</span></p>
                       </div>
                     </div>
                     <button 
@@ -475,7 +475,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                   {/* BREAKDOWN */}
                   <div className="mt-auto pt-8 border-t border-gray-100 space-y-4">
                     <div className="flex justify-between text-gray-400 text-xs font-black uppercase tracking-[0.2em]">
-                      <span>Subtotal (₹1599 per item)</span>
+                      <span>Subtotal (₹1399 per item)</span>
                       <span className="line-through">₹{total}</span>
                     </div>
 
@@ -636,7 +636,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                         const formattedItems = cartItems.map((item: any) => ({
                           title: item.title,
                           quantity: item.qty,
-                          price: 1599
+                          price: 1399
                         }));
                         await fetch("/api/order", {
                           method: "POST",
@@ -655,7 +655,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                         const formattedItems = cartItems.map((item: any) => ({
                           title: item.title,
                           quantity: item.qty,
-                          price: 1599
+                          price: 1399
                         }));
                         await fetch("/api/order", {
                           method: "POST",

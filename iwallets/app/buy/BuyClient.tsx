@@ -269,14 +269,14 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                   <div className="mt-2 md:mt-6 flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                        <div className="flex items-baseline gap-2">
-                         <span className="text-lg md:text-3xl font-black text-[#ff3366] tracking-tighter">
-                           ₹{(product.price || 1599) - 600}
-                         </span>
-                         <span className="text-xs md:text-sm font-black text-gray-400 line-through tracking-tighter">
-                           ₹{product.price || 1599}
-                         </span>
-                       </div>
-                       <span className="text-[8px] md:text-[9px] font-black text-[#ff3366] uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-full w-fit animate-pulse">🔥 Limited Time Offer</span>
+                          <span className="text-lg md:text-3xl font-black text-[#ff3366] tracking-tighter">
+                            ₹{(product.price || 1599) - 200}
+                          </span>
+                          <span className="text-xs md:text-sm font-black text-gray-400 line-through tracking-tighter">
+                            ₹{product.price || 1599}
+                          </span>
+                        </div>
+                        <span className="text-[8px] md:text-[9px] font-black text-[#ff3366] uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-full w-fit animate-pulse">🔥 ₹999 WITH COUPON</span>
                     </div>
                     
                     <div className="w-6 h-6 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white group-hover:bg-rose-600 transition-colors shadow-lg shrink-0">
@@ -420,11 +420,11 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                     <div className="mt-3 md:mt-6 flex flex-col gap-2 md:gap-4">
                        <div className="flex flex-col gap-2">
                           <div className="flex items-baseline gap-4">
-                             <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(selectedProduct.price || 1599) - 600}</span>
+                             <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(selectedProduct.price || 1599) - 200}</span>
                              <span className="text-xl md:text-3xl font-black tracking-tighter text-gray-400 line-through">₹{selectedProduct.price || 1599}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                             <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 Limited Time Offer Going On</span>
+                             <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 ₹999 WITH COUPON</span>
                           </div>
                        </div>
 

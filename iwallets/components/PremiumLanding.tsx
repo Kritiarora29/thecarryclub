@@ -381,11 +381,11 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 </h2>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-baseline gap-4">
-                    <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(currentProduct?.price || 1599) - 600}</span>
+                    <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(currentProduct?.price || 1599) - 200}</span>
                     <span className="text-xl md:text-3xl font-black tracking-tighter text-gray-400 line-through">₹{currentProduct?.price || 1599}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 Limited Time Offer Going On</span>
+                    <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 ₹999 WITH COUPON</span>
                   </div>
                 </div>
               </div>

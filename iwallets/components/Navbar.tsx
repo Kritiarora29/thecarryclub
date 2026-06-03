@@ -35,7 +35,7 @@ export default function Navbar() {
 
   const banners = [
     <span key="1">PREMIUM SLIM WALLETS – FREE SHIPPING PAN INDIA 🔥</span>,
-    <span key="2">🔥 LIMITED TIME OFFER: <span className="line-through text-gray-500 mx-1">₹1599</span> <span className="text-rose-400 font-black">₹999</span></span>
+    <span key="2">🔥 ₹999 WITH COUPON: <span className="line-through text-gray-500 mx-1">₹1599</span> <span className="text-rose-400 font-black">₹1399</span></span>
   ];
 
   const updateCartCount = async () => {
