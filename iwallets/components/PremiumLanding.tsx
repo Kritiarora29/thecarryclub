@@ -63,10 +63,10 @@ const SLIDES = [
 ];
 
 const FEATURES = [
-  { num: "01", title: "Holds 8+ Cards",         desc: "Every card organized and accessible. No more bulging billfolds." },
-  { num: "02", title: "Ultra Slim â€” 6mm",        desc: "Thinner than your smartphone. Slides right into your front pocket." },
-  { num: "03", title: "RFID Blocking",           desc: "Built-in protection shields your cards from contactless scanning." },
-  { num: "04", title: "Premium Vegan Leather",   desc: "Cruelty-free, soft-touch material that develops a beautiful patina." },
+  { num: "01", title: "Holds 8+ Cards", desc: "Every card organized and accessible. No more bulging billfolds." },
+  { num: "02", title: "Ultra Slim ", desc: "Thinner than your smartphone. Slides right into your front pocket." },
+  { num: "03", title: "RFID Blocking",  desc: "Built-in protection shields your cards from contactless scanning." },
+  { num: "04", title: "Premium Vegan Leather", desc: "Cruelty-free, soft-touch material that develops a beautiful patina." },
 ];
 
 const MARQUEE = [
@@ -93,6 +93,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const [busy, setBusy]                 = useState(false);
   const [inWishlist, setInWishlist]     = useState(false);
   const [activeF, setActiveF]           = useState(0);
+  const [coupon, setCoupon]             = useState<{ code: string; label: string; payJust: number | null; active: boolean } | null>(null);
   const reviewsRef = useRef<HTMLDivElement>(null);
   const slideTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -113,6 +114,17 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const nextSlide = () => goSlide((slide + 1) % SLIDES.length);
 
   useEffect(() => { fetch("/api/reviews").then(r => r.json()).then(setReviews).catch(() => {}); }, []);
+
+  useEffect(() => {
+    fetch("/api/coupon").then(r => r.json()).then(c => {
+      if (!c?.couponCode) return;
+      const basePrice = 1399;
+      const payJust = c.discountType === "percent"
+        ? Math.round(basePrice * (1 - c.discountAmount / 100))
+        : basePrice - c.discountAmount;
+      setCoupon({ code: c.couponCode, label: c.displayLabel, payJust, active: c.isActive });
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     setImgIdx(0);
@@ -194,27 +206,29 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
 
                   <div className="hero-stars">
                     {[...Array(5)].map((_, j) => <Star key={j} size={12} className="star-fill" />)}
-                    <span className="hero-stars-text">{avg} Â· {reviews.length || "100+"} reviews</span>
+                    <span className="hero-stars-text">{avg} &middot; {reviews.length || "100+"} reviews</span>
                   </div>
 
                   <div className="hero-price-row">
-                    <span className="hero-price">â‚¹1,399</span>
-                    <span className="hero-mrp">â‚¹1,599</span>
-                    <span className="hero-save">Save â‚¹200</span>
+                    <span className="hero-price">&#8377;1,399</span>
+                    <span className="hero-mrp">&#8377;1,599</span>
+                    <span className="hero-save">Save &#8377;200</span>
                   </div>
 
                   <div className="hero-btns">
                     <button onClick={buyNow} disabled={busy} className="btn-white">
-                      {busy ? "â€¦" : "Shop Now"}
+                      {busy ? "…" : "Shop Now"}
                     </button>
                     <button onClick={addCart} disabled={busy} className="btn-ghost">
                       <ShoppingBag size={15} /> Add to Cart
                     </button>
                   </div>
 
-                  <div className="hero-coupon">
-                    <Tag size={12} /> Apply&nbsp;<strong>SAVE400</strong>&nbsp;â€” pay just&nbsp;<strong>â‚¹999</strong>
-                  </div>
+                  {coupon?.active && (
+                    <div className="hero-coupon">
+                      <Tag size={12} /> Apply&nbsp;<strong>{coupon.code}</strong>&nbsp;&mdash; pay just&nbsp;<strong>&#8377;{coupon.payJust}</strong>
+                    </div>
+                  )}
                 </div>
 
                 {/* Product image (desktop only) */}
@@ -233,14 +247,14 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
           ))}
         </div>
 
-        {/* Dots only â€” no arrow buttons */}
+        {/* Dots only - no arrow buttons */}
         <div className="hero-dots-bar">
           {SLIDES.map((_, i) => (
             <button key={i} onClick={() => goSlide(i)} className={`hero-dot ${i === slide ? "hero-dot--on" : ""}`} />
           ))}
         </div>
 
-        {/* Colour + thumb strip â€” bottom */}
+        {/* Colour + thumb strip - bottom */}
         <div className="hero-strip">
           <div className="hero-strip-inner">
             {/* Color picker */}
@@ -307,8 +321,8 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                     <span className="product-rtext">{avg} ({reviews.length || "100+"})</span>
                   </div>
                   <div className="product-price-row">
-                    <span className="product-price">â‚¹1,399</span>
-                    <span className="product-mrp">â‚¹1,599</span>
+                    <span className="product-price">&#8377;1,399</span>
+                    <span className="product-mrp">&#8377;1,599</span>
                   </div>
                   <button
                     onClick={() => { setSelectedColor(color); buyNow(); }}
@@ -338,7 +352,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
       <div className="marquee-wrap">
         <div className="marquee tcc-marquee-run">
           {[...MARQUEE, ...MARQUEE, ...MARQUEE].map((t, i) => (
-            <span key={i} className="marquee-item"><span className="marquee-dot">â—†</span>{t}</span>
+            <span key={i} className="marquee-item"><span className="marquee-dot">&#9670;</span>{t}</span>
           ))}
         </div>
       </div>
@@ -410,7 +424,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 ))}
               </div>
               <button onClick={buyNow} disabled={busy} className="btn-amber" style={{ marginTop: "2rem" }}>
-                Shop Now â€” â‚¹1,399 <ArrowRight size={14} />
+                Shop Now &mdash; &#8377;1,399 <ArrowRight size={14} />
               </button>
             </div>
           </div>
@@ -428,9 +442,9 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
               {[...Array(5)].map((_, i) => <Star key={i} size={15} className="star-fill" />)}
             </div>
             <blockquote className="testimonial-quote">
-              &ldquo;Finally a wallet that doesn&apos;t ruin the lines of my outfit. Ultra slim, premium feel â€” completely worth every rupee.&rdquo;
+              &ldquo;Finally a wallet that doesn&apos;t ruin the lines of my outfit. Ultra slim, premium feel &mdash; completely worth every rupee.&rdquo;
             </blockquote>
-            <p className="testimonial-author">â€” Arjun S. Â· Verified Purchase</p>
+            <p className="testimonial-author">&mdash; Arjun S. &middot; Verified Purchase</p>
           </div>
         </div>
       </section>
@@ -506,14 +520,14 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                         ))}
                       </div>
                     </div>
-                    <textarea required rows={3} value={newReview.text} onChange={e => setNewReview({ ...newReview, text: e.target.value })} placeholder="Tell us about your experienceâ€¦" className="inp inp--ta" />
+                    <textarea required rows={3} value={newReview.text} onChange={e => setNewReview({ ...newReview, text: e.target.value })} placeholder="Tell us about your experience…" className="inp inp--ta" />
                     <button type="submit" className="btn-dark">Submit Review</button>
                   </motion.form>
                 )}
               </AnimatePresence>
 
               {reviews.length === 0
-                ? <p className="no-reviews">No reviews yet â€” be the first!</p>
+                ? <p className="no-reviews">No reviews yet &mdash; be the first!</p>
                 : (
                   <div className="reviews-grid">
                     {reviews.slice(0, 6).map((r: any, i: number) => (
@@ -550,8 +564,13 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
         <div className="offer-inner">
           <div>
             <p className="eyebrow-amber">Limited Time Offer</p>
-            <h2 className="offer-h2">Get it for just <span className="offer-price">â‚¹999</span></h2>
-            <p className="offer-sub">Apply coupon <strong>SAVE400</strong> at checkout Â· Save â‚¹400</p>
+            <h2 className="offer-h2">Get it for just <span className="offer-price">&#8377;{coupon?.active && coupon.payJust ? coupon.payJust : 999}</span></h2>
+            <p className="offer-sub">
+              {coupon?.active
+                ? <>Apply coupon <strong>{coupon.code}</strong> at checkout &middot; {coupon.label}</>
+                : <>Free shipping &middot; 7-day easy returns</>
+              }
+            </p>
           </div>
           <Link href="/cart" className="btn-amber">Claim Discount <ArrowRight size={14} /></Link>
         </div>
