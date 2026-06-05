@@ -22,7 +22,7 @@ export default function AboutPage() {
             <Eyebrow className="mb-6">About theCarryClub</Eyebrow>
             <Heading as="h1" className="text-6xl md:text-[100px] lg:text-[120px] mb-10">
               Redefining <br />
-              <span className="text-brand italic">Everyday</span> <br />
+              <span className="text-brand">Everyday</span> <br />
               Carry.
             </Heading>
             <p className="text-muted-foreground text-lg md:text-2xl max-w-xl mb-12 leading-relaxed font-medium">

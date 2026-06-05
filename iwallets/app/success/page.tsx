@@ -39,7 +39,7 @@ export default function SuccessPage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <Heading as="h1" className="mb-6">
-              Order <span className="text-emerald-600 italic">Confirmed.</span>
+              Order <span className="text-emerald-600">Confirmed.</span>
             </Heading>
           </motion.div>
 

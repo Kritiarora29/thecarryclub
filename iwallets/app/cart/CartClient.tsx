@@ -170,7 +170,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
         <div className="text-center mb-10 md:mb-14">
           <Eyebrow className="mb-3">Secure Checkout</Eyebrow>
           <Heading as="h1" className="text-4xl md:text-6xl">
-            Review Your <span className="text-brand italic">Order</span>
+            Review Your <span className="text-brand">Order</span>
           </Heading>
         </div>
 
@@ -188,7 +188,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
             <div className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">Full Name *</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">Full Name *</label>
                 <input
                   type="text" autoComplete="name"
                   placeholder="John Doe"
@@ -200,7 +200,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Email */}
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">Email *</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">Email *</label>
                   <input
                     type="email" autoComplete="email"
                     placeholder="john@example.com"
@@ -210,7 +210,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 </div>
                 {/* Phone */}
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">Phone *</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">Phone *</label>
                   <input
                     type="tel" autoComplete="tel"
                     placeholder="+91 98765 43210"
@@ -222,7 +222,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
 
               {/* Street */}
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">Street Address *</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">Street Address *</label>
                 <input
                   type="text" autoComplete="street-address"
                   placeholder="Flat / Floor / Building / Street"
@@ -233,22 +233,22 @@ export default function CartClient({ cart = [], products = [] }: any) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">City *</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">City *</label>
                   <input type="text" autoComplete="address-level2" placeholder="Mumbai" value={city} onChange={(e) => setCity(e.target.value)} className="checkout-input" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">State *</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">State *</label>
                   <input type="text" autoComplete="address-level1" placeholder="Maharashtra" value={state} onChange={(e) => setState(e.target.value)} className="checkout-input" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">Pincode *</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">Pincode *</label>
                   <input type="text" autoComplete="postal-code" placeholder="400001" value={pincode} onChange={(e) => setPincode(e.target.value)} className="checkout-input" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 ml-1">Landmark</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1.5 ml-1">Landmark</label>
                   <input type="text" placeholder="Near metro station" value={landmark} onChange={(e) => setLandmark(e.target.value)} className="checkout-input" />
                 </div>
               </div>
@@ -280,8 +280,8 @@ export default function CartClient({ cart = [], products = [] }: any) {
 
               {cartItems.length === 0 ? (
                 <div className="text-center py-10">
-                  <ShoppingBag size={40} className="text-gray-200 mx-auto mb-4" />
-                  <p className="text-gray-400 font-black uppercase tracking-tight">Your cart is empty</p>
+                  <ShoppingBag size={40} className="text-muted-foreground/40 mx-auto mb-4" />
+                  <p className="text-muted-foreground font-black uppercase tracking-tight">Your cart is empty</p>
                   <BackButton href="/buy" label="Shop Now" className="mt-4" />
                 </div>
               ) : (
@@ -297,7 +297,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-sm tracking-tight truncate">{item.title}</p>
-                        <p className="text-xs text-gray-400 font-bold">₹1,399 each</p>
+                        <p className="text-xs text-muted-foreground font-bold">₹1,399 each</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="flex items-center bg-muted rounded-full border border-border">
@@ -409,7 +409,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
             {/* Price Breakdown */}
             <Card size="sm" className="shadow-sm">
               <div className="space-y-2.5 text-sm">
-                <div className="flex justify-between text-gray-400 font-medium">
+                <div className="flex justify-between text-muted-foreground font-medium">
                   <span>Subtotal ({totalQty} item{totalQty !== 1 ? "s" : ""})</span>
                   <span>₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
@@ -469,8 +469,8 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="bg-muted p-4 rounded-2xl border border-border">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Delivering to</p>
                   <p className="font-black text-black">{name}</p>
-                  <p className="text-sm text-gray-600 mt-0.5">{phone} · {email}</p>
-                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                  <p className="text-sm text-muted-foreground mt-0.5">{phone} · {email}</p>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                     {street}, {city}, {state} — {pincode}
                     {landmark && <>, near {landmark}</>}
                   </p>
@@ -480,7 +480,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Items</p>
                   <ul className="space-y-1">
                     {cartItems.map((item: any, i: number) => (
-                      <li key={i} className="flex justify-between text-sm font-bold text-gray-800">
+                      <li key={i} className="flex justify-between text-sm font-bold text-primary">
                         <span className="truncate pr-4">{item.qty}× {item.title}</span>
                         <span>₹{(1399 * item.qty).toLocaleString("en-IN")}</span>
                       </li>

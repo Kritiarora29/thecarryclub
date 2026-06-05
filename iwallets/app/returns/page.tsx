@@ -13,11 +13,11 @@ export default function ReturnsPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-emerald-600/10 rounded-full blur-[100px] -z-10"
+            className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-brand/10 rounded-full blur-[100px] -z-10"
           />
           <PageHeader
             eyebrow="Service Policy"
-            title={<>Returns & <br /><span className="text-emerald-600">Refunds.</span></>}
+            title={<>Returns & <br /><span className="text-brand">Refunds.</span></>}
             align="left"
             className="mb-8"
           />
@@ -25,16 +25,16 @@ export default function ReturnsPage() {
         </div>
 
         <Card size="xl" className="space-y-12 text-muted-foreground font-medium">
-          <div className="bg-rose-50 border border-rose-100 p-8 md:p-12 rounded-[2rem]">
-            <h2 className="text-rose-600 font-black text-2xl md:text-3xl tracking-tight mb-4 uppercase">Important Notice</h2>
-            <p className="text-rose-600 font-bold text-lg md:text-xl leading-relaxed">
+          <div className="bg-brand-light border border-brand/20 p-8 md:p-12 rounded-4xl">
+            <h2 className="text-brand font-black text-2xl md:text-3xl tracking-tight mb-4 uppercase">Important Notice</h2>
+            <p className="text-brand font-bold text-lg md:text-xl leading-relaxed">
               ALL SALES ARE FINAL! Due to the limited nature of our drops and releases, we do not offer standard returns or exchanges unless the product is defective.
             </p>
           </div>
 
           <section className="space-y-6">
             <h2 className="text-3xl md:text-4xl font-black text-primary tracking-tight flex items-center gap-4">
-              <span className="text-emerald-600">01.</span> Quality Check
+              <span className="text-brand">01.</span> Quality Check
             </h2>
             <p className="leading-relaxed">Every single iWallet undergoes a rigorous multi-point quality inspection before it is packed and shipped. We ensure that you receive a product that meets our high standards of craftsmanship.</p>
           </section>
@@ -43,7 +43,7 @@ export default function ReturnsPage() {
 
           <section className="space-y-6">
             <h2 className="text-3xl md:text-4xl font-black text-primary tracking-tight flex items-center gap-4">
-              <span className="text-emerald-600">02.</span> Defective Items
+              <span className="text-brand">02.</span> Defective Items
             </h2>
             <p className="leading-relaxed">In the rare event that you receive a defective item, please contact us at <span className="text-primary font-black">info@thecarryclub.in</span> within 5 days of delivery. Include your order number and clear photos of the defect.</p>
           </section>
@@ -52,7 +52,7 @@ export default function ReturnsPage() {
 
           <section className="space-y-6">
             <h2 className="text-3xl md:text-4xl font-black text-primary tracking-tight flex items-center gap-4">
-              <span className="text-emerald-600">03.</span> Shipping Damage
+              <span className="text-brand">03.</span> Shipping Damage
             </h2>
             <p className="leading-relaxed">If your package arrives visibly damaged, please take photos before opening it and contact us immediately. We will work with our courier partners to resolve the issue for you.</p>
           </section>
@@ -61,7 +61,7 @@ export default function ReturnsPage() {
 
           <section className="space-y-6">
             <h2 className="text-3xl md:text-4xl font-black text-primary tracking-tight flex items-center gap-4">
-              <span className="text-emerald-600">04.</span> Refunds
+              <span className="text-brand">04.</span> Refunds
             </h2>
             <p className="leading-relaxed">Refunds are only issued for verified defective items that cannot be replaced. Once approved, the refund will be processed to your original payment method within 7-10 business days.</p>
           </section>

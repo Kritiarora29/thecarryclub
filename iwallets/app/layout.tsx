@@ -2,22 +2,6 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import LayoutClient from "@/components/LayoutClient";
 import Script from "next/script";
-import { Playfair_Display, Inter } from "next/font/google";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -60,7 +44,7 @@ const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "898817735950340"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en">
       <head>
         {/* Google Tag Manager */}
         <Script id="gtm-head" strategy="afterInteractive">

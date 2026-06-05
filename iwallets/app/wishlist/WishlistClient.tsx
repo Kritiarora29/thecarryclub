@@ -190,7 +190,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                       action={removeFromWishlist.bind(null, product.slug.current)}
                       className="absolute top-4 right-4 md:top-6 md:right-6 z-10"
                     >
-                      <button className="w-8 h-8 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-amber-700 hover:bg-amber-700 hover:text-white transition-all shadow-md font-bold">
+                      <button className="w-8 h-8 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-brand hover:bg-brand hover:text-white transition-all shadow-md font-bold">
                         ✕
                       </button>
                     </form>
@@ -199,13 +199,13 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                   <div className="p-6 md:p-10 flex flex-col flex-1">
                     <div className="flex-1 mb-6">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-4 h-0.5 bg-amber-700 rounded-full" />
-                        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Premium Collection</p>
+                        <span className="w-4 h-0.5 bg-brand rounded-full" />
+                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Premium Collection</p>
                       </div>
-                      <h2 className="text-xl md:text-3xl font-black text-black tracking-tight leading-none mb-2">
+                      <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight leading-none mb-2">
                         {product.title}
                       </h2>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">₹{product.price || 1399}</p>
+                      <p className="text-xl md:text-2xl font-bold text-primary">₹{product.price || 1399}</p>
                     </div>
 
                     <div className="flex flex-col gap-3">

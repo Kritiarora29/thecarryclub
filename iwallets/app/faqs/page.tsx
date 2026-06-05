@@ -31,7 +31,7 @@ export default function FAQsPage() {
           />
           <Eyebrow className="mb-6">Support Center</Eyebrow>
           <Heading as="h1" className="text-6xl md:text-[120px] mb-10">
-            Got <br /><span className="text-brand italic">Questions?</span>
+            Got <br /><span className="text-brand">Questions?</span>
           </Heading>
           <p className="text-muted-foreground text-lg md:text-2xl max-w-2xl mx-auto font-medium">
             Everything you need to know about theCarryClub products and services.
