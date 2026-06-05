@@ -617,4 +617,4 @@ NEXT_PUBLIC_APP_URL=https://thecarryclub.in
 
 ---
 
-*End of documentation. Last updated: 2026-06-05 — reflects branch `patch-fixes-1` including Ekster-style redesign, Replica font setup, TCC design token unification, and TypeScript fixes.*
+*End of documentation. Last updated: 2026-06-05 — reflects branch `patch-fixes-1`  Replica font setup, TCC design token unification, and TypeScript fixes.*
