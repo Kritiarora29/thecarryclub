@@ -33,7 +33,7 @@ export default function AnnouncementBar() {
           >
             <p className="text-[10px] md:text-sm font-bold tracking-[0.1em] uppercase">
               {messages[index].text.split(messages[index].highlight)[0]}
-              <span className="text-[#ff3366]">{messages[index].highlight}</span>
+              <span className="text-[#B45309]">{messages[index].highlight}</span>
               {messages[index].text.split(messages[index].highlight)[1]}
             </p>
           </motion.div>
@@ -41,7 +41,7 @@ export default function AnnouncementBar() {
       </div>
 
       {/* Subtle background glow that follows the theme */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff3366]/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B45309]/5 to-transparent pointer-events-none" />
     </div>
   )
 }

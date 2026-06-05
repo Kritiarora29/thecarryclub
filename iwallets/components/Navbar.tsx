@@ -3,80 +3,60 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminLoginModal from "@/components/AdminLoginModal";
-import { Menu, X, ShoppingCart, User, Search, Heart } from "lucide-react";
+import { Menu, X, ShoppingBag, User, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const BANNERS = [
+  "Premium Slim Wallets · Free Shipping Pan India",
+  "🔥 ₹999 with coupon SAVE400 — limited time offer",
+];
+
 export default function Navbar() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [isAdmin, setIsAdmin]         = useState(false);
+  const [showModal, setShowModal]     = useState(false);
+  const [isOpen, setIsOpen]           = useState(false);
+  const [cartCount, setCartCount]     = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled]       = useState(false);
   const [bannerIndex, setBannerIndex] = useState(0);
 
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto";
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBannerIndex((prev) => (prev + 1) % 2);
-    }, 3500);
-    return () => clearInterval(interval);
+    const id = setInterval(() => setBannerIndex(p => (p + 1) % BANNERS.length), 4000);
+    return () => clearInterval(id);
   }, []);
 
-  const banners = [
-    <span key="1">PREMIUM SLIM WALLETS – FREE SHIPPING PAN INDIA 🔥</span>,
-    <span key="2">🔥 ₹999 WITH COUPON: <span className="line-through text-gray-500 mx-1">₹1599</span> <span className="text-rose-400 font-black">₹1399</span></span>
-  ];
-
-  const updateCartCount = async () => {
+  const updateCart = async () => {
     try {
       const res = await fetch("/api/cart-count");
       const data = await res.json();
       setCartCount(data.count);
-    } catch {
-      setCartCount(0);
-    }
+    } catch { setCartCount(0); }
   };
 
-  const updateWishlistCount = () => {
+  const updateWishlist = () => {
     try {
-      const wishlistMatch = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("wishlist="));
-      const wishlist = wishlistMatch ? JSON.parse(decodeURIComponent(wishlistMatch.split("=")[1])) : [];
-      setWishlistCount(wishlist.length);
-    } catch {
-      setWishlistCount(0);
-    }
+      const m = document.cookie.split("; ").find(r => r.startsWith("wishlist="));
+      const w = m ? JSON.parse(decodeURIComponent(m.split("=")[1])) : [];
+      setWishlistCount(w.length);
+    } catch { setWishlistCount(0); }
   };
 
   useEffect(() => {
-    fetch("/api/admin-check")
-      .then((res) => res.json())
-      .then((data) => setIsAdmin(data.authenticated));
-
-    updateCartCount();
-    updateWishlistCount();
-    window.addEventListener("storage", updateCartCount);
-    const interval = setInterval(() => {
-      updateCartCount();
-      updateWishlistCount();
-    }, 2000);
-
-    return () => {
-      window.removeEventListener("storage", updateCartCount);
-      clearInterval(interval);
-    };
+    fetch("/api/admin-check").then(r => r.json()).then(d => setIsAdmin(d.authenticated));
+    updateCart();
+    updateWishlist();
+    const id = setInterval(() => { updateCart(); updateWishlist(); }, 3000);
+    return () => clearInterval(id);
   }, []);
 
   const logout = async () => {
@@ -85,84 +65,85 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Shop", href: "/buy" },
+    { name: "Home",  href: "/" },
+    { name: "Shop",  href: "/buy" },
     { name: "About", href: "/about" },
-    { name: "FAQs", href: "/faqs" },
+    { name: "FAQs",  href: "/faqs" },
   ];
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full z-[100] flex flex-col font-sans">
-        {/* PROMO BAR */}
-        <div className="bg-[#111] text-white text-center h-10 flex items-center justify-center text-[10px] font-black tracking-[0.2em] uppercase overflow-hidden relative">
+      <div className="fixed top-0 left-0 w-full z-[100] flex flex-col">
+
+        {/* ── Promo bar ───────────────────────────────────────── */}
+        <div className="bg-[#1A1A1A] text-white h-9 flex items-center justify-center overflow-hidden relative">
           <AnimatePresence mode="wait">
-            <motion.div
+            <motion.p
               key={bannerIndex}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="absolute w-full flex items-center justify-center px-4"
+              initial={{ y: 14, opacity: 0 }}
+              animate={{ y: 0,  opacity: 1 }}
+              exit={{   y: -14, opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              className="absolute text-[11px] font-medium tracking-[0.06em] text-center px-4"
+              style={{ fontFamily: "var(--font-body, sans-serif)" }}
             >
-              {banners[bannerIndex]}
-            </motion.div>
+              {BANNERS[bannerIndex]}
+            </motion.p>
           </AnimatePresence>
         </div>
 
-        {/* MAIN NAV */}
-        <motion.nav
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          className={`w-full transition-all duration-500 ${scrolled 
-            ? "bg-white/90 backdrop-blur-md py-3 shadow-lg" 
-            : "bg-white/50 backdrop-blur-sm py-6"
+        {/* ── Main navbar ─────────────────────────────────────── */}
+        <nav
+          className={`w-full transition-all duration-300 ${
+            scrolled
+              ? "bg-white shadow-[0_1px_0_0_#E3DDD6] py-3"
+              : "bg-white/95 backdrop-blur-sm py-4"
           }`}
         >
-          <div className="max-w-[1440px] mx-auto px-6 md:px-10 grid grid-cols-2 md:grid-cols-3 items-center">
-            
-            {/* Logo - Left */}
-            <Link href="/" className="flex items-center">
-              <span className="text-2xl md:text-4xl font-black text-black tracking-tighter">
-                theCarryClub<span className="text-blue-600">.</span>
+          <div className="max-w-[1280px] mx-auto px-6 md:px-10 flex items-center justify-between gap-6">
+
+            {/* Logo */}
+            <Link href="/" className="flex items-center shrink-0">
+              <span
+                className="text-[1.45rem] md:text-[1.65rem] font-bold tracking-tight text-[#1A1A1A]"
+                style={{ fontFamily: "var(--font-display, Georgia, serif)", letterSpacing: "-0.03em" }}
+              >
+                theCarryClub<span style={{ color: "var(--brand)" }}>.</span>
               </span>
             </Link>
 
-            {/* Links - Center (Desktop) */}
-            <div className="hidden md:flex items-center justify-center gap-8">
-              {navLinks.map((link) => (
+            {/* Nav links — desktop */}
+            <div className="hidden md:flex items-center gap-8">
+              {navLinks.map(link => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-black transition-colors"
+                  className="text-[13px] font-medium text-[#5A534E] hover:text-[#1A1A1A] transition-colors tracking-wide"
+                  style={{ fontFamily: "var(--font-body, sans-serif)" }}
                 >
                   {link.name}
                 </Link>
               ))}
             </div>
 
-            {/* Icons - Right */}
-            <div className="flex items-center justify-end gap-6 md:gap-8">
-              
-              {isAdmin ? (
-                <button onClick={logout} className="text-blue-600 hover:scale-110 transition-transform">
-                  <User size={22} strokeWidth={2.5} />
-                </button>
-              ) : (
-                <button onClick={() => setShowModal(true)} className="text-black hover:scale-110 transition-transform">
-                  <User size={22} strokeWidth={2.5} />
-                </button>
-              )}
+            {/* Icons */}
+            <div className="flex items-center gap-5 md:gap-6">
+              <button
+                onClick={isAdmin ? logout : () => setShowModal(true)}
+                className="text-[#5A534E] hover:text-[#1A1A1A] transition-colors"
+                title={isAdmin ? "Logout" : "Login"}
+              >
+                <User size={20} strokeWidth={1.75} />
+              </button>
 
-              <Link href="/wishlist" className="hidden md:block relative text-black hover:scale-110 transition-transform">
-                <Heart size={22} strokeWidth={2.5} />
+              <Link href="/wishlist" className="hidden md:flex relative text-[#5A534E] hover:text-[#1A1A1A] transition-colors">
+                <Heart size={20} strokeWidth={1.75} />
                 <AnimatePresence>
                   {wishlistCount > 0 && (
                     <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="absolute -top-2 -right-2 bg-rose-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full"
+                      initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                      className="absolute -top-1.5 -right-1.5 text-white text-[9px] font-semibold w-[15px] h-[15px] flex items-center justify-center rounded-full"
+                      style={{ background: "var(--brand)" }}
                     >
                       {wishlistCount}
                     </motion.span>
@@ -170,15 +151,14 @@ export default function Navbar() {
                 </AnimatePresence>
               </Link>
 
-              <Link href="/cart" className="relative text-black hover:scale-110 transition-transform">
-                <ShoppingCart size={22} strokeWidth={2.5} />
+              <Link href="/cart" className="relative flex items-center gap-1.5 text-[#5A534E] hover:text-[#1A1A1A] transition-colors">
+                <ShoppingBag size={20} strokeWidth={1.75} />
                 <AnimatePresence>
                   {cartCount > 0 && (
                     <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full"
+                      initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                      className="absolute -top-1.5 -right-1.5 text-white text-[9px] font-semibold w-[15px] h-[15px] flex items-center justify-center rounded-full"
+                      style={{ background: "var(--brand)" }}
                     >
                       {cartCount}
                     </motion.span>
@@ -186,55 +166,69 @@ export default function Navbar() {
                 </AnimatePresence>
               </Link>
 
+              {/* Hamburger */}
               <button
-                className="md:hidden text-black"
+                className="md:hidden text-[#1A1A1A] p-1"
                 onClick={() => setIsOpen(!isOpen)}
+                aria-label="Menu"
               >
-                {isOpen ? <X size={28} /> : <Menu size={28} />}
+                {isOpen ? <X size={24} strokeWidth={1.75} /> : <Menu size={24} strokeWidth={1.75} />}
               </button>
             </div>
-
           </div>
-        </motion.nav>
+        </nav>
       </div>
 
-      {/* MOBILE NAV */}
+      {/* ── Mobile drawer ───────────────────────────────────────── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
-            className="fixed inset-0 bg-white z-[95] pt-[120px] px-10"
+            transition={{ type: "tween", duration: 0.28 }}
+            className="fixed inset-0 bg-white z-[99] flex flex-col pt-[88px] px-8 pb-10"
           >
-            <div className="flex flex-col gap-6">
-              {navLinks.map((link) => (
-                <Link
+            <nav className="flex flex-col gap-1 mt-4">
+              {navLinks.map((link, i) => (
+                <motion.div
                   key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="text-2xl font-black uppercase tracking-tighter text-black"
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 }}
                 >
-                  {link.name}
-                </Link>
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className="block py-4 text-2xl font-semibold text-[#1A1A1A] border-b border-[#F0EBE3] tracking-tight"
+                    style={{ fontFamily: "var(--font-display, Georgia, serif)" }}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
-              <Link
-                href="/wishlist"
-                onClick={() => setIsOpen(false)}
-                className="text-2xl font-black uppercase tracking-tighter text-rose-600"
-              >
-                Wishlist
-              </Link>
+              <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.24 }}>
+                <Link
+                  href="/wishlist"
+                  onClick={() => setIsOpen(false)}
+                  className="block py-4 text-2xl font-semibold border-b border-[#F0EBE3] tracking-tight"
+                  style={{ fontFamily: "var(--font-display, Georgia, serif)", color: "var(--brand)" }}
+                >
+                  Wishlist
+                </Link>
+              </motion.div>
+            </nav>
+            <div className="mt-auto">
+              <p className="text-xs text-[#B0A89F]" style={{ fontFamily: "var(--font-body, sans-serif)" }}>
+                Free shipping · 7-day returns · COD available
+              </p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {showModal && (
-        <AdminLoginModal
-          onClose={() => setShowModal(false)}
-          onSuccess={() => setIsAdmin(true)}
-        />
+        <AdminLoginModal onClose={() => setShowModal(false)} onSuccess={() => setIsAdmin(true)} />
       )}
     </>
   );

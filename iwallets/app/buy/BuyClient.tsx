@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/lib/cartActions";
 import { toggleWishlist } from "@/lib/wishlistActions";
 import toast from "react-hot-toast";
-import { Heart, ArrowLeft, Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
+import { Eyebrow, Heading, BackButton, PriceTag } from "@/components/ui/tcc";
+import { trackConversion } from "@/lib/analytics";
 import { useSearchParams } from "next/navigation";
 
 import Image from "next/image";
@@ -67,11 +69,25 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
     e.preventDefault();
     await addToCart(slug);
     toast.success("Successfully added to cart");
+    const product = products.find((p: any) => p.slug?.current === slug);
+    trackConversion({
+      event_name: "add_to_cart",
+      content_ids: [slug],
+      value: product ? (product.price || 1599) - 200 : 1399,
+      currency: "INR",
+    });
   };
 
   const handleBuyNow = async (e: React.MouseEvent, slug: string) => {
     e.preventDefault();
     await addToCart(slug);
+    const product = products.find((p: any) => p.slug?.current === slug);
+    trackConversion({
+      event_name: "add_to_cart",
+      content_ids: [slug],
+      value: product ? (product.price || 1599) - 200 : 1399,
+      currency: "INR",
+    });
     window.location.href = "/cart";
   };
 
@@ -83,9 +99,14 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   }, [productSlug, products]);
 
   useEffect(() => {
-    // Scroll to top when product is selected
     if (selectedProduct) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      trackConversion({
+        event_name: "view_content",
+        content_ids: [selectedProduct.slug?.current],
+        value: (selectedProduct.price || 1599) - 200,
+        currency: "INR",
+      });
     }
   }, [selectedProduct]);
 
@@ -198,7 +219,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   };
 
   return (
-    <section className="min-h-screen bg-[#fafafa] pt-28 md:pt-40 pb-16 px-4 md:px-8 flex flex-col">
+    <section className="min-h-screen bg-surface pt-28 md:pt-40 pb-16 px-4 md:px-8 flex flex-col">
 
       <AnimatePresence mode="wait">
         {!selectedProduct ? (
@@ -211,9 +232,9 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
           >
 
         <div className="text-center mb-10 md:mb-16">
-            <h1 className="text-5xl md:text-8xl font-extrabold text-black tracking-tighter leading-none mb-6">
-              Select Your <span className="text-rose-600">Style.</span>
-            </h1>
+            <Heading as="h1" className="text-5xl md:text-8xl mb-6">
+              Select Your <span className="text-brand italic">Style.</span>
+            </Heading>
           <motion.p 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
@@ -241,11 +262,11 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                 <form action={toggleWishlist.bind(null, product.slug?.current)}>
                   <button 
                     onClick={(e) => e.stopPropagation()}
-                    className="p-2 md:p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-rose-600 group/heart transition-all duration-300"
+                    className="p-2 md:p-3 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-amber-700 group/heart transition-all duration-300"
                   >
                     <Heart 
                       size={16} 
-                      className={`${wishlist.some((w: any) => w.slug === product.slug?.current) ? "fill-rose-600 stroke-rose-600" : "text-gray-400"} group-hover/heart:text-white group-hover/heart:fill-white transition-colors`} 
+                      className={`${wishlist.some((w: any) => w.slug === product.slug?.current) ? "fill-amber-700 stroke-amber-700" : "text-gray-400"} group-hover/heart:text-white group-hover/heart:fill-white transition-colors`} 
                       strokeWidth={3} 
                     />
                   </button>
@@ -306,7 +327,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                 <div className="p-3 md:p-8 pt-0 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
-                       <span className="w-3 md:w-6 h-0.5 bg-rose-600 rounded-full" />
+                       <span className="w-3 md:w-6 h-0.5 bg-amber-700 rounded-full" />
                        <p className="text-[8px] md:text-[9px] text-gray-400 uppercase font-black tracking-widest truncate">{product.collectionName}</p>
                     </div>
                     <h2 className="text-base md:text-xl font-bold md:font-black text-black tracking-tight leading-snug line-clamp-2 min-h-[40px] md:min-h-0">
@@ -325,17 +346,15 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                   <div className="mt-2 md:mt-6 flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg md:text-3xl font-black text-[#ff3366] tracking-tighter">
-                            ₹{(product.price || 1599) - 200}
-                          </span>
+                          <PriceTag amount={(product.price || 1599) - 200} size="md" />
                           <span className="text-xs md:text-sm font-black text-gray-400 line-through tracking-tighter">
                             ₹{product.price || 1599}
                           </span>
                         </div>
-                        <span className="text-[8px] md:text-[9px] font-black text-[#ff3366] uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-full w-fit animate-pulse">🔥 ₹999 WITH COUPON</span>
+                        <span className="text-[8px] md:text-[9px] font-black text-[#B45309] uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-full w-fit animate-pulse">🔥 ₹999 WITH COUPON</span>
                     </div>
                     
-                    <div className="w-6 h-6 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white group-hover:bg-rose-600 transition-colors shadow-lg shrink-0">
+                    <div className="w-6 h-6 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white group-hover:bg-amber-700 transition-colors shadow-lg shrink-0">
                        <span className="text-[10px] md:text-lg leading-none">+</span>
                     </div>
                   </div>
@@ -353,19 +372,13 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
             exit={{ opacity: 0, y: 20 }}
             className="w-full max-w-5xl mx-auto"
           >
-            <button
-              onClick={() => setSelectedProduct(null)}
-              className="mt-4 md:mt-0 mb-6 md:mb-8 inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-sm border border-gray-200 text-gray-600 hover:text-black hover:shadow-md hover:border-gray-300 transition-all font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs transform hover:-translate-y-0.5"
-            >
-              <ArrowLeft size={14} strokeWidth={2.5} />
-              Back to Products
-            </button>
+            <BackButton onClick={() => setSelectedProduct(null)} label="Back to Products" className="mt-4 md:mt-0 mb-6 md:mb-8" />
             <div className="bg-white rounded-3xl md:rounded-[3rem] w-full shadow-2xl overflow-hidden">
 
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                    {/* Product Image Panel */}
                    <div className="bg-gray-50 relative min-h-[360px] md:min-h-[460px] flex items-center overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-rose-600/10 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-amber-700/10 to-transparent" />
                       
                       <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar w-full h-full relative z-10 group/scroll items-center">
                         {getProductMedia(selectedProduct).map((media: any, i: number) => {
@@ -420,7 +433,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
 
                  {/* Content Panel */}
                  <div className="p-4 pt-0 md:p-8 md:py-6 flex flex-col justify-center mt-2 md:mt-0">
-                    <span className="text-[#ff3366] font-black tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[10px] uppercase mb-0.5 md:mb-2">{selectedProduct.brand || "theCarryClub Premium"}</span>
+                    <Eyebrow className="mb-0.5 md:mb-2">{selectedProduct.brand || "theCarryClub Premium"}</Eyebrow>
                     <h2 className="text-2xl md:text-4xl font-black text-black tracking-tighter leading-[1.1] md:leading-none mb-2 md:mb-3">
                       {selectedProduct.title}
                     </h2>
@@ -436,7 +449,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                       <div className="w-px h-4 bg-gray-300 mx-2"></div>
                       <button 
                         onClick={() => setShowTopReviewForm(!showTopReviewForm)}
-                        className="text-[10px] md:text-xs font-black text-[#ff3366] hover:text-black uppercase tracking-widest transition-colors"
+                        className="text-[10px] md:text-xs font-black text-[#B45309] hover:text-black uppercase tracking-widest transition-colors"
                       >
                         {showTopReviewForm ? "Cancel" : "Write Review"}
                       </button>
@@ -538,7 +551,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                             <ul className="space-y-1 md:space-y-2">
                               {bullets.map((b: string, i: number) => (
                                 <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-medium text-gray-500">
-                                  <span className="w-1.5 h-1.5 bg-[#ff3366] rounded-full" />
+                                  <span className="w-1.5 h-1.5 bg-[#B45309] rounded-full" />
                                   {b}
                                 </li>
                               ))}
@@ -551,22 +564,22 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
                     <div className="mt-3 md:mt-6 flex flex-col gap-2 md:gap-4">
                        <div className="flex flex-col gap-2">
                           <div className="flex items-baseline gap-4">
-                             <span className="text-3xl md:text-5xl font-black tracking-tighter text-[#ff3366]">₹{(selectedProduct.price || 1599) - 200}</span>
-                             <span className="text-xl md:text-3xl font-black tracking-tighter text-gray-400 line-through">₹{selectedProduct.price || 1599}</span>
+                             <PriceTag amount={(selectedProduct.price || 1599) - 200} size="lg" />
+                             <span className="text-xl md:text-3xl font-black tracking-tighter text-muted-foreground line-through">₹{selectedProduct.price || 1599}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                             <span className="bg-rose-50 border border-rose-100 text-[#ff3366] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 ₹999 WITH COUPON</span>
+                             <span className="bg-amber-50 border border-rose-100 text-[#B45309] text-[10px] md:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm animate-pulse">🔥 ₹999 WITH COUPON</span>
                           </div>
                        </div>
 
                         <div className="flex gap-3 md:gap-4 w-full">
                           <form className="flex-1">
-                            <button onClick={(e) => handleAddToCart(e, selectedProduct.slug?.current)} className="w-full py-2.5 md:py-3.5 bg-rose-600 text-white font-black text-xs md:text-base rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-rose-500/20 transform hover:-translate-y-0.5 tracking-widest uppercase text-center">
+                            <button onClick={(e) => handleAddToCart(e, selectedProduct.slug?.current)} className="w-full py-2.5 md:py-3.5 bg-amber-700 text-white font-black text-xs md:text-base rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-amber-700/20 transform hover:-translate-y-0.5 tracking-widest uppercase text-center">
                               ADD TO CART
                             </button>
                           </form>
                           <form className="flex-1">
-                            <button onClick={(e) => handleBuyNow(e, selectedProduct.slug?.current)} className="w-full py-2.5 md:py-3.5 bg-black text-white font-black text-xs md:text-base rounded-full hover:bg-rose-600 transition-all duration-300 shadow-xl shadow-gray-200/50 transform hover:-translate-y-0.5 tracking-widest uppercase text-center">
+                            <button onClick={(e) => handleBuyNow(e, selectedProduct.slug?.current)} className="w-full py-2.5 md:py-3.5 bg-black text-white font-black text-xs md:text-base rounded-full hover:bg-amber-700 transition-all duration-300 shadow-xl shadow-gray-200/50 transform hover:-translate-y-0.5 tracking-widest uppercase text-center">
                               BUY NOW
                             </button>
                           </form>

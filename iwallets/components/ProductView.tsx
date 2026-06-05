@@ -39,10 +39,10 @@ export default function ProductView({ product }: any) {
           </p>
 
           <div className="mt-6 flex items-baseline gap-4">
-            <span className="text-xl font-bold text-rose-500">₹ 1399</span>
+            <span className="text-xl font-bold text-amber-700">₹ 1399</span>
             <span className="text-lg line-through text-gray-500">₹ 1599</span>
           </div>
-          <p className="text-sm font-bold text-rose-500 mt-2">🔥 ₹ 999 WITH COUPON</p>
+          <p className="text-sm font-bold text-amber-700 mt-2">🔥 ₹ 999 WITH COUPON</p>
 
           <div className="flex gap-4 mt-8">
             {product.colors.map((c: string) => (

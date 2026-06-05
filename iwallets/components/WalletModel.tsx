@@ -30,7 +30,7 @@ export default function WalletModel() {
           opacity: [0.1, 0.2, 0.1],
         }}
         transition={{ duration: 8, repeat: Infinity }}
-        className="absolute w-64 h-64 bg-[#ff3366] rounded-full blur-[100px] -z-10"
+        className="absolute w-64 h-64 bg-[#B45309] rounded-full blur-[100px] -z-10"
         aria-hidden="true"
       />
 
@@ -82,7 +82,7 @@ export default function WalletModel() {
         <motion.div
           animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-8 w-12 h-12 md:w-16 md:h-16 bg-[#ff3366] rounded-full shadow-lg flex items-center justify-center text-white z-10"
+          className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-8 w-12 h-12 md:w-16 md:h-16 bg-[#B45309] rounded-full shadow-lg flex items-center justify-center text-white z-10"
           aria-hidden="true"
         >
           <span className="text-lg md:text-xl" role="img" aria-label="sparkles">✨</span>
