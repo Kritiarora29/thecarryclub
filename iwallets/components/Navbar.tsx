@@ -2,25 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import AdminLoginModal from "@/components/AdminLoginModal";
-import { Menu, X, ShoppingBag, User, Heart } from "lucide-react";
+import { Menu, X, ShoppingBag, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TAPES = [
+const STATIC_TAPES = [
   "FREE SHIPPING PAN INDIA · ALL ORDERS",
-  "USE CODE SAVE400 · PAY JUST ₹999",
   "7-DAY EASY RETURNS · NO QUESTIONS ASKED",
   "CASH ON DELIVERY AVAILABLE",
 ];
 
 export default function Navbar() {
-  const [isAdmin, setIsAdmin]             = useState(false);
-  const [showModal, setShowModal]         = useState(false);
   const [isOpen, setIsOpen]               = useState(false);
   const [cartCount, setCartCount]         = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [scrolled, setScrolled]           = useState(false);
   const [tapeIdx, setTapeIdx]             = useState(0);
+  const [tapes, setTapes]                 = useState(STATIC_TAPES);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -33,9 +30,28 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const id = setInterval(() => setTapeIdx(p => (p + 1) % TAPES.length), 4000);
-    return () => clearInterval(id);
+    fetch("/api/coupon")
+      .then(r => r.json())
+      .then(c => {
+        if (c?.isActive && c?.couponCode) {
+          const label = c.discountType === "percent"
+            ? `${c.discountAmount}% OFF`
+            : `₹${c.discountAmount} OFF`;
+          setTapes([
+            "FREE SHIPPING PAN INDIA · ALL ORDERS",
+            `USE CODE ${c.couponCode} · GET ${label}`,
+            "7-DAY EASY RETURNS · NO QUESTIONS ASKED",
+            "CASH ON DELIVERY AVAILABLE",
+          ]);
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setTapeIdx(p => (p + 1) % tapes.length), 4000);
+    return () => clearInterval(id);
+  }, [tapes.length]);
 
   const updateCart = async () => {
     try { const d = await fetch("/api/cart-count").then(r => r.json()); setCartCount(d.count); }
@@ -49,16 +65,10 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    fetch("/api/admin-check").then(r => r.json()).then(d => setIsAdmin(d.authenticated));
     updateCart(); updateWishlist();
     const id = setInterval(() => { updateCart(); updateWishlist(); }, 3000);
     return () => clearInterval(id);
   }, []);
-
-  const logout = async () => {
-    await fetch("/api/admin-logout", { method: "POST" });
-    setIsAdmin(false);
-  };
 
   const NAV = [
     { label: "Home",  href: "/" },
@@ -82,7 +92,7 @@ export default function Navbar() {
               transition={{ duration: 0.28 }}
               className="nb-tape-text"
             >
-              {TAPES[tapeIdx]}
+              {tapes[tapeIdx]}
             </motion.span>
           </AnimatePresence>
         </div>
@@ -105,10 +115,6 @@ export default function Navbar() {
 
             {/* Right: icons */}
             <div className="nb-right">
-              <button className="nb-icon" onClick={isAdmin ? logout : () => setShowModal(true)} title={isAdmin ? "Logout" : "Login"}>
-                <User size={18} strokeWidth={1.5} />
-              </button>
-
               <Link href="/wishlist" className="nb-icon nb-icon--desktop">
                 <Heart size={18} strokeWidth={1.5} />
                 <AnimatePresence>
@@ -162,196 +168,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {showModal && <AdminLoginModal onClose={() => setShowModal(false)} onSuccess={() => setIsAdmin(true)} />}
-
-      <style jsx global>{`
-        :root {
-          --nb-tape-h: 34px;
-          --nb-bar-h:  68px;
-          --nb-h:      calc(var(--nb-tape-h) + var(--nb-bar-h));
-          --ff:        "Replica", ui-sans-serif, system-ui, sans-serif;
-        }
-
-        /* ── Tape ───────────────────────────────────────────────── */
-        .nb-root {
-          position: fixed;
-          top: 0; left: 0;
-          width: 100%;
-          z-index: 100;
-        }
-
-        .nb-tape {
-          height: var(--nb-tape-h);
-          background: #111111;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          position: relative;
-        }
-        .nb-tape-text {
-          font-family: var(--ff);
-          font-size: 0.625rem;
-          font-weight: 600;
-          letter-spacing: 0.18em;
-          color: #E0DDD8;
-          text-transform: uppercase;
-          position: absolute;
-          white-space: nowrap;
-        }
-
-        /* ── Nav bar ─────────────────────────────────────────────── */
-        .nb-nav {
-          height: var(--nb-bar-h);
-          background: #FFFFFF;
-          border-bottom: 1px solid transparent;
-          transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .nb-nav--scrolled {
-          border-bottom-color: #E5E2DC;
-          box-shadow: 0 1px 16px rgba(0,0,0,0.06);
-        }
-
-        .nb-inner {
-          max-width: 1280px;
-          margin: 0 auto;
-          height: 100%;
-          padding: 0 1.5rem;
-          display: grid;
-          grid-template-columns: 1fr auto 1fr;
-          align-items: center;
-          gap: 1rem;
-        }
-        @media (min-width: 768px)  { .nb-inner { padding: 0 2.5rem; } }
-        @media (min-width: 1280px) { .nb-inner { padding: 0 3rem; } }
-
-        /* Left nav */
-        .nb-left {
-          display: none;
-          align-items: center;
-          gap: 2rem;
-          justify-self: start;
-        }
-        @media (min-width: 768px) { .nb-left { display: flex; } }
-
-        .nb-link {
-          font-family: var(--ff);
-          font-size: 0.8125rem;
-          font-weight: 500;
-          letter-spacing: 0.02em;
-          color: #5A534E;
-          text-decoration: none;
-          transition: color 0.15s;
-          position: relative;
-        }
-        .nb-link::after {
-          content: '';
-          position: absolute;
-          bottom: -2px; left: 0;
-          height: 1.5px; width: 0;
-          background: #B45309;
-          transition: width 0.2s;
-        }
-        .nb-link:hover { color: #1A1A1A; }
-        .nb-link:hover::after { width: 100%; }
-
-        /* Center logo */
-        .nb-logo {
-          font-family: var(--ff);
-          font-size: 1.25rem;
-          font-weight: 700;
-          letter-spacing: -0.03em;
-          color: #1A1A1A;
-          text-decoration: none;
-          justify-self: center;
-          white-space: nowrap;
-        }
-        @media (min-width: 768px) { .nb-logo { font-size: 1.4rem; } }
-        .nb-logo-dot { color: #B45309; }
-
-        /* Right icons */
-        .nb-right {
-          display: flex;
-          align-items: center;
-          gap: 1.125rem;
-          justify-self: end;
-        }
-        @media (min-width: 768px) { .nb-right { gap: 1.375rem; } }
-
-        .nb-icon {
-          position: relative;
-          display: flex;
-          align-items: center;
-          color: #5A534E;
-          background: none;
-          border: none;
-          padding: 0;
-          cursor: pointer;
-          text-decoration: none;
-          transition: color 0.15s;
-        }
-        .nb-icon:hover { color: #1A1A1A; }
-
-        .nb-icon--desktop { display: none; }
-        @media (min-width: 768px) { .nb-icon--desktop { display: flex; } }
-
-        .nb-badge {
-          position: absolute;
-          top: -5px; right: -5px;
-          width: 14px; height: 14px;
-          background: #B45309;
-          color: #fff;
-          font-size: 7.5px;
-          font-weight: 700;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: var(--ff);
-        }
-
-        .nb-ham {
-          display: flex;
-        }
-        @media (min-width: 768px) { .nb-ham { display: none; } }
-
-        /* ── Mobile drawer ─────────────────────────────────────── */
-        .nb-drawer {
-          position: fixed;
-          inset: 0;
-          top: var(--nb-h);
-          background: #FFFFFF;
-          z-index: 99;
-          padding: 2rem 2rem 3rem;
-          display: flex;
-          flex-direction: column;
-          overflow-y: auto;
-        }
-
-        .nb-drawer-link {
-          display: block;
-          padding: 1.125rem 0;
-          font-family: var(--ff);
-          font-size: 1.5rem;
-          font-weight: 600;
-          letter-spacing: -0.02em;
-          color: #1A1A1A;
-          text-decoration: none;
-          border-bottom: 1px solid #EEEBE5;
-          transition: color 0.15s;
-        }
-        .nb-drawer-link:hover { color: #B45309; }
-        .nb-drawer-accent { color: #B45309; }
-
-        .nb-drawer-sub {
-          margin-top: auto;
-          padding-top: 2rem;
-          font-family: var(--ff);
-          font-size: 0.75rem;
-          color: #ADA49B;
-          letter-spacing: 0.04em;
-        }
-      `}</style>
     </>
   );
 }
