@@ -1,4 +1,6 @@
 import "./globals.css";
+import "@/styles/navbar.css";
+import "@/styles/landing.css";
 import type { Metadata, Viewport } from "next";
 import LayoutClient from "@/components/LayoutClient";
 import Script from "next/script";
