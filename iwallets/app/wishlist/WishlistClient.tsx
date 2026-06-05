@@ -1,10 +1,10 @@
 "use client"
 
-import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { removeFromWishlist } from "@/lib/wishlistActions"
 import { addToCart } from "@/lib/cartActions"
 import Image from "next/image"
+import { Eyebrow, Heading, Button } from "@/components/ui/tcc"
 
 export default function WishlistClient({ wishlist = [], products = [] }: any) {
   const wishlistItems = wishlist
@@ -104,7 +104,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#fafafa] pt-32 md:pt-40 pb-16 px-4 md:px-8 text-black flex flex-col items-center"
+      className="min-h-screen bg-surface pt-32 md:pt-40 pb-16 px-4 md:px-8 text-primary flex flex-col items-center"
     >
       <div className="max-w-7xl w-full">
         <motion.div
@@ -112,12 +112,8 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
           animate={{ y: 0, opacity: 1 }}
           className="text-center mb-12 md:mb-20"
         >
-          <p className="text-[10px] md:text-sm font-black uppercase tracking-[0.5em] text-rose-600 mb-4">
-            YOUR CURATED FAVORITES
-          </p>
-          <h1 className="text-4xl md:text-7xl font-black tracking-tighter">
-            Wishlist<span className="text-rose-600">.</span>
-          </h1>
+          <Eyebrow className="mb-4">YOUR CURATED FAVORITES</Eyebrow>
+          <Heading as="h1">Wishlist<span className="text-brand">.</span></Heading>
         </motion.div>
 
         {wishlistItems.length === 0 ? (
@@ -130,12 +126,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
               <span className="text-4xl md:text-6xl text-gray-200">♥</span>
             </div>
             <p className="text-gray-400 font-bold text-lg md:text-2xl mb-8">Your wishlist is empty.</p>
-            <Link 
-              href="/buy" 
-              className="px-8 py-3 md:px-12 md:py-4 bg-black text-white rounded-full font-black text-xs md:text-sm tracking-widest hover:bg-rose-600 transition-all transform hover:-translate-y-1 shadow-lg"
-            >
-              EXPLORE PRODUCTS
-            </Link>
+            <Button href="/buy" size="lg">EXPLORE PRODUCTS</Button>
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
@@ -199,7 +190,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                       action={removeFromWishlist.bind(null, product.slug.current)}
                       className="absolute top-4 right-4 md:top-6 md:right-6 z-10"
                     >
-                      <button className="w-8 h-8 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-md font-bold">
+                      <button className="w-8 h-8 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-brand hover:bg-brand hover:text-white transition-all shadow-md font-bold">
                         ✕
                       </button>
                     </form>
@@ -208,27 +199,22 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                   <div className="p-6 md:p-10 flex flex-col flex-1">
                     <div className="flex-1 mb-6">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-4 h-0.5 bg-rose-600 rounded-full" />
-                        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Premium Collection</p>
+                        <span className="w-4 h-0.5 bg-brand rounded-full" />
+                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Premium Collection</p>
                       </div>
-                      <h2 className="text-xl md:text-3xl font-black text-black tracking-tight leading-none mb-2">
+                      <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight leading-none mb-2">
                         {product.title}
                       </h2>
-                      <p className="text-xl md:text-2xl font-bold text-gray-900">₹{product.price || 1399}</p>
+                      <p className="text-xl md:text-2xl font-bold text-primary">₹{product.price || 1399}</p>
                     </div>
 
                     <div className="flex flex-col gap-3">
                       <form action={addToCart.bind(null, product.slug.current)}>
-                        <button className="w-full py-4 md:py-5 bg-black text-white font-black text-xs md:text-sm rounded-full hover:bg-rose-600 transition-all duration-300 shadow-xl transform hover:-translate-y-1 tracking-widest">
-                          ADD TO CART
-                        </button>
+                        <Button type="submit" fullWidth size="lg">ADD TO CART</Button>
                       </form>
-                      <Link 
-                        href={`/buy?product=${product.slug.current}`} 
-                        className="w-full py-3 md:py-4 bg-gray-50 text-gray-400 font-bold text-[10px] md:text-xs rounded-full hover:bg-gray-100 transition-all text-center tracking-widest uppercase"
-                      >
+                      <Button href={`/buy?product=${product.slug.current}`} variant="secondary" fullWidth>
                         View Details
-                      </Link>
+                      </Button>
                     </div>
                   </div>
                 </motion.div>
