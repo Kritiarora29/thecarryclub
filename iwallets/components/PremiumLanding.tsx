@@ -113,12 +113,21 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const prevSlide = () => goSlide((slide - 1 + SLIDES.length) % SLIDES.length);
   const nextSlide = () => goSlide((slide + 1) % SLIDES.length);
 
+  const touchStartX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 40) dx < 0 ? nextSlide() : prevSlide();
+    touchStartX.current = null;
+  };
+
   useEffect(() => { fetch("/api/reviews").then(r => r.json()).then(setReviews).catch(() => {}); }, []);
 
   useEffect(() => {
     fetch("/api/coupon").then(r => r.json()).then(c => {
       if (!c?.couponCode) return;
-      const basePrice = 1399;
+      const basePrice = 1150;
       const payJust = c.discountType === "percent"
         ? Math.round(basePrice * (1 - c.discountAmount / 100))
         : basePrice - c.discountAmount;
@@ -138,7 +147,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     setBusy(true);
     try {
       await addToCart(slug);
-      trackConversion({ event_name: "add_to_cart", value: 1399, currency: "INR", content_ids: [slug] });
+      trackConversion({ event_name: "add_to_cart", value: 1150, currency: "INR", content_ids: [slug] });
       toast.success("Added to cart!");
     } catch { toast.error("Failed"); }
     finally { setBusy(false); }
@@ -148,7 +157,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     setBusy(true);
     try {
       await addToCart(slug);
-      trackConversion({ event_name: "add_to_cart", value: 1399, currency: "INR", content_ids: [slug] });
+      trackConversion({ event_name: "add_to_cart", value: 1150, currency: "INR", content_ids: [slug] });
       window.location.href = "/cart";
     } catch { toast.error("Failed"); setBusy(false); }
   };
@@ -182,7 +191,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     <div className="lp">
 
 
-      <section className="hero">
+      <section className="hero" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
 
         <div className="hero-track" style={{ transform: `translateX(-${slide * 100}%)` }}>
           {SLIDES.map((s, i) => (
@@ -210,8 +219,8 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                   </div>
 
                   <div className="hero-price-row">
-                    <span className="hero-price">&#8377;1,399</span>
-                    <span className="hero-mrp">&#8377;1,599</span>
+                    <span className="hero-price">&#8377;1,150</span>
+                    <span className="hero-mrp">&#8377;1,150</span>
                     <span className="hero-save">Save &#8377;200</span>
                   </div>
 
@@ -321,8 +330,8 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                     <span className="product-rtext">{avg} ({reviews.length || "100+"})</span>
                   </div>
                   <div className="product-price-row">
-                    <span className="product-price">&#8377;1,399</span>
-                    <span className="product-mrp">&#8377;1,599</span>
+                    <span className="product-price">&#8377;1,150</span>
+                    <span className="product-mrp">&#8377;1,150</span>
                   </div>
                   <button
                     onClick={() => { setSelectedColor(color); buyNow(); }}
@@ -424,7 +433,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 ))}
               </div>
               <button onClick={buyNow} disabled={busy} className="btn-amber" style={{ marginTop: "2rem" }}>
-                Shop Now &mdash; &#8377;1,399 <ArrowRight size={14} />
+                Shop Now &mdash; &#8377;1,150 <ArrowRight size={14} />
               </button>
             </div>
           </div>

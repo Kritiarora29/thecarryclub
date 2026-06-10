@@ -76,14 +76,14 @@ export default function CartClient({ cart = [], products = [] }: any) {
     .filter(Boolean);
 
   const totalQty      = cartItems.reduce((s: number, i: any) => s + i.qty, 0);
-  const subtotal      = totalQty * 1399;
+  const subtotal      = totalQty * 1150;
   const couponSaving  = isCouponApplied ? COUPON_DISCOUNT * totalQty : 0;
   const afterCoupon   = Math.max(subtotal - couponSaving, 0);
   const prepaidSaving = paymentMethod === "prepaid" ? Math.round(afterCoupon * 0.05) : 0;
   const finalTotal    = afterCoupon - prepaidSaving;
 
   const formattedItems = cartItems.map((item: any) => ({
-    title: item.title, quantity: item.qty, price: 1399,
+    title: item.title, quantity: item.qty, price: 1150,
   }));
 
   // ── Coupon apply ─────────────────────────────────────────────────────────────
@@ -297,7 +297,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-sm tracking-tight truncate">{item.title}</p>
-                        <p className="text-xs text-muted-foreground font-bold">₹1,399 each</p>
+                        <p className="text-xs text-muted-foreground font-bold">₹1,150 each</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="flex items-center bg-muted rounded-full border border-border">
@@ -482,7 +482,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                     {cartItems.map((item: any, i: number) => (
                       <li key={i} className="flex justify-between text-sm font-bold text-primary">
                         <span className="truncate pr-4">{item.qty}× {item.title}</span>
-                        <span>₹{(1399 * item.qty).toLocaleString("en-IN")}</span>
+                        <span>₹{(1150 * item.qty).toLocaleString("en-IN")}</span>
                       </li>
                     ))}
                   </ul>

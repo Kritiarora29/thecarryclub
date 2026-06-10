@@ -205,7 +205,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                       <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight leading-none mb-2">
                         {product.title}
                       </h2>
-                      <p className="text-xl md:text-2xl font-bold text-primary">₹{product.price || 1399}</p>
+                      <p className="text-xl md:text-2xl font-bold text-primary">₹{product.price || 1150}</p>
                     </div>
 
                     <div className="flex flex-col gap-3">
