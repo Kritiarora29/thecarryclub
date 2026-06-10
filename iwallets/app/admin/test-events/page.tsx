@@ -39,9 +39,9 @@ const API_STATUSES = [
 
 const CLIENT_EVENTS = [
   { name: "page_view",         props: { page_path: "/test-events" } },
-  { name: "view_content",      props: { content_ids: ["test-product-001"], value: 1399 } },
-  { name: "add_to_cart",       props: { content_ids: ["test-product-001"], value: 1399, currency: "INR" } },
-  { name: "initiate_checkout", props: { value: 1399, currency: "INR" } },
+  { name: "view_content",      props: { content_ids: ["test-product-001"], value: 1150 } },
+  { name: "add_to_cart",       props: { content_ids: ["test-product-001"], value: 1150, currency: "INR" } },
+  { name: "initiate_checkout", props: { value: 1150, currency: "INR" } },
   { name: "add_payment_info",  props: { payment_method: "card" } },
   { name: "search",            props: { search_string: "slim wallet" } },
   { name: "lead",              props: { source: "test" } },
@@ -56,11 +56,11 @@ const SERVER_EVENTS = [
   },
   {
     label: "add_to_cart",
-    data: { event_name: "add_to_cart", value: 1399, currency: "INR", content_ids: ["test-product-001"] },
+    data: { event_name: "add_to_cart", value: 1150, currency: "INR", content_ids: ["test-product-001"] },
   },
   {
     label: "initiate_checkout",
-    data: { event_name: "initiate_checkout", value: 1399, currency: "INR", content_ids: ["test-product-001"] },
+    data: { event_name: "initiate_checkout", value: 1150, currency: "INR", content_ids: ["test-product-001"] },
   },
   {
     label: "purchase",
@@ -69,7 +69,7 @@ const SERVER_EVENTS = [
       email: "test@thecarryclub.in",
       first_name: "Test",
       last_name: "User",
-      value: 1399,
+      value: 1150,
       currency: "INR",
       order_id: "test-order-001",
       content_ids: ["test-product-001"],

@@ -217,7 +217,7 @@ export function PageHeader({
 }
 
 // ─── PriceTag ─────────────────────────────────────────────────────────────────
-// Amber ₹ price. Formats with Indian locale (1,599 not 1599).
+// Amber ₹ price. Formats with Indian locale (1,150 not 1599).
 
 export interface PriceTagProps extends React.HTMLAttributes<HTMLSpanElement> {
   amount: number;
