@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RazorpayCheckout from "@/components/RazorpayCheckout";
@@ -19,9 +18,6 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "Premium iWallet – Space Grey": "/Iwallet - Images/Prod image-desk-grey/1.png",
 };
 
-const COUPON_CODE = "SAVE400";
-const COUPON_DISCOUNT = 400;
-
 export default function CartClient({ cart = [], products = [] }: any) {
   const [name, setName]         = useState("");
   const [email, setEmail]       = useState("");
@@ -38,6 +34,16 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const [couponInput, setCouponInput]         = useState("");
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponError, setCouponError]         = useState("");
+
+  // Live coupon config from admin
+  const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount: number; type: string } | null>(null);
+  useEffect(() => {
+    fetch("/api/coupon").then(r => r.json()).then(c => {
+      if (c?.isActive && c?.couponCode) {
+        setActiveCoupon({ code: c.couponCode.toUpperCase(), discount: c.discountAmount, type: c.discountType });
+      }
+    }).catch(() => {});
+  }, []);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Restore form from localStorage
@@ -75,23 +81,29 @@ export default function CartClient({ cart = [], products = [] }: any) {
     })
     .filter(Boolean);
 
-  const totalQty      = cartItems.reduce((s: number, i: any) => s + i.qty, 0);
-  const subtotal      = totalQty * 1150;
-  const couponSaving  = isCouponApplied ? COUPON_DISCOUNT * totalQty : 0;
+  const totalQty     = cartItems.reduce((s: number, i: any) => s + i.qty, 0);
+  const unitPrice    = cartItems[0]?.price || 1150;
+  const subtotal     = totalQty * unitPrice;
+  const couponDiscount = activeCoupon
+    ? activeCoupon.type === "percent"
+      ? Math.round(unitPrice * activeCoupon.discount / 100)
+      : activeCoupon.discount
+    : 0;
+  const couponSaving  = isCouponApplied ? couponDiscount * totalQty : 0;
   const afterCoupon   = Math.max(subtotal - couponSaving, 0);
   const prepaidSaving = paymentMethod === "prepaid" ? Math.round(afterCoupon * 0.05) : 0;
   const finalTotal    = afterCoupon - prepaidSaving;
 
   const formattedItems = cartItems.map((item: any) => ({
-    title: item.title, quantity: item.qty, price: 1150,
+    title: item.title, quantity: item.qty, price: item.price || 1150,
   }));
 
   // ── Coupon apply ─────────────────────────────────────────────────────────────
   const applyCoupon = () => {
-    if (couponInput.trim().toUpperCase() === COUPON_CODE) {
+    if (activeCoupon && couponInput.trim().toUpperCase() === activeCoupon.code) {
       setIsCouponApplied(true);
       setCouponError("");
-      toast.success(`Coupon applied! Save ₹${COUPON_DISCOUNT}/item`);
+      toast.success(`Coupon applied! Save ₹${couponDiscount}/item`);
     } else {
       setCouponError("Invalid coupon code");
       toast.error("Invalid coupon code");
@@ -297,7 +309,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-sm tracking-tight truncate">{item.title}</p>
-                        <p className="text-xs text-muted-foreground font-bold">₹1,150 each</p>
+                        <p className="text-xs text-muted-foreground font-bold">&#8377;{(item.price || 1150).toLocaleString("en-IN")} each</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="flex items-center bg-muted rounded-full border border-border">
@@ -332,7 +344,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3">
                   <div className="flex items-center gap-2 text-emerald-700">
                     <CheckCircle2 size={16} />
-                    <span className="text-sm font-black">{COUPON_CODE} — Save ₹{couponSaving}</span>
+                    <span className="text-sm font-black">{activeCoupon?.code} — Save ₹{couponSaving}</span>
                   </div>
                   <button onClick={removeCoupon} className="text-xs text-gray-400 hover:text-red-500 font-bold transition-colors">Remove</button>
                 </div>
@@ -340,7 +352,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Enter code (e.g. SAVE400)"
+                    placeholder={activeCoupon ? `Enter code (e.g. ${activeCoupon.code})` : "Enter coupon code"}
                     value={couponInput}
                     onChange={(e) => { setCouponInput(e.target.value); setCouponError(""); }}
                     onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
@@ -415,7 +427,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                 </div>
                 {couponSaving > 0 && (
                   <div className="flex justify-between text-emerald-600 font-bold">
-                    <span>Coupon ({COUPON_CODE})</span>
+                    <span>Coupon ({activeCoupon?.code})</span>
                     <span>-₹{couponSaving.toLocaleString("en-IN")}</span>
                   </div>
                 )}
@@ -482,7 +494,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                     {cartItems.map((item: any, i: number) => (
                       <li key={i} className="flex justify-between text-sm font-bold text-primary">
                         <span className="truncate pr-4">{item.qty}× {item.title}</span>
-                        <span>₹{(1150 * item.qty).toLocaleString("en-IN")}</span>
+                        <span>₹{((item.price || 1150) * item.qty).toLocaleString("en-IN")}</span>
                       </li>
                     ))}
                   </ul>

@@ -29,7 +29,7 @@ export const getProducts = unstable_cache(
 
     const sanityProducts = sanityProductsRaw.map((p: any) => ({
       ...p,
-      price: p.price === 999 ? 1599 : (p.price || 1599)
+      price: (p.price === 999 || p.price === 1599 || p.price === 1399) ? 1150 : (p.price || 1150)
     }));
 
     if (sanityProductsResult.status === "rejected") {

@@ -97,6 +97,10 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const reviewsRef = useRef<HTMLDivElement>(null);
   const slideTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const currentProduct = products.find((p: any) => p.slug?.current === selectedColor.slug);
+  const basePrice = currentProduct?.price || products[0]?.price || 1150;
+  const baseMRP   = basePrice + 200;
+
   const avg = reviews.length
     ? (reviews.reduce((a, r) => a + r.stars, 0) / reviews.length).toFixed(1)
     : "4.9";
@@ -127,7 +131,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   useEffect(() => {
     fetch("/api/coupon").then(r => r.json()).then(c => {
       if (!c?.couponCode) return;
-      const basePrice = 1150;
+      const basePrice = currentProduct?.price || products[0]?.price || 1150;
       const payJust = c.discountType === "percent"
         ? Math.round(basePrice * (1 - c.discountAmount / 100))
         : basePrice - c.discountAmount;
@@ -147,7 +151,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     setBusy(true);
     try {
       await addToCart(slug);
-      trackConversion({ event_name: "add_to_cart", value: 1150, currency: "INR", content_ids: [slug] });
+      trackConversion({ event_name: "add_to_cart", value: basePrice, currency: "INR", content_ids: [slug] });
       toast.success("Added to cart!");
     } catch { toast.error("Failed"); }
     finally { setBusy(false); }
@@ -157,7 +161,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
     setBusy(true);
     try {
       await addToCart(slug);
-      trackConversion({ event_name: "add_to_cart", value: 1150, currency: "INR", content_ids: [slug] });
+      trackConversion({ event_name: "add_to_cart", value: basePrice, currency: "INR", content_ids: [slug] });
       window.location.href = "/cart";
     } catch { toast.error("Failed"); setBusy(false); }
   };
@@ -219,9 +223,9 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                   </div>
 
                   <div className="hero-price-row">
-                    <span className="hero-price">&#8377;1,150</span>
-                    <span className="hero-mrp">&#8377;1,150</span>
-                    <span className="hero-save">Save &#8377;200</span>
+                    <span className="hero-price">&#8377;{basePrice.toLocaleString("en-IN")}</span>
+                    <span className="hero-mrp">&#8377;{baseMRP.toLocaleString("en-IN")}</span>
+                    <span className="hero-save">Save &#8377;{baseMRP - basePrice}</span>
                   </div>
 
                   <div className="hero-btns">
@@ -330,8 +334,8 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                     <span className="product-rtext">{avg} ({reviews.length || "100+"})</span>
                   </div>
                   <div className="product-price-row">
-                    <span className="product-price">&#8377;1,150</span>
-                    <span className="product-mrp">&#8377;1,150</span>
+                    <span className="product-price">&#8377;{(products.find((p: any) => p.slug?.current === color.slug)?.price || basePrice).toLocaleString("en-IN")}</span>
+                    <span className="product-mrp">&#8377;{((products.find((p: any) => p.slug?.current === color.slug)?.price || basePrice) + 200).toLocaleString("en-IN")}</span>
                   </div>
                   <button
                     onClick={() => { setSelectedColor(color); buyNow(); }}
@@ -433,7 +437,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                 ))}
               </div>
               <button onClick={buyNow} disabled={busy} className="btn-amber" style={{ marginTop: "2rem" }}>
-                Shop Now &mdash; &#8377;1,150 <ArrowRight size={14} />
+                Shop Now &mdash; &#8377;{basePrice.toLocaleString("en-IN")} <ArrowRight size={14} />
               </button>
             </div>
           </div>
@@ -573,7 +577,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
         <div className="offer-inner">
           <div>
             <p className="eyebrow-amber">Limited Time Offer</p>
-            <h2 className="offer-h2">Get it for just <span className="offer-price">&#8377;{coupon?.active && coupon.payJust ? coupon.payJust : 999}</span></h2>
+            <h2 className="offer-h2">Get it for just <span className="offer-price">&#8377;{coupon?.active && coupon.payJust ? coupon.payJust : basePrice}</span></h2>
             <p className="offer-sub">
               {coupon?.active
                 ? <>Apply coupon <strong>{coupon.code}</strong> at checkout &middot; {coupon.label}</>
