@@ -100,8 +100,8 @@ function ProductCard({
   averageRating: string; totalReviews: number;
 }) {
   const media  = getProductMedia(product);
-  const price  = (product.price || 1599) - 200;
-  const mrp    = product.price || 1599;
+  const price  = product.price || 1150;
+  const mrp    = (product.price || 1150) + 200;
   const slug   = product.slug?.current;
   const [hovered, setHovered] = useState(false);
 
@@ -278,8 +278,8 @@ function ProductDetail({
   const [showForm, setShowForm]       = useState(false);
   const [newReview, setNewReview]     = useState({ name: "", text: "", stars: 5 });
 
-  const price   = (product.price || 1599) - 200;
-  const mrp     = product.price || 1599;
+  const price   = product.price || 1150;
+  const mrp     = (product.price || 1150) + 200;
   const slug    = product.slug?.current;
   const media   = getProductMedia(product);
   const tagline = product.tagline || descriptions[product.title]?.tagline;
@@ -497,7 +497,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   useEffect(() => {
     if (selected) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      trackConversion({ event_name: "view_content", content_ids: [selected.slug?.current], value: (selected.price || 1599) - 200, currency: "INR" });
+      trackConversion({ event_name: "view_content", content_ids: [selected.slug?.current], value: selected.price || 1150, currency: "INR" });
     }
   }, [selected]);
 

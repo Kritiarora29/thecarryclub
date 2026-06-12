@@ -39,10 +39,9 @@ export default function ProductView({ product }: any) {
           </p>
 
           <div className="mt-6 flex items-baseline gap-4">
-            <span className="text-xl font-bold text-amber-700">₹ 1150</span>
-            <span className="text-lg line-through text-gray-500">₹ 1599</span>
+            <span className="text-xl font-bold text-amber-700">&#8377;{(product.price || 1150).toLocaleString("en-IN")}</span>
+            <span className="text-lg line-through text-gray-500">&#8377;{((product.price || 1150) + 200).toLocaleString("en-IN")}</span>
           </div>
-          <p className="text-sm font-bold text-amber-700 mt-2">🔥 ₹ 999 WITH COUPON</p>
 
           <div className="flex gap-4 mt-8">
             {product.colors.map((c: string) => (
