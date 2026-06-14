@@ -125,9 +125,9 @@ export async function POST(req: Request) {
 
     // B. Check Serviceability
     // Wallet weight is around 0.1 - 0.2 kg. Let's use 0.2 kg (200 grams) as standard
-    const weight = 0.2; 
     const orderAmount = order.amount || 999;
-    const isCod = 0; // The client pays online via Razorpay in our flow
+    const isCod = order.paymentMethod?.toLowerCase() === "cod";
+    const nimbusPaymentType = isCod ? "cod" : "prepaid";
 
     const serviceabilityRes = await fetch(`${baseUrl}/courier/serviceability`, {
       method: "POST",
@@ -139,7 +139,7 @@ export async function POST(req: Request) {
         origin: pickupPincode,
         destination: deliveryPincode,
         weight: 200, // 200 grams integer
-        payment_type: "prepaid",
+        payment_type: nimbusPaymentType,
         order_amount: orderAmount
       })
     });

@@ -82,10 +82,14 @@ export async function POST(req: Request) {
       sku: item.title?.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     }));
 
+    // Determine payment type from order — COD stays cod, everything else is prepaid
+    const isCod = order.paymentMethod?.toLowerCase() === "cod";
+    const nimbusPaymentType = isCod ? "cod" : "prepaid";
+
     const payload = {
       order_number: order._id.toString(),
-      payment_method: "prepaid",
-      payment_type: "prepaid",
+      payment_method: nimbusPaymentType,
+      payment_type: nimbusPaymentType,
       courier_id: courierId,
       weight: 200, // 200 grams default
       length: 15, // standard wallet package cm
