@@ -1,4 +1,5 @@
 import { connectDB } from "./mongodb";
+import { PRODUCT_PRICE } from "./constants";
 import Product from "@/models/Product";
 import { sanityClient } from "./sanity";
 import { unstable_cache } from "next/cache";
@@ -29,7 +30,7 @@ export const getProducts = unstable_cache(
 
     const sanityProducts = sanityProductsRaw.map((p: any) => ({
       ...p,
-      price: (p.price === 999 || p.price === 1599 || p.price === 1399) ? 1150 : (p.price || 1150)
+      price: (p.price === 999 || p.price === 1599 || p.price === 1399 || p.price === 1150) ? PRODUCT_PRICE : (p.price || PRODUCT_PRICE)
     }));
 
     if (sanityProductsResult.status === "rejected") {

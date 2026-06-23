@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PRODUCT_PRICE } from "@/lib/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import RazorpayCheckout from "@/components/RazorpayCheckout";
 import { updateQty, removeFromCart } from "@/lib/cartActions";
@@ -82,7 +83,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
     .filter(Boolean);
 
   const totalQty     = cartItems.reduce((s: number, i: any) => s + i.qty, 0);
-  const unitPrice    = cartItems[0]?.price || 1150;
+  const unitPrice    = cartItems[0]?.price || PRODUCT_PRICE;
   const subtotal     = totalQty * unitPrice;
   const couponDiscount = activeCoupon
     ? activeCoupon.type === "percent"
@@ -95,7 +96,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
   const finalTotal    = afterCoupon - prepaidSaving;
 
   const formattedItems = cartItems.map((item: any) => ({
-    title: item.title, quantity: item.qty, price: item.price || 1150,
+    title: item.title, quantity: item.qty, price: item.price || PRODUCT_PRICE,
   }));
 
   // ── Coupon apply ─────────────────────────────────────────────────────────────
@@ -309,7 +310,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-sm tracking-tight truncate">{item.title}</p>
-                        <p className="text-xs text-muted-foreground font-bold">&#8377;{(item.price || 1150).toLocaleString("en-IN")} each</p>
+                        <p className="text-xs text-muted-foreground font-bold">&#8377;{(item.price || PRODUCT_PRICE).toLocaleString("en-IN")} each</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <div className="flex items-center bg-muted rounded-full border border-border">
@@ -494,7 +495,7 @@ export default function CartClient({ cart = [], products = [] }: any) {
                     {cartItems.map((item: any, i: number) => (
                       <li key={i} className="flex justify-between text-sm font-bold text-primary">
                         <span className="truncate pr-4">{item.qty}× {item.title}</span>
-                        <span>₹{((item.price || 1150) * item.qty).toLocaleString("en-IN")}</span>
+                        <span>₹{((item.price || PRODUCT_PRICE) * item.qty).toLocaleString("en-IN")}</span>
                       </li>
                     ))}
                   </ul>

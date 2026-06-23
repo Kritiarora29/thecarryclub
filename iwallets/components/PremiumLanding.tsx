@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addToCart } from "@/lib/cartActions";
+import { PRODUCT_PRICE, PRICE_AFTER_COUPON } from "@/lib/constants";
 import { toggleWishlist } from "@/lib/wishlistActions";
 import { trackConversion } from "@/lib/analytics";
 import toast from "react-hot-toast";
@@ -98,8 +99,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   const slideTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentProduct = products.find((p: any) => p.slug?.current === selectedColor.slug);
-  const basePrice = currentProduct?.price || products[0]?.price || 1150;
-  const baseMRP   = basePrice + 200;
+  const basePrice = currentProduct?.price || products[0]?.price || PRODUCT_PRICE;
 
   const avg = reviews.length
     ? (reviews.reduce((a, r) => a + r.stars, 0) / reviews.length).toFixed(1)
@@ -131,7 +131,7 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
   useEffect(() => {
     fetch("/api/coupon").then(r => r.json()).then(c => {
       if (!c?.couponCode) return;
-      const basePrice = currentProduct?.price || products[0]?.price || 1150;
+      const basePrice = currentProduct?.price || products[0]?.price || PRODUCT_PRICE;
       const payJust = c.discountType === "percent"
         ? Math.round(basePrice * (1 - c.discountAmount / 100))
         : basePrice - c.discountAmount;
@@ -224,8 +224,9 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
 
                   <div className="hero-price-row">
                     <span className="hero-price">&#8377;{basePrice.toLocaleString("en-IN")}</span>
-                    <span className="hero-mrp">&#8377;{baseMRP.toLocaleString("en-IN")}</span>
-                    <span className="hero-save">Save &#8377;{baseMRP - basePrice}</span>
+                    {coupon?.active && coupon.payJust && (
+                      <span className="hero-save">&#8377;{coupon.payJust} with coupon</span>
+                    )}
                   </div>
 
                   <div className="hero-btns">
@@ -335,7 +336,9 @@ export default function PremiumLanding({ products = [], wishlist = [] }: any) {
                   </div>
                   <div className="product-price-row">
                     <span className="product-price">&#8377;{(products.find((p: any) => p.slug?.current === color.slug)?.price || basePrice).toLocaleString("en-IN")}</span>
-                    <span className="product-mrp">&#8377;{((products.find((p: any) => p.slug?.current === color.slug)?.price || basePrice) + 200).toLocaleString("en-IN")}</span>
+                    {coupon?.active && coupon.payJust && (
+                      <span className="product-mrp">&#8377;{coupon.payJust} with coupon</span>
+                    )}
                   </div>
                   <button
                     onClick={() => { setSelectedColor(color); buyNow(); }}

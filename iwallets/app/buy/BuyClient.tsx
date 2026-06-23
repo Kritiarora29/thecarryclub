@@ -10,6 +10,7 @@ import { Eyebrow, BackButton, PriceTag } from "@/components/ui/tcc";
 import { trackConversion } from "@/lib/analytics";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { PRODUCT_PRICE, COUPON_CODE, COUPON_DISCOUNT, PRICE_AFTER_COUPON } from "@/lib/constants";
 
 /* ─── static data ─────────────────────────────────────────────────── */
 const descriptions: Record<string, { tagline: string; bullets: string[] }> = {
@@ -100,8 +101,7 @@ function ProductCard({
   averageRating: string; totalReviews: number;
 }) {
   const media  = getProductMedia(product);
-  const price  = product.price || 1150;
-  const mrp    = (product.price || 1150) + 200;
+  const price  = product.price || PRODUCT_PRICE;
   const slug   = product.slug?.current;
   const [hovered, setHovered] = useState(false);
 
@@ -207,10 +207,7 @@ function ProductCard({
 
         {/* price row */}
         <div className="buy-card-price-row">
-          <div className="flex items-baseline gap-2">
-            <PriceTag amount={price} size="md" />
-            <span className="buy-card-mrp">&#8377;{mrp.toLocaleString("en-IN")}</span>
-          </div>
+          <PriceTag amount={price} size="md" />
           {coupon?.active && (
             <span className="buy-card-coupon">
               <Tag size={9} />&#8377;{coupon.payJust} with {coupon.code}
@@ -278,8 +275,7 @@ function ProductDetail({
   const [showForm, setShowForm]       = useState(false);
   const [newReview, setNewReview]     = useState({ name: "", text: "", stars: 5 });
 
-  const price   = product.price || 1150;
-  const mrp     = (product.price || 1150) + 200;
+  const price   = product.price || PRODUCT_PRICE;
   const slug    = product.slug?.current;
   const media   = getProductMedia(product);
   const tagline = product.tagline || descriptions[product.title]?.tagline;
@@ -418,10 +414,7 @@ function ProductDetail({
 
             {/* price */}
             <div className="pd-price-block">
-              <div className="flex items-baseline gap-3">
-                <PriceTag amount={price} size="lg" />
-                <span className="pd-mrp">&#8377;{mrp.toLocaleString("en-IN")}</span>
-              </div>
+              <PriceTag amount={price} size="lg" />
               {coupon?.active && (
                 <span className="pd-coupon-pill">
                   <Tag size={9} /> &#8377;{coupon.payJust} with coupon {coupon.code}
@@ -478,7 +471,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   useEffect(() => {
     fetch("/api/coupon").then(r => r.json()).then(c => {
       if (!c?.couponCode) return;
-      const base = 1150;
+      const base = PRODUCT_PRICE;
       const payJust = c.discountType === "percent"
         ? Math.round(base * (1 - c.discountAmount / 100))
         : base - c.discountAmount;
@@ -497,7 +490,7 @@ function BuyClientContent({ products = [], wishlist = [] }: any) {
   useEffect(() => {
     if (selected) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      trackConversion({ event_name: "view_content", content_ids: [selected.slug?.current], value: selected.price || 1150, currency: "INR" });
+      trackConversion({ event_name: "view_content", content_ids: [selected.slug?.current], value: selected.price || PRODUCT_PRICE, currency: "INR" });
     }
   }, [selected]);
 
