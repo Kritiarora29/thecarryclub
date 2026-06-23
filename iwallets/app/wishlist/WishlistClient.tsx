@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { removeFromWishlist } from "@/lib/wishlistActions"
 import { addToCart } from "@/lib/cartActions"
+import { PRODUCT_PRICE } from "@/lib/constants"
 import Image from "next/image"
 import { Eyebrow, Heading, Button } from "@/components/ui/tcc"
 
@@ -205,7 +206,7 @@ export default function WishlistClient({ wishlist = [], products = [] }: any) {
                       <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight leading-none mb-2">
                         {product.title}
                       </h2>
-                      <p className="text-xl md:text-2xl font-bold text-primary">₹{product.price || 1150}</p>
+                      <p className="text-xl md:text-2xl font-bold text-primary">₹{(product.price || PRODUCT_PRICE).toLocaleString("en-IN")}</p>
                     </div>
 
                     <div className="flex flex-col gap-3">
